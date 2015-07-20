@@ -1,6 +1,1 @@
 language: java
-notifications:
-  slack:
-    rooms:
-      - dsi-mairie-noumea:OaeTYNOoupSvYeuhpLLA0THt#travis-ci
-      - dsi-mairie-noumea:OaeTYNOoupSvYeuhpLLA0THt#organigramme
