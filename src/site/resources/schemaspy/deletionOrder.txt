@@ -1,3 +1,0 @@
-databasechangeloglock
-databasechangelog
-couleur_type_entite

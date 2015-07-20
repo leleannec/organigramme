@@ -1,3 +1,0 @@
-<vbox align="center" hflex="1">
-	<label value="Gestion des organigrammes ${project.version}" hflex="1"/>
-</vbox>
