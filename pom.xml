@@ -155,7 +155,6 @@
 			<artifactId>zkmax</artifactId>
 			<version>${zk.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.zkoss.zk</groupId>
 			<artifactId>zk</artifactId>
@@ -241,11 +240,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>5.1.2.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.zkoss.zk</groupId>
-            <artifactId>zkbind</artifactId>
-            <version>${zk.version}</version>
         </dependency>
         <!-- Spring 3 dependencies -->
         <dependency>
