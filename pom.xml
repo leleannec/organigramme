@@ -24,6 +24,7 @@
         </license>
     </licenses>
     
+    <!-- Liaison GitHub -->
 	<scm>
         <connection>scm:git:git://github.com/DSI-Ville-Noumea/organigramme.git</connection>
         <developerConnection>scm:git:git@github.com:DSI-Ville-Noumea/organigramme.git</developerConnection>
