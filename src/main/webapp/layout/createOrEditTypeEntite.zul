@@ -1,0 +1,14 @@
+<window id="createUpdateTypeEntite" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('nc.noumea.mairie.organigramme.viewmodel.CreateOrEditTypeEntiteViewModel')" border="normal"
+	contentStyle="overflow:auto" title="Création d'un nouveau type d'entité" width="500px" mode="modal" forward="onCancel=btnCancel.onClick">
+
+	<vlayout height="100%" form="@id('vm') @validator(vm.validator)">
+
+		<include src="/layout/typeEntite.zul" />
+	
+		<toolbar mold="panel" align="center">
+			<toolbarbutton onClick="@command('saveOrUpdate')" image="/imgs/icon/save.png" label="Enregistrer" />
+			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+		</toolbar>
+
+	</vlayout>
+</window>

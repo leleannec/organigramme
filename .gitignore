@@ -1,0 +1,6 @@
+.travis.yml
+.classpath
+.project
+.settings/
+target/
+test-output/

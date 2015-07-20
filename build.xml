@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="organigramme" basedir=".">
+
+    <!-- Properties -->
+    <property file="src/main/resources/ant.properties"/>
+    <!-- Step 1.
+       Define the ant tasks (macros) that come with SchemaCrawler
+     -->
+    <typedef
+    resource="schemacrawler-antlib.xml"
+    classpath="lib/schemacrawler-${schemacrawler.version}.jar"/>
+      <!-- Step 2.
+       Define the classpath to the database driver
+     -->
+    <path id="schemacrawler-classpath">
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+  <tstamp>
+    <format property="TODAY_FR" pattern="YYYY-MM-dd" locale="fr,FR"/>
+  </tstamp>
+  
+  <target name="schemacrawler-diagram" description="Produce database diagram">
+    <property name="outputfile-diagram" location="${schemacrawler.target.dir}/diagram.png"/>
+    <delete file="${outputfile-diagram}"/>
+    <schemacrawler
+      schemacrawler-classpath="schemacrawler-classpath"
+      user="${db.login}"
+      password="${db.password}"
+      driver="${db.driver}"
+      url="jdbc:postgresql://${db.host}/${db.name}"
+      infolevel="maximum"
+      command="graph"
+      outputformat="png"
+      outputfile="${outputfile-diagram}"/>
+
+    <echo message="SchemaCrawler output is in ${outputfile-diagram}"/>
+  </target>
+  
+  <target name="schemacrawler-details" description="Produce database details">
+    <property name="outputfile-details" location="${schemacrawler.target.dir}/details.html"/>
+    <delete file="${outputfile-details}"/>
+    <schemacrawler
+      schemacrawler-classpath="schemacrawler-classpath"
+      user="${db.login}"
+      password="${db.password}"
+      driver="${db.driver}"
+      url="jdbc:postgresql://${db.host}/${db.name}"
+      infolevel="maximum"
+      command="details"
+      outputformat="html"
+      outputfile="${outputfile-details}"/>
+
+    <echo message="SchemaCrawler details output is in ${outputfile-details}"/>
+  </target>
+  
+  <target name="schemacrawler-count" description="Produce database count report">
+    <property name="outputfile-count" location="${schemacrawler.target.dir}/count.html"/>
+    <delete file="${outputfile-count}"/>
+    <schemacrawler
+      schemacrawler-classpath="schemacrawler-classpath"
+      user="${db.login}"
+      password="${db.password}"
+      driver="${db.driver}"
+      url="jdbc:postgresql://${db.host}/${db.name}"
+      infolevel="maximum"
+      command="count"
+      outputformat="html"
+      outputfile="${outputfile-count}"/>
+    <echo message="SchemaCrawler count output is in ${outputfile-count}"/>
+  </target>
+  
+  <target name="schemacrawler-lint" description="Produce database lint report">
+    <property name="outputfile-lint" location="${schemacrawler.target.dir}/lint.html"/>
+    <delete file="${outputfile-lint}"/>
+    <schemacrawler
+      schemacrawler-classpath="schemacrawler-classpath"
+      user="${db.login}"
+      password="${db.password}"
+      driver="${db.driver}"
+      url="jdbc:postgresql://${db.host}/${db.name}"
+      infolevel="maximum"
+      command="lint"
+      outputformat="html"
+      outputfile="${outputfile-lint}"/>
+
+    <echo message="SchemaCrawler output is in ${outputfile-lint}"/>
+  </target>
+  
+  <target name="schemacrawler"
+    description="Install and run all schemacarwler reports."
+    depends="get-jars,schemacrawler-count,schemacrawler-details,schemacrawler-diagram,schemacrawler-lint">
+    
+  </target>
+  
+  
+    
+    
+    <!-- Get resources -->
+    <target name="mkdir-lib">
+        <mkdir dir="lib"/>
+    </target>
+
+    <target name="get-schemaspy" description="Download schemaspy jar" depends="mkdir-lib">
+        <get src="http://repo1.maven.org/maven2/org/jumpmind/symmetric/schemaspy/schemaspy/5.0.0/schemaspy-5.0.0.jar" dest="lib"/>
+    </target>
+    
+    <target name="get-schemacrawler" description="Download schemacrawler jar" depends="mkdir-lib">
+        <get src="http://central.maven.org/maven2/net/sourceforge/schemacrawler/schemacrawler/${schemacrawler.version}/schemacrawler-${schemacrawler.version}.jar" dest="lib"/>
+        <get src="http://central.maven.org/maven2/net/sourceforge/schemacrawler/schemacrawler-lint/${schemacrawler.version}/schemacrawler-lint-${schemacrawler.version}.jar" dest="lib"/>
+    </target>
+    
+    <target name="get-postgres-drivers" description="Download postgres jdbc jar" depends="mkdir-lib">
+        <get src="http://repo1.maven.org/maven2/org/postgresql/postgresql/9.3-1101-jdbc41/postgresql-9.3-1101-jdbc41.jar" dest="lib"/>
+    </target>
+    <target name="get-jars" depends="get-schemaspy,get-postgres-drivers,get-schemacrawler" description="get all required resources (drivers, tools)">
+       
+    </target>
+    
+    
+    <target name="schemaspy" description="! NEEDS Graphviz ! Generates schema spy docs in [src/site/resources/schemaspy]">
+        <delete dir="src/site/resources/schemaspy"/>
+	<mkdir dir="src/site/resources/schemaspy"/>
+        <java jar="lib/schemaspy-5.0.0.jar"
+              fork="true"
+              failonerror="true"
+              maxmemory="128m"
+        >
+            <arg value="-t"/>
+            <arg value="pgsql"/>
+            <arg value="-host"/>
+            <arg value="${db.host}"/>
+            <arg value="-db"/>
+            <arg value="${db.name}"/>
+            <arg value="-u"/>
+            <arg value="${db.login}"/>
+            <arg value="-p"/>
+            <arg value="${db.password}"/>
+            <arg value="-dp"/>
+            <arg value="lib/postgresql-9.3-1101-jdbc41.jar"/>
+            <arg value="-o"/>
+            <arg value="src/site/resources/schemaspy"/>
+  
+            <!--      
+            java -jar schemaSpy_5.0.0.jar -t pgsql -host svi-pg0.site-mairie.noumea.nc:5432 -db organigramme -u orga_adm -p changeme -dp /home/salad74/.m2/repository/org/postgresql/postgresql/9.3-1101-jdbc41/postgresql-9.3-1101-jdbc41.jar  -o ./test
+            -->
+        </java>
+    
+    
+    </target>
+    
+    <target name="db-doc"
+      description="Generates all database relative documentation (schemacrawler and schemaspy) within a single zipped archive."
+      depends="schemacrawler,schemaspy,pg_dump">
+	<!-- package doc in a single zip file -->
+	 <zip destfile="target/ORGANIGRAMME_DB_DOC-${TODAY_FR}.zip">
+	 <zipfileset dir="src/site/resources/schemacrawler" prefix="organigramme-db-docs/schemacrawler"/>
+	 <zipfileset dir="src/site/resources/schemaspy" prefix="organigramme-db-docs/schemaspy"/>
+	<zipfileset dir="." includes="organigramme.sql" prefix="organigramme-db-docs/pg_dump"/>
+      </zip>
+    </target>
+    
+    <target name="pg_dump" description="pg_dump main bilan schema (postgres cli required)">
+      <delete file="target/organigramme.sql"/>
+      <exec dir="." executable="pg_dump" osfamily="unix">
+	<arg value="-h"/>
+	<arg value="${db.host}"/>
+	<arg value="-U"/>
+	<arg value="${db.login}"/>
+	<arg value="-f"/>
+	<arg value="organigramme.sql"/>
+	<arg value="-n"/>
+	<arg value="${db.login}"/>
+	<arg value="${db.name}"/>
+      </exec>
+    </target>
+</project>

@@ -1,0 +1,26 @@
+<window id = "popupStatutWithRefAndDate" apply="org.zkoss.bind.BindComposer" viewModel="@id('vmEtape') @init('nc.noumea.mairie.organigramme.viewmodel.PopupStatutWithRefAndDateViewModel')"
+	border="normal" title="Changement de statut de l'entité" width="500px" height="150px" closable="true" onClose="@command('cancel')" 
+	mode="modal" validationMessages="@id('vmsgs')" forward="onCancel=btnCancel.onClick">
+
+	<grid>
+		<columns>
+			<column width="200px"/>
+			<column/>
+		</columns>
+		<rows>
+			<row>
+				<label value="Date de délibération : " sclass="@load(vmEtape.cssLabelAndDate)" />
+				<datebox value="@bind(vmEtape.dateDeliberation)" hflex="1"/>
+			</row>
+			<row>
+				<label value="Référence de la délibération : " sclass="@load(vmEtape.cssLabelAndDate)" />
+				<textbox value="@bind(vmEtape.refDeliberation)" hflex="1"/>
+			</row>
+		</rows> 
+	</grid>
+	
+	<toolbar mold="panel" align="center">
+		<toolbarbutton onClick="@command('saveStatutWithRefAndDate')" image="/imgs/icon/save.png" label="Enregistrer" />
+		<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+	</toolbar>
+</window>

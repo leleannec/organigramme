@@ -1,0 +1,3 @@
+<div hflex="1" vflex="1" sclass="footer">
+	<include src="/version.zul" hflex="1"/>
+</div>

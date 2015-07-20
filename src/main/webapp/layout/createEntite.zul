@@ -1,0 +1,27 @@
+<window id="createEntite" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('nc.noumea.mairie.organigramme.viewmodel.CreateEntiteViewModel')" border="normal"
+	contentStyle="overflow:auto" title="Création d'une entité" width="700px" mode="modal" renderdefer="100" forward="onCancel=btnCancel.onClick">
+	<caption image="/imgs/icon/add.png" />
+	<vlayout height="100%">
+		<grid hflex="1">
+			<columns>
+				<column width="220px" />
+				<column hflex="1" />
+			</columns>
+			<rows>
+				<row>
+					<label class="mandatory" value="Sigle :" />
+					<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase" />
+				</row>
+				<row>
+					<label class="mandatory" value="Libellé :" />
+					<textbox value="@bind(vm.entity.label)" hflex="1" />
+				</row>
+			</rows>
+		</grid>
+
+		<toolbar mold="panel" align="center">
+			<toolbarbutton onClick="@command('save')" image="/imgs/icon/save.png" label="Enregistrer" />
+			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+		</toolbar>
+	</vlayout>
+</window>
