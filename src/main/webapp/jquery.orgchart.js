@@ -48,6 +48,25 @@ function replierTout() {
 	refreshOrganigrammeReplie();
 }; 
 
+function expandEntiteFromIdDiv(id) {
+	var $entite = $("div#" + id);
+	expandEntite($entite);
+};
+
+function expandEntite($entiteDiv) { 
+    var $row = $entiteDiv.closest("tr");
+    if ($row.next("tr").is(":visible")) {
+    	$entiteDiv.addClass('collapsed'); 
+    	$row.nextAll("tr").hide();
+        $row.removeClass("shownChildren").addClass("hiddenChildren");
+    }
+    else {
+    	$entiteDiv.removeClass('collapsed');
+    	$row.removeClass("hiddenChildren").addClass("shownChildren");
+        $row.nextAll("tr").show();
+    } 
+};
+
 function goToByScroll(id){
 	deplierTout();
 	refreshOrganigrammeSuiteAjout(id, null);
@@ -114,7 +133,7 @@ function goToByScroll(id){
             		var $entiteParent = $("div#" + opts.editEntiteParentId);
                 	var $row = $entiteParent.closest("tr");
                 	if(!($row.next("tr").is(":visible"))) {
-                		expandEntite($entiteParent, opts);
+                		expandEntite($entiteParent);
                     }
             	}
             	
@@ -146,7 +165,6 @@ function goToByScroll(id){
         chartClass : "orgChart",
         hoverClass : "hover",
         entiteText   : function($entite) {return $entite.clone().children("ul,li").remove().end().html();},
-        entiteDblClicked: function($entite) {},
         copyClasses: true,
         copyData   : true,
         copyStyles : true,
@@ -181,21 +199,6 @@ function goToByScroll(id){
         	opts.editEntiteParentId = "";
     	}
     };
-    
-    function expandEntite($entiteDiv, opts) {
-        opts.entiteDblClicked($entiteDiv.data("orgchart-entite"), $entiteDiv);
-        var $row = $entiteDiv.closest("tr");
-        if ($row.next("tr").is(":visible")) {
-        	$entiteDiv.addClass('collapsed'); 
-        	$row.nextAll("tr").hide();
-            $row.removeClass("shownChildren").addClass("hiddenChildren");
-        }
-        else {
-        	$entiteDiv.removeClass('collapsed');
-        	$row.removeClass("hiddenChildren").addClass("shownChildren");
-            $row.nextAll("tr").show();
-        } 
-    }; 
     
     function buildEntite($entite, $appendTo, level, index, opts, $previousChart) {
         var $table = $("<table cellpadding='0' cellspacing='0' border='0'/>");
@@ -265,7 +268,7 @@ function goToByScroll(id){
                 }, DELAY);
             } else { 
             	clearTimeout(timer);		//prevent single-click action
-            	expandEntite($entiteDiv, opts); 
+            	expandEntite($entiteDiv); 
                 clicks = 0;             	//after action performed, reset counter
                 zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onDblClickEntite', $entiteDiv.attr("id"))); 
             	removeEditEntite(opts);  
@@ -277,7 +280,7 @@ function goToByScroll(id){
         });
          
         $entiteDiv.on("deplierReplierEntite", function(e) {
-        	expandEntite($entiteDiv, opts);
+        	expandEntite($entiteDiv);
         });
          
         if ($childEntites.length > 0) {
