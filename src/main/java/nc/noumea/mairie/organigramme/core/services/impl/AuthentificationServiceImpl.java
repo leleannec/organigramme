@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 
 @Service("authentificationService")
@@ -51,11 +50,7 @@ public class AuthentificationServiceImpl implements AuthentificationService {
 	public void logout() {
 		ProfilAgentDto currentUser = getCurrentUser();
 		log.debug("Disconnect User : " + currentUser.getIdAgent());
-		Sessions.getCurrent().setAttribute("currentUser", null);
 		Executions.getCurrent().getSession().setAttribute("logout", "logout");
-
-		Session sess = Sessions.getCurrent();
-		sess.invalidate();
 		Executions.sendRedirect("/login.zul");
 	}
 }
