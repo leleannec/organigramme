@@ -16,6 +16,14 @@
 					<label class="mandatory" value="Libellé :" />
 					<textbox value="@bind(vm.entity.label)" hflex="1" />
 				</row>
+				<row> 
+					<label class="mandatory" value="Type :" />
+					<combobox selectedItem="@bind(vm.entity.typeEntite)" model="@load(vm.listeTypeEntiteActifInactif)" hflex="1">
+						<template name="model">
+							<comboitem label="${each.labelWithActifInactif}" />
+						</template> 
+					</combobox>
+				</row>
 			</rows>
 		</grid>
 
