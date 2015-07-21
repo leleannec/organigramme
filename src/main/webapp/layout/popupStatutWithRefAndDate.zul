@@ -9,7 +9,7 @@
 		</columns>
 		<rows>
 			<row>
-				<label value="Date de délibération : " sclass="@load(vmEtape.cssLabelAndDate)" />
+				<label value="Date de délibération / CTP : " sclass="@load(vmEtape.cssLabelAndDate)" />
 				<datebox value="@bind(vmEtape.dateDeliberation)" hflex="1"/>
 			</row>
 			<row>

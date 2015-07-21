@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.dto;
  * #L%
  */
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,41 +48,41 @@ import flexjson.JSON;
 @XmlRootElement
 public class EntiteDto extends AbstractEntityDto {
 
-	private Integer				idEntite;
-	
+	private Integer			idEntite;
+
 	@Column(length = 20)
-	private String				sigle;
-	private String				label;
-	
+	private String			sigle;
+	private String			label;
+
 	@Column(length = 60)
-	private String				labelCourt;
-	private TypeEntiteDto		typeEntite;
-	private String				codeServi;
-	private List<EntiteDto>		enfants;
-	private EntiteDto			entiteParent;
-	private EntiteDto			entiteRemplacee;
+	private String			labelCourt;
+	private TypeEntiteDto	typeEntite;
+	private String			codeServi;
+	private List<EntiteDto>	enfants;
+	private EntiteDto		entiteParent;
+	private EntiteDto		entiteRemplacee;
 
-	private Integer				idStatut;
-	private Integer				idAgentCreation;
+	private Integer			idStatut;
+	private Integer			idAgentCreation;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date				dateCreation;
-	private Integer				idAgentModification;
+	private Date			dateCreation;
+	private Integer			idAgentModification;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date				dateModification;
-	private String				refDeliberationActif;
+	private Date			dateModification;
+	private String			refDeliberationActif;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date				dateDeliberationActif;
-	private String				refDeliberationInactif;
+	private Date			dateDeliberationActif;
+	private String			refDeliberationInactif;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date				dateDeliberationInactif;
+	private Date			dateDeliberationInactif;
 
-	private Li					li;
-	private Statut				statut;
-	private Integer				idAgentSuppression;
+	private Li				li;
+	private Statut			statut;
+	private Integer			idAgentSuppression;
 
 	public EntiteDto() {
 		enfants = new ArrayList<>();
@@ -264,7 +263,7 @@ public class EntiteDto extends AbstractEntityDto {
 		this.dateDeliberationInactif = dateDeliberationInactif;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public Li getLi() {
 		return li;
 	}
@@ -273,7 +272,7 @@ public class EntiteDto extends AbstractEntityDto {
 		this.li = li;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public Integer getIdAgentSuppression() {
 		return idAgentSuppression;
 	}
@@ -282,7 +281,7 @@ public class EntiteDto extends AbstractEntityDto {
 		this.idAgentSuppression = idAgentSuppression;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public Statut getStatut() {
 		return statut;
 	}
@@ -292,13 +291,13 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@Override
-	@JSON(include=false)
+	@JSON(include = false)
 	public String getLibelleCourt() {
 		return label;
 	}
 
 	@Override
-	@JSON(include=false)
+	@JSON(include = false)
 	public Long getId() {
 		if (this.getIdEntite() == null) {
 			return null;
@@ -308,7 +307,7 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@Override
-	@JSON(include=false)
+	@JSON(include = false)
 	public Integer getVersion() {
 		return null;
 	}
@@ -326,6 +325,10 @@ public class EntiteDto extends AbstractEntityDto {
 			result.add(new MessageErreur("Le libellé est obligatoire"));
 		}
 
+		if (this.getTypeEntite() == null) {
+			result.add(new MessageErreur("Le type est obligatoire"));
+		}
+
 		return result;
 	}
 
@@ -337,7 +340,7 @@ public class EntiteDto extends AbstractEntityDto {
 	 * @return la liste des transitions autorisées pour cette entité, en tenant compte du statut courant de l'entité et de règles de gestion, ne retourne jamais
 	 *         null.
 	 */
-	@JSON(include=false)
+	@JSON(include = false)
 	public List<Transition> getListeTransitionAutorise() {
 
 		// construit la liste de toutes les transitions possibles depuis le statut source
@@ -346,18 +349,17 @@ public class EntiteDto extends AbstractEntityDto {
 			boolean transitionDepuisStatutCourant = this.getStatut().equals(transition.getStatutSource());
 			if (transitionDepuisStatutCourant) {
 
-				//On se le statut de l'entité parent 
-				if(this.getEntiteParent() != null) {
+				// On se le statut de l'entité parent
+				if (this.getEntiteParent() != null) {
 					this.getEntiteParent().setStatut(Statut.getStatutById(this.getEntiteParent().getIdStatut()));
 				}
-				
-				boolean statutParentNotPrevisionOrInactif = this.getEntiteParent() != null && 
-						this.getEntiteParent().getStatut() != Statut.PREVISION && this.getEntiteParent().getStatut() != Statut.INACTIF;
-				if(statutParentNotPrevisionOrInactif) {
-					if(transition.getStatut() == Statut.ACTIF) {
+
+				boolean statutParentNotPrevisionOrInactif = this.getEntiteParent() != null && this.getEntiteParent().getStatut() != Statut.PREVISION
+						&& this.getEntiteParent().getStatut() != Statut.INACTIF;
+				if (statutParentNotPrevisionOrInactif) {
+					if (transition.getStatut() == Statut.ACTIF) {
 						listeTransition.add(transition);
-					}
-					else if (transition.getStatut() == Statut.INACTIF) {
+					} else if (transition.getStatut() == Statut.INACTIF) {
 						// tous les noeuds descendants doivent être inactifs
 						List<Statut> listeStatut = new ArrayList<Statut>();
 						listeStatut.add(Statut.INACTIF);
@@ -369,7 +371,7 @@ public class EntiteDto extends AbstractEntityDto {
 						List<Statut> listeStatut = new ArrayList<Statut>();
 						listeStatut.add(Statut.TRANSITOIRE);
 						listeStatut.add(Statut.INACTIF);
-						if (tousEnfantEnStatut(listeStatut, this.getEnfants())) { 
+						if (tousEnfantEnStatut(listeStatut, this.getEnfants())) {
 							listeTransition.add(transition);
 						}
 					}
@@ -411,34 +413,34 @@ public class EntiteDto extends AbstractEntityDto {
 		return false;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public boolean isPrevision() {
 		return this.getStatut() != null && this.getStatut() == Statut.PREVISION;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public boolean isTransitoireOuInactif() {
 		return this.getStatut() != null && (this.getStatut() == Statut.TRANSITOIRE || this.getStatut() == Statut.INACTIF);
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public boolean isInactif() {
 		return this.getStatut() != null && this.getStatut() == Statut.INACTIF;
 	}
-	
-	@JSON(include=false)
+
+	@JSON(include = false)
 	public boolean isFeuille() {
 		return CollectionUtils.isEmpty(this.getEnfants());
 	}
-	
-	@JSON(include=false)
+
+	@JSON(include = false)
 	public String getSigleWithLibelleStatut() {
-		if(this.getStatut() != null && this.getStatut() != Statut.ACTIF) {
+		if (this.getStatut() != null && this.getStatut() != Statut.ACTIF) {
 			return this.sigle + " (" + this.getStatut().getLibelle() + ")";
 		}
 		return this.sigle;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.getSigle();

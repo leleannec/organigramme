@@ -75,25 +75,25 @@
 									</columns>
 									<rows>
 										<row vflex="1" hflex="1" valign="top"> 
-											<label value="Sigle :" />
+											<label class="mandatory" value="Sigle :" />
 											<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase" disabled="@load(not vm.editable)" maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'sigle'))"/>
-											<label value="Date délib. activation :" visible="@load(not vm.entity.prevision)"/>
+											<label value="Date délib. activation / CTP :" visible="@load(not vm.entity.prevision)"/>
 											<datebox value="@bind(vm.entity.dateDeliberationActif)" visible="@load(not vm.entity.prevision)" disabled="@load(not vm.editable)"/>
 										</row>
 										<row vflex="1" hflex="1" valign="top"> 
-											<label value="Libellé :" /> 
+											<label class="mandatory" value="Libellé :" /> 
 											<textbox value="@bind(vm.entity.label)" hflex="1" disabled="@load(not vm.editable)"/>
 											<label value="Réf. délib. activation :" visible="@load(not vm.entity.prevision)"/>
 											<textbox value="@bind(vm.entity.refDeliberationActif)" visible="@load(not vm.entity.prevision)" hflex="1" disabled="@load(not vm.editable)"/>
 										</row>
 										<row vflex="1" hflex="1" valign="top"> 
-											<label value="Type :" />
+											<label class="mandatory" value="Type :" />
 											<combobox selectedItem="@bind(vm.entity.typeEntite)" model="@load(vm.listeTypeEntiteActifInactif)" hflex="1" disabled="@load(not vm.editable)">
 												<template name="model">
 													<comboitem label="${each.labelWithActifInactif}" />
 												</template> 
 											</combobox>
-											<label value="Date délib. désactivation :" visible="@load(vm.entity.transitoireOuInactif)"/>
+											<label value="Date délib. désactivation / CTP :" visible="@load(vm.entity.transitoireOuInactif)"/>
 											<datebox value="@bind(vm.entity.dateDeliberationInactif)" visible="@load(vm.entity.transitoireOuInactif)" disabled="@load(not vm.editable)"/>
 										</row>
 										<row vflex="1" hflex="1" valign="top"> 

@@ -47,6 +47,22 @@ public class TypeEntiteServiceImpl extends GenericServiceImpl<TypeEntiteDto> imp
 	AdsWSConsumer	adsWSConsumer;
 
 	@Override
+	public List<TypeEntiteDto> getListeTypeEntiteActif() {
+		List<TypeEntiteDto> listeTypeEntiteDto = adsWSConsumer.getListeTypeEntite();
+		List<TypeEntiteDto> result = new ArrayList<TypeEntiteDto>();
+
+		for (TypeEntiteDto typeEntiteDto : listeTypeEntiteDto) {
+			if (typeEntiteDto.isActif()) {
+				result.add(typeEntiteDto);
+			}
+		}
+
+		Collections.sort(result, new ComparatorUtil.TypeEntiteComparator());
+
+		return result;
+	}
+
+	@Override
 	public List<TypeEntiteDto> getListeTypeEntiteActifInactif() {
 		List<TypeEntiteDto> listeTypeEntiteDto = adsWSConsumer.getListeTypeEntite();
 		List<TypeEntiteDto> listeTypeEntiteDtoActif = new ArrayList<TypeEntiteDto>();

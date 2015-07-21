@@ -6,6 +6,7 @@
 <?script src="jquery.scrollTo.min.js" ?>
 
 <zk>
+	<?meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" ?>
 	<?link rel="shortcut icon" type="image/x-icon" href="imgs/organigramme-icon.ico" ?>
 	
 	<borderlayout id="mainBorderLayout" hflex="1" vflex="1" apply="nc.noumea.mairie.organigramme.controller.MainController" visible="false" >
