@@ -25,7 +25,7 @@ function refreshOrganigrammeSuiteAjout(idLi, idLiParent) {
 	$("#organigramme-root").orgChart({container: $("#chart"), editEntiteId: idLi, editEntiteParentId: idLiParent});
 };
 
-function refreshOrganigrammeSuiteSuppression() { 
+function refreshOrganigrammeWithoutSelectedEntite() { 
 	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true}); 
 }; 
 

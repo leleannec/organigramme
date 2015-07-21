@@ -26,16 +26,23 @@
 							<label value="Zoomer sur :" visible="@load(vm.selectedEntiteDtoZoom eq null)"/>
 							<toolbarbutton image="/imgs/icon/back.png" onClick="@command('dezoomer')" label="Dézoomer" visible="@load(vm.selectedEntiteDtoZoom ne null)" /> 
 							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.entiteDtoQueryListModel)" width="250px" 
-								onSelect="@command('selectionnerEntiteZoom')" autodrop="true" buttonVisible="false" visible="@load(vm.selectedEntiteDtoZoom eq null)">
+								onSelect="@command('selectionneEntiteZoom')" autodrop="true" buttonVisible="false" visible="@load(vm.selectedEntiteDtoZoom eq null)">
 								<template name="model">
 									<comboitem label="${each.sigle}" />
 								</template>
 							</combobox>
 							<label value="Rechercher dans l'arbre :" />
 							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedEntiteDtoRecherche)" model="@load(vm.entiteDtoQueryListModel)" 	
-								onSelect="@command('selectionnerEntiteRecherche')" autodrop="true" buttonVisible="false" width="250px" >
+								onSelect="@command('selectionneEntiteRecherche')" autodrop="true" buttonVisible="false" width="250px" >
 								<template name="model">
 									<comboitem label="${each.sigle}" />
+								</template>
+							</combobox>
+							<label value="Afficher :" />
+							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedFiltreStatut)" model="@load(vm.listeFiltreStatut)" 	
+								onSelect="@command('selectionneFiltreStatut')" width="250px" >
+								<template name="model">
+									<comboitem label="${each.libelle}" />
 								</template>
 							</combobox>
 						</toolbar>
@@ -43,7 +50,7 @@
 				</h:div>
 				<h:div id="chart"/> 
 				<h:div id="div-edit-entite"> 
-					<groupbox hflex="1" mold="3d" closable="false" style="@load(vm.stylePanelEdition)" vflex="1">
+					<groupbox hflex="1" vflex="1" mold="3d" closable="false" style="@load(vm.stylePanelEdition)">
 						<caption label="@load(vm.entity.label)" />
 						<vlayout hflex="1" vflex="1">
 							<hlayout sclass="no-padding-right"> 
@@ -65,9 +72,9 @@
 									<label value="@load(vm.statut.libelle)" sclass="statut-en-cours"></label>
 								</toolbar>
 							</hlayout>
-							<groupbox vflex="1">
+							<groupbox hflex="1" vflex="1">
 								<caption label="Caractéristiques" />
-								<grid hflex="1">
+								<grid hflex="1" vflex="1">
 									<columns>
 										<column width="15%" /> 
 										<column width="35%" />

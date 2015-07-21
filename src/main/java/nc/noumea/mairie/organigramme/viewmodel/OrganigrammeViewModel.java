@@ -26,6 +26,7 @@ package nc.noumea.mairie.organigramme.viewmodel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
+import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
 import nc.noumea.mairie.organigramme.query.EntiteDtoQueryListModel;
@@ -111,6 +113,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** L'{@link EntiteDto} représentant l'entité zommé **/
 	EntiteDto								selectedEntiteDtoZoom;
 
+	/** Le {@link FiltreStatut} représentant le filtre actif, par défaut, on affiche tous les statuts **/
+	FiltreStatut							selectedFiltreStatut			= FiltreStatut.TOUS;
+
 	/** Map permettant rapidement d'accèder à une {@link EntiteDto} à partir de son id html client **/
 	Map<String, EntiteDto>					mapIdLiEntiteDto;
 
@@ -152,6 +157,14 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public void setSelectedEntiteDtoZoom(EntiteDto selectedEntiteDtoZoom) {
 		this.selectedEntiteDtoZoom = selectedEntiteDtoZoom;
+	}
+
+	public FiltreStatut getSelectedFiltreStatut() {
+		return selectedFiltreStatut;
+	}
+
+	public void setSelectedFiltreStatut(FiltreStatut selectedFiltreStatut) {
+		this.selectedFiltreStatut = selectedFiltreStatut;
 	}
 
 	public EntiteDtoQueryListModel getEntiteDtoQueryListModel() {
@@ -380,7 +393,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 						creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
 
 						// Appel de la fonction javascript correscpondante
-						Clients.evalJavaScript("refreshOrganigrammeSuiteSuppression();");
+						Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
 					}
 				}
 			}
@@ -512,7 +525,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	@Command
-	public void selectionnerEntiteRecherche() {
+	public void selectionneEntiteRecherche() {
 		if (this.selectedEntiteDtoRecherche != null) {
 			setEntity(this.selectedEntiteDtoRecherche);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
@@ -541,7 +554,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	@Command
-	public void selectionnerEntiteZoom() {
+	public void selectionneEntiteZoom() {
 		if (this.selectedEntiteDtoZoom != null) {
 			setEntity(null);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
@@ -549,6 +562,82 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			creeArbreComplet(entiteDto);
 			Clients.evalJavaScript("refreshOrganigrammeSuiteZoom();");
 		}
+	}
+
+	@Command
+	public void selectionneFiltreStatut() {
+		if (this.selectedFiltreStatut != null) {
+
+			// Si une entité était en édition, on vide pour ne pas se retrouver dans des cas bizarre d'entité ouverte en édition alors qu'elle n'est
+			// pas présente avec le fitre actif
+			setEntity(null);
+
+			// On recharge toujours à partir d'ADS avant de filtrer pour être sur de tout récupérer à jour
+			if (this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
+				// Si on est en zoom, on filtre uniquement sur les entités zoomées
+				if (this.selectedEntiteDtoZoom != null) {
+					entiteDtoRoot = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
+				} else {
+					entiteDtoRoot = adsWSConsumer.getCurrentTreeWithVDNRoot();
+				}
+			} else {
+				// Si on est en zoom, on filtre uniquement sur les entités zoomées
+				EntiteDto entiteDtoAFiltre = null;
+				if (this.selectedEntiteDtoZoom != null) {
+					entiteDtoAFiltre = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
+
+				} else {
+					entiteDtoAFiltre = adsWSConsumer.getCurrentTreeWithVDNRoot();
+				}
+				entiteDtoRoot = filtrerEntiteDtoRootParStatut(entiteDtoAFiltre, this.selectedFiltreStatut);
+			}
+
+			treeViewModel.creeArbre(entiteDtoRoot);
+			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
+			refreshListeEntiteRemplace();
+			Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
+		}
+	}
+
+	/**
+	 * Renvoi une arborescence composé uniquement des statuts correspondant au filtre passé en paramétre
+	 * @param entiteDto : l'entité root de l'arbre à filtrer
+	 * @param filtreStatut : le filtre a appliquer
+	 * @return un arbre ne contenant que les statuts correspondant au filtre
+	 */
+	private EntiteDto filtrerEntiteDtoRootParStatut(EntiteDto entiteDto, FiltreStatut filtreStatut) {
+		if (filtreStatut == null || entiteDto == null) {
+			return null;
+		}
+
+		removeEntiteDtoIfNotInFiltre(entiteDto, filtreStatut);
+
+		return entiteDto;
+	}
+
+	/**
+	 * Méthode récursive qui parcoure les enfants et les enlève de l'arbre si ils ne sont pas dans un des statuts du filtre
+	 * @param entiteDto : l'entité parcourue
+	 * @param filtreStatut : le filtre
+	 */
+	private void removeEntiteDtoIfNotInFiltre(EntiteDto entiteDto, FiltreStatut filtreStatut) {
+		List<EntiteDto> listeEnfant = new ArrayList<EntiteDto>();
+		listeEnfant.addAll(entiteDto.getEnfants());
+		// On se le statut de l'entité
+		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
+		for (EntiteDto entiteDtoEnfant : listeEnfant) {
+			// On se le statut de l'entité
+			entiteDtoEnfant.setStatut(Statut.getStatutById(entiteDtoEnfant.getIdStatut()));
+			if (!filtreStatut.getListeStatut().contains(entiteDtoEnfant.getStatut())) {
+				entiteDto.getEnfants().remove(entiteDtoEnfant);
+			} else {
+				removeEntiteDtoIfNotInFiltre(entiteDtoEnfant, filtreStatut);
+			}
+		}
+	}
+
+	public List<FiltreStatut> getListeFiltreStatut() {
+		return Arrays.asList(FiltreStatut.values());
 	}
 
 	public String getComboVide() {
