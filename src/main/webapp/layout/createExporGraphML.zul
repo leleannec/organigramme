@@ -1,0 +1,23 @@
+<window id="createExportGraphML" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('nc.noumea.mairie.organigramme.viewmodel.CreateExportGraphMLViewModel')" border="normal"
+	contentStyle="overflow:auto" title="Création d'un export" width="300px" mode="modal" renderdefer="100" forward="onCancel=btnCancel.onClick">
+	<caption image="/imgs/icon/exporter.png" />
+	<vlayout height="100%">
+		<grid hflex="1">
+			<columns>
+				<column width="170px" />
+				<column hflex="1" />
+			</columns>
+			<rows>
+				<row>
+					<label value="Avec les fiches de postes ?" />
+					<checkbox checked="@bind(vm.entity.avecFichePoste)" />
+				</row>
+			</rows>
+		</grid>
+
+		<toolbar mold="panel" align="center">
+			<toolbarbutton onClick="@command('export')" image="/imgs/icon/exporter.png" label="Exporter" />
+			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+		</toolbar>
+	</vlayout>
+</window>
