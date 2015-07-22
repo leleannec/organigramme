@@ -34,8 +34,10 @@ import java.util.Map;
 import nc.noumea.mairie.organigramme.core.services.AuthentificationService;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
-import nc.noumea.mairie.organigramme.core.ws.AdsWSConsumer;
+import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
+import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
@@ -83,7 +85,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	public static Logger					log								= LoggerFactory.getLogger(OrganigrammeViewModel.class);
 
 	//@formatter:off
-	@WireVariable AdsWSConsumer				adsWSConsumer;
+	@WireVariable IAdsWSConsumer			adsWSConsumer;
+	@WireVariable ISirhWSConsumer			sirhWsConsumer;
 	@WireVariable ExportGraphMLService		exportGraphMLService;
 	@WireVariable OrganigrammeService		organigrammeService;
 	@WireVariable AuthentificationService	authentificationService;
@@ -96,7 +99,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	private static final String[]			LISTE_PROP_A_NOTIFIER_ENTITE	= new String[] { "statut", "entity", "listeTransitionAutorise", "listeEntite",
 			"listeEntiteRemplace", "editable", "listeTypeEntiteActifInactif", "hauteurPanelEdition", "mapIdLiEntiteDto", "stylePanelEdition",
-			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel" };
+			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "listeFicheDePoste" };
 
 	private OrganigrammeWorkflowViewModel	organigrammeWorkflowViewModel	= new OrganigrammeWorkflowViewModel(this);
 	public TreeViewModel					treeViewModel					= new TreeViewModel(this);
@@ -642,5 +645,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public String getComboVide() {
 		return null;
+	}
+
+	public List<FichePosteDto> getListeFicheDePoste() {
+		if (this.entity == null) {
+			return null;
+		}
+
+		return sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite());
 	}
 }

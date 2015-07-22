@@ -1,4 +1,4 @@
-package nc.noumea.mairie.organigramme.core.ws;
+package nc.noumea.mairie.organigramme.dto;
 
 /*
  * #%L
@@ -24,17 +24,21 @@ package nc.noumea.mairie.organigramme.core.ws;
  * #L%
  */
 
-import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
-import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+public class TitrePosteDto {
 
-public interface ISirhWSConsumer {
+	private String	libTitrePoste;
 
-	ProfilAgentDto getAgent(Integer idAgent);
+	public TitrePosteDto() {
+		super();
+	}
 
-	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
+	public String getLibTitrePoste() {
+		return libTitrePoste;
+	}
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite);
+	public void setLibTitrePoste(String libTitrePoste) {
+		this.libTitrePoste = libTitrePoste;
+	}
+
 }
