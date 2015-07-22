@@ -31,7 +31,7 @@
 									<comboitem label="${each.sigle}" />
 								</template>
 							</combobox>
-							<label value="Rechercher dans l'arbre :" />
+							<label value="Accèder à :" />
 							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedEntiteDtoRecherche)" model="@load(vm.entiteDtoQueryListModel)" 	
 								onSelect="@command('selectionneEntiteRecherche')" autodrop="true" buttonVisible="false" width="250px" >
 								<template name="model">
@@ -67,56 +67,25 @@
 											<custom-attributes statut="${each.statut.name}" />
 										</toolbarbutton>
 									</template>
-								</toolbar>  
+								</toolbar> 
 								<toolbar hflex="1" sclass="align-right">
 									<label value="@load(vm.statut.libelle)" sclass="statut-en-cours"></label>
 								</toolbar>
 							</hlayout>
-							<groupbox hflex="1" vflex="1">
-								<caption label="Caractéristiques" />
-								<grid hflex="1" vflex="1">
-									<columns>
-										<column width="15%" /> 
-										<column width="35%" />
-										<column width="15%" />
-										<column width="35%" />
-									</columns>
-									<rows>
-										<row vflex="1" hflex="1" valign="top"> 
-											<label class="mandatory" value="Sigle :" />
-											<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase" disabled="@load(not vm.editable)" maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'sigle'))"/>
-											<label value="Date délib. activation / CTP :" visible="@load(not vm.entity.prevision)"/>
-											<datebox value="@bind(vm.entity.dateDeliberationActif)" visible="@load(not vm.entity.prevision)" disabled="@load(not vm.editable)"/>
-										</row>
-										<row vflex="1" hflex="1" valign="top"> 
-											<label class="mandatory" value="Libellé :" /> 
-											<textbox value="@bind(vm.entity.label)" hflex="1" disabled="@load(not vm.editable)"/>
-											<label value="Réf. délib. activation :" visible="@load(not vm.entity.prevision)"/>
-											<textbox value="@bind(vm.entity.refDeliberationActif)" visible="@load(not vm.entity.prevision)" hflex="1" disabled="@load(not vm.editable)"/>
-										</row>
-										<row vflex="1" hflex="1" valign="top"> 
-											<label class="mandatory" value="Type :" />
-											<combobox selectedItem="@bind(vm.entity.typeEntite)" model="@load(vm.listeTypeEntiteActifInactif)" hflex="1" disabled="@load(not vm.editable)">
-												<template name="model">
-													<comboitem label="${each.labelWithActifInactif}" />
-												</template> 
-											</combobox>
-											<label value="Date délib. désactivation / CTP :" visible="@load(vm.entity.transitoireOuInactif)"/>
-											<datebox value="@bind(vm.entity.dateDeliberationInactif)" visible="@load(vm.entity.transitoireOuInactif)" disabled="@load(not vm.editable)"/>
-										</row>
-										<row vflex="1" hflex="1" valign="top"> 
-											<label value="Entité remplacée :" visible="@load(not vm.entity.prevision)"/>
-											<combobox selectedItem="@bind(vm.entity.entiteRemplacee)" model="@load(vm.listeEntiteRemplace)" visible="@load(not vm.entity.prevision)" hflex="1" disabled="@load(not vm.editable)">
-												<template name="model">
-													<comboitem label="${each.sigleWithLibelleStatut}" />
-												</template>
-											</combobox>
-											<label value="Réf. délib. désactivation :" visible="@load(vm.entity.transitoireOuInactif)"/>
-											<textbox value="@bind(vm.entity.refDeliberationInactif)" hflex="1" visible="@load(vm.entity.transitoireOuInactif)" disabled="@load(not vm.editable)"/>
-										</row> 
-									</rows>
-								</grid>
-							</groupbox>
+							<tabbox vflex="1" hflex="1">
+								<tabs >
+									<tab label="Caractéristiques" />
+									<tab label="Fiches de postes" />
+								</tabs>
+								<tabpanels>
+									<tabpanel style="overflow:auto">
+										<include src="/layout/editEntiteCaracteristique.zul" />
+									</tabpanel>
+									<tabpanel style="overflow:auto">
+										<include src="/layout/editEntiteFicheDePoste.zul" />
+									</tabpanel>
+								</tabpanels>
+							</tabbox>
 						</vlayout>
 					</groupbox>
 				</h:div>
