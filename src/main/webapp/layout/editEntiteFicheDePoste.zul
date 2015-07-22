@@ -1,0 +1,34 @@
+<zk>
+	<listbox mold="paging" model="@bind(vm.listeFicheDePoste)" hflex="1" vflex="1" pageSize="50">
+		<listhead menupopup="auto" sizable="true">
+			<listheader label="Numéro" sort="auto(numero)" width="90px" align="center"/>
+			<listheader label="Titre" sort="auto(titre)" />
+			<listheader label="Statut" sort="auto(statutFDP)" />
+			<listheader label="Catégorie" sort="auto(categorie)" />
+			<listheader label="Agent" sort="auto(agent)"/>
+			<listheader label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
+		</listhead>
+		<template name="model">
+			<listitem>
+				<listcell>
+					<label value="@bind(each.numero)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.titre)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.statutFDP)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.categorie)" />
+				</listcell>
+				<listcell>
+					<label value="@load(each.agent)" />
+				</listcell>
+				<listcell> 
+					<label value="@bind(each.reglementaire)" />
+				</listcell>
+			</listitem>
+		</template>
+	</listbox>
+</zk>

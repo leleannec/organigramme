@@ -24,11 +24,11 @@ package nc.noumea.mairie.organigramme.utils;
  * #L%
  */
 
-
 import java.io.Serializable;
 import java.util.Comparator;
 
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 
 public class ComparatorUtil {
@@ -42,7 +42,7 @@ public class ComparatorUtil {
 			return o1.getLabel().compareTo(o2.getLabel());
 		}
 	}
-	
+
 	public static class EntiteComparator implements Comparator<EntiteDto>, Serializable {
 
 		private static final long	serialVersionUID	= 1L;
@@ -50,6 +50,16 @@ public class ComparatorUtil {
 		@Override
 		public int compare(EntiteDto o1, EntiteDto o2) {
 			return o1.getSigle().compareTo(o2.getSigle());
+		}
+	}
+
+	public static class FichePosteComparator implements Comparator<FichePosteDto>, Serializable {
+
+		private static final long	serialVersionUID	= 1L;
+
+		@Override
+		public int compare(FichePosteDto o1, FichePosteDto o2) {
+			return o1.getTitre().compareTo(o2.getTitre());
 		}
 	}
 }
