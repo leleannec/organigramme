@@ -553,7 +553,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		setEntity(null);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 		creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
-		Clients.evalJavaScript("refreshOrganigrammeSuiteZoom();");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteDezoom();");
 	}
 
 	@Command
