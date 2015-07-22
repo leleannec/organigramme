@@ -30,7 +30,12 @@ function refreshOrganigrammeWithoutSelectedEntite() {
 }; 
 
 function refreshOrganigrammeSuiteZoom() { 
-	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true}); 
+	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
+	deplierTout();
+}; 
+
+function refreshOrganigrammeSuiteDezoom() { 
+	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
 }; 
 
 function refreshOrganigrammeReplie() { 
