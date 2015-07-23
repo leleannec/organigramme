@@ -36,5 +36,5 @@ public interface ISirhWSConsumer {
 
 	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite);
+	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren);
 }

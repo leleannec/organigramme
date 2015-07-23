@@ -687,7 +687,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			return null;
 		}
 
-		return sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite());
+		return sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
 	}
 
 	@Command

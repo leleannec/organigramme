@@ -1,6 +1,7 @@
 <zk>
 	<listbox mold="paging" model="@bind(vm.listeFicheDePoste)" hflex="1" vflex="1" pageSize="50">
 		<listhead menupopup="auto" sizable="true">
+			<listheader label="Entité" sort="auto(sigle)" />
 			<listheader label="Numéro" sort="auto(numero)" width="90px" align="center"/>
 			<listheader label="Titre" sort="auto(titre)" />
 			<listheader label="Statut" sort="auto(statutFDP)" />
@@ -10,6 +11,9 @@
 		</listhead>
 		<template name="model">
 			<listitem>
+				<listcell>
+					<label value="@bind(each.sigle)" />
+				</listcell>
 				<listcell>
 					<label value="@bind(each.numero)" />
 				</listcell>

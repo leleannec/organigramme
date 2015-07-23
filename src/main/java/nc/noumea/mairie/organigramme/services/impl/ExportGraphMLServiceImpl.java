@@ -112,7 +112,7 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 		List<FichePosteDto> listeFichePosteEntite = null;
 		if (avecFichePoste) {
-			listeFichePosteEntite = sirhWsConsumer.getFichePosteByIdEntite(entiteDto.getIdEntite());
+			listeFichePosteEntite = sirhWsConsumer.getFichePosteByIdEntite(entiteDto.getIdEntite(), false);
 		}
 
 		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite() : "#FFFFCF";
