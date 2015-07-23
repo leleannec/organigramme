@@ -38,6 +38,7 @@ import nc.noumea.mairie.organigramme.core.utility.MessageErreur;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.util.CollectionUtils;
@@ -317,12 +318,16 @@ public class EntiteDto extends AbstractEntityDto {
 
 		List<MessageErreur> result = super.construitListeMessageErreur();
 
-		if (this.getSigle() == null) {
+		if (StringUtils.isBlank(this.getSigle())) {
 			result.add(new MessageErreur("Le sigle est obligatoire"));
 		}
 
-		if (this.getLabel() == null) {
+		if (StringUtils.isBlank(this.getLabel())) {
 			result.add(new MessageErreur("Le libellé est obligatoire"));
+		}
+
+		if (StringUtils.isBlank(this.getLabelCourt())) {
+			result.add(new MessageErreur("Le libellé court est obligatoire"));
 		}
 
 		if (this.getTypeEntite() == null) {

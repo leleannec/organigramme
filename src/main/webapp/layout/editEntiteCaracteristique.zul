@@ -21,6 +21,10 @@
 					<textbox value="@bind(vm.entity.refDeliberationActif)" visible="@load(not vm.entity.prevision)" hflex="1" disabled="@load(not vm.editable)"/>
 				</row>
 				<row vflex="1" hflex="1" valign="top"> 
+					<label class="mandatory" value="Libellé court :" /> 
+					<textbox value="@bind(vm.entity.labelCourt)" hflex="1" disabled="@load(not vm.editable)" maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'labelCourt'))"/>
+				</row>
+				<row vflex="1" hflex="1" valign="top"> 
 					<label class="mandatory" value="Type :" />
 					<combobox selectedItem="@bind(vm.entity.typeEntite)" model="@load(vm.listeTypeEntiteActifInactif)" hflex="1" disabled="@load(not vm.editable)">
 						<template name="model">

@@ -346,7 +346,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@NotifyChange("entity")
 	public boolean updateEntite(@BindingParam("entity") EntiteDto entiteDto) {
 
-		if (!profilAgentDto.isEdition()) {
+		if (!profilAgentDto.isEdition() || showErrorPopup(entiteDto)) {
 			return false;
 		}
 
