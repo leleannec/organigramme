@@ -580,6 +580,16 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		}
 	}
 
+	/**
+	 * Permet de zoomer sur une entité
+	 * @param entiteDto : l'entité sur laquelle zoomer
+	 */
+	@Command
+	public void zoomSurEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		setSelectedEntiteDtoZoom(entiteDto);
+		selectionneEntiteZoom();
+	}
+
 	@Command
 	public void selectionneFiltreStatut() {
 		if (this.selectedFiltreStatut != null) {
