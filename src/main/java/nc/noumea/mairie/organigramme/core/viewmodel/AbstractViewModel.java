@@ -309,19 +309,19 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	public Integer getMaxLengthClassProperty(String className, String property) throws Exception {
 		return OrganigrammeUtil.getMaxLengthClassProperty(className, property);
 	}
-	
+
 	public void ouvrePopupCreation(String template) throws InstantiationException, IllegalAccessException {
 		Map<String, Object> arguments = new HashMap<String, Object>();
 		arguments.put("entity", getEntityClass().newInstance());
-        Window window = (Window)Executions.createComponents(template, null, arguments);
-        window.doModal();
+		Window window = (Window) Executions.createComponents(template, null, arguments);
+		window.doModal();
 	}
 
 	public void initPopupEdition(T entity, String template) {
 		Map<String, Object> arguments = new HashMap<String, Object>();
-        arguments.put("entity", entity);
-        Executions.createComponents(template, null, arguments);
-        
-        BindUtils.postGlobalCommand(null, null, "ouvrePopupEdition" + getEntityName(), arguments);
+		arguments.put("entity", entity);
+		Executions.createComponents(template, null, arguments);
+
+		BindUtils.postGlobalCommand(null, null, "ouvrePopupEdition" + getEntityName(), arguments);
 	}
 }
