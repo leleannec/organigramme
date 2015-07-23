@@ -1,4 +1,6 @@
-package nc.noumea.mairie.organigramme.services;
+package nc.noumea.mairie.organigramme.dto;
+
+import nc.noumea.mairie.organigramme.core.dto.AbstractEntityDto;
 
 /*
  * #%L
@@ -24,22 +26,40 @@ package nc.noumea.mairie.organigramme.services;
  * #L%
  */
 
-import java.util.Map;
+public class ExportDto extends AbstractEntityDto {
 
-import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.dto.ExportDto;
+	EntiteDto	entiteDto;
+	boolean		avecFichePoste	= false;
 
-/**
- * Service pour gérer les exports graphML.
- * 
- * @author AgileSoft.NC
- */
-public interface ExportGraphMLService {
+	public boolean isAvecFichePoste() {
+		return avecFichePoste;
+	}
 
-	/**
-	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto} entiteDto
-	 * @param exportDto : l'exportDto contenant l'entité à partir de laquelle on souhaite exporter et si on souhaite ou non exporter les FDP
-	 * @param mapIdLiOuvert : permet de savoir quel entité est dépliée
-	 */
-	void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert);
+	public void setAvecFichePoste(boolean avecFichePoste) {
+		this.avecFichePoste = avecFichePoste;
+	}
+
+	public EntiteDto getEntiteDto() {
+		return entiteDto;
+	}
+
+	public void setEntiteDto(EntiteDto entiteDto) {
+		this.entiteDto = entiteDto;
+	}
+
+	@Override
+	public String getLibelleCourt() {
+		return null;
+	}
+
+	@Override
+	public Long getId() {
+		return null;
+	}
+
+	@Override
+	public Integer getVersion() {
+		return null;
+	}
+
 }

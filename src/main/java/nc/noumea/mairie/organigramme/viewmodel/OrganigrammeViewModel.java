@@ -37,6 +37,7 @@ import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
@@ -53,6 +54,7 @@ import nc.noumea.mairie.organigramme.services.TypeEntiteService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -63,6 +65,7 @@ import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.select.Selectors;
@@ -406,11 +409,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/**
 	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto} entiteDto
-	 * @param entiteDto : l'{@link EntiteDto} à partir de laquelle on souhaite exporter
+	 * @param exportDto : l'exportDto contenant l'entité à partir de laquelle on souhaite exporter et si on souhaite ou non exporter les FDP
 	 */
-	@Command
-	public void exportGraphMLFromEntite(@BindingParam("entity") EntiteDto entiteDto) {
-		exportGraphMLService.exportGraphMLFromEntite(entiteDto, mapIdLiOuvert);
+	@GlobalCommand
+	public void exportGraphMLFromEntite(@BindingParam("exportDto") ExportDto exportDto) {
+		exportGraphMLService.exportGraphMLFromEntite(exportDto, mapIdLiOuvert);
 	}
 
 	/**
@@ -553,7 +556,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		setEntity(null);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 		creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
-		Clients.evalJavaScript("refreshOrganigrammeSuiteZoom();");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteDezoom();");
 	}
 
 	@Command
@@ -653,5 +656,15 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		}
 
 		return sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite());
+	}
+
+	@Command
+	public void ouvrirPopupCreateExport(@BindingParam("entity") EntiteDto entiteDto) {
+		ExportDto exportDto = new ExportDto();
+		exportDto.setEntiteDto(entiteDto);
+		Map<String, Object> args = new HashMap<>();
+		args.put("exportDto", exportDto);
+		Executions.createComponents("/layout/createExporGraphML.zul", null, null);
+		BindUtils.postGlobalCommand(null, null, "ouvrePopupCreationExport", args);
 	}
 }

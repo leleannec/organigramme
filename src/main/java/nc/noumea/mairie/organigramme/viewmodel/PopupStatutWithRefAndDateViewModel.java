@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nc.noumea.mairie.organigramme.core.utility.DateUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractPopupViewModel;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.enums.Statut;
@@ -38,6 +39,7 @@ import nc.noumea.mairie.organigramme.enums.Transition;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -58,17 +60,17 @@ import org.zkoss.zul.Window;
 @Init(superclass = true)
 public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<EntiteDto> implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	protected Transition	transition;
-	private String			refDeliberation;
-	private Date			dateDeliberation;
+	private static final long	serialVersionUID	= 1L;
 
-	@AfterCompose 
+	protected Transition		transition;
+	private String				refDeliberation;
+	private Date				dateDeliberation;
+
+	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		setPopup((Window) Selectors.iterable(view, "#popupStatutWithRefAndDate").iterator().next());
 	}
-	
+
 	public Transition getTransition() {
 		return transition;
 	}
@@ -99,13 +101,13 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 			throws InstantiationException, IllegalAccessException {
 		setEntity(entity);
 		setTransition(transition);
-        getPopup().doModal();
+		getPopup().doModal();
 	}
 
 	@Command
 	public void saveStatutWithRefAndDate() {
 
-		if(!validerChampObligatoire()) {
+		if (!validerChampObligatoire()) {
 			return;
 		}
 
@@ -136,12 +138,18 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 				listeMessageErreur.add("La date de la délibération est obligatoire");
 			}
 
+			Date demain = new DateTime().plusDays(1).withHourOfDay(0).withMinuteOfHour(0).withMillisOfDay(0).toDate();
+
+			if (DateUtil.compare(demain, dateDeliberation) <= 0) {
+				listeMessageErreur.add("La date de délibération ne peut pas être postérieure à la date du jour");
+			}
+
 			if (!CollectionUtils.isEmpty(listeMessageErreur)) {
 				Messagebox.show(StringUtils.join(listeMessageErreur, "\n"), "Erreur", Messagebox.OK, Messagebox.EXCLAMATION);
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 

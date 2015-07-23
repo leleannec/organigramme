@@ -27,10 +27,14 @@ package nc.noumea.mairie.organigramme.services.impl;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.List;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
+import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.ExportDto;
+import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 
@@ -41,17 +45,21 @@ import org.dom4j.Namespace;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Filedownload;
 
 @Service("exportGraphMLService")
 @Scope(value = "singleton", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
-	public void exportGraphMLFromEntite(EntiteDto entiteDto, Map<String, Boolean> mapIdLiOuvert) {
-		Filedownload.save(exportGraphML(entiteDto, mapIdLiOuvert), null, "exportGraphML.graphml");
+	@WireVariable
+	ISirhWSConsumer	sirhWsConsumer;
+
+	public void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
+		Filedownload.save(exportGraphML(exportDto, mapIdLiOuvert), null, "exportGraphML.graphml");
 	}
-	
-	private byte[] exportGraphML(EntiteDto entiteDto, Map<String, Boolean> mapIdLiOuvert) {
+
+	private byte[] exportGraphML(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
 
 		DocumentFactory factory = DocumentFactory.getInstance();
 		Element root = factory.createElement("graphml");
@@ -60,7 +68,7 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 		initHeader(root);
 		Element graph = initRoot(root);
-		buildGraphMlTree(graph, entiteDto, mapIdLiOuvert); 
+		buildGraphMlTree(graph, exportDto.getEntiteDto(), exportDto.isAvecFichePoste(), mapIdLiOuvert);
 
 		ByteArrayOutputStream os_writer = new ByteArrayOutputStream();
 		try {
@@ -97,37 +105,59 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	 * Recursive method to build graphml nodes and edges for the entire tree
 	 * @param graph : le graph général
 	 * @param entiteDto : l'entité dto à construire
+	 * @param avecFichePoste : doit-on exporter les fiches de postes ?
 	 * @param mapIdLiOuvert : permet de savoir quel entité est dépliée
 	 */
-	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, Map<String, Boolean> mapIdLiOuvert) {
-		
+	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, boolean avecFichePoste, Map<String, Boolean> mapIdLiOuvert) {
+
+		List<FichePosteDto> listeFichePosteEntite = null;
+		if (avecFichePoste) {
+			listeFichePosteEntite = sirhWsConsumer.getFichePosteByIdEntite(entiteDto.getIdEntite());
+		}
+
 		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite() : "#FFFFCF";
 		String couleurTexte = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurTexte() : "#000000";
 		String forme = "roundrectangle";
-		
-		Element el = graph.addElement("node").addAttribute("id", String.valueOf(entiteDto.getId())); 
+
+		Element el = graph.addElement("node").addAttribute("id", String.valueOf(entiteDto.getId()));
+
+		String libelle = entiteDto.getSigle();
+		if (avecFichePoste) {
+			libelle += ""; // TODO
+		}
+
 		el.addElement("data").addAttribute("key", "d4").setText(entiteDto.getSigle());
 		el.addElement("data").addAttribute("key", "d5").setText(entiteDto.getLabel());
 
 		Element elD6 = el.addElement("data").addAttribute("key", "d6");
 		Element elGenericNode = elD6.addElement("y:ShapeNode");
-		elGenericNode.addElement("y:Geometry").addAttribute("height", "40.0").addAttribute("width", "80.0"); 
+		elGenericNode.addElement("y:Geometry").addAttribute("height", "40.0").addAttribute("width", "80.0");
 		String sigleSplit = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
 		elGenericNode.addElement("y:NodeLabel").addAttribute("textColor", couleurTexte).setText(sigleSplit);
-		
-		if(entiteDto.getStatut() == Statut.PREVISION) 	{ 	elGenericNode.addElement("y:BorderStyle").addAttribute("type", "dashed"); }
-		if(entiteDto.getStatut() == Statut.TRANSITOIRE) { 	forme = "parallelogram"; }
-		if(entiteDto.getStatut() == Statut.INACTIF) 	{ 	couleurEntite = "#909090"; couleurTexte = "#000000";}
-		
-		elGenericNode.addElement("y:Fill").addAttribute("color", couleurEntite); 
+
+		if (entiteDto.getStatut() == Statut.PREVISION) {
+			elGenericNode.addElement("y:BorderStyle").addAttribute("type", "dashed");
+		}
+		if (entiteDto.getStatut() == Statut.TRANSITOIRE) {
+			forme = "parallelogram";
+		}
+		if (entiteDto.getStatut() == Statut.INACTIF) {
+			couleurEntite = "#909090";
+			couleurTexte = "#000000";
+		}
+
+		elGenericNode.addElement("y:Fill").addAttribute("color", couleurEntite);
 		elGenericNode.addElement("y:Shape").addAttribute("type", forme);
-		
-		//Si l'entité est dépliée, on affiche ses enfants
-		if(mapIdLiOuvert.get(entiteDto.getLi().getId())) {
+
+		// Si l'entité est dépliée, on affiche ses enfants
+		if (mapIdLiOuvert.get(entiteDto.getLi().getId())) {
 			for (EntiteDto enfant : entiteDto.getEnfants()) {
-				buildGraphMlTree(graph, enfant, mapIdLiOuvert);
+				buildGraphMlTree(graph, enfant, avecFichePoste, mapIdLiOuvert);
 				genereEdge(graph, entiteDto, enfant);
 			}
+		} else {
+			// TODO
+			// Sinon, si elle a des enfants on ne les affiche pas mais on agrége les FDP de ses enfants
 		}
 	}
 
