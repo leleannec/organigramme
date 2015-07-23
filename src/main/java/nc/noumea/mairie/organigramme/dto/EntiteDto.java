@@ -446,6 +446,11 @@ public class EntiteDto extends AbstractEntityDto {
 		return this.sigle;
 	}
 
+	@JSON(include = false)
+	public String getSigleEntiteRemplace() {
+		return this.entiteRemplacee != null ? this.entiteRemplacee.getSigle() : "";
+	}
+
 	@Override
 	public String toString() {
 		return this.getSigle();

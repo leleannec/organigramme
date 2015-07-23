@@ -1,0 +1,58 @@
+<zk>
+	<listbox mold="paging" model="@bind(vm.listeHistorique)" hflex="1" vflex="1" pageSize="50">
+		<listhead menupopup="auto" sizable="true">
+			<listheader label="Date" sort="auto(dateHisto)" width="130px"/>
+			<listheader label="Action" sort="auto(libelleTypeHisto)" />
+			<listheader label="Agent" sort="auto(idAgentHisto)" />
+			<listheader label="Sigle" sort="auto(sigle)" />
+			<listheader label="Libellé" sort="auto(label)" />
+			<listheader label="Libellé court" sort="auto(labelCourt)" />
+			<listheader label="Type" sort="auto(typeEntite.label)" />
+			<listheader label="Date activation" sort="auto(dateDeliberationActif)" width="130px"/>
+			<listheader label="Réf. activation" sort="auto(refDeliberationActif)" />
+			<listheader label="Date inactivation" sort="auto(dateDeliberationInactif)" width="130px"/>
+			<listheader label="Réf. inactivation" sort="auto(refDeliberationInactif)" />
+			<listheader label="Entité remplacé" sort="auto(sigleEntiteRemplace)" />
+		</listhead>
+		<template name="model">
+			<listitem>
+				<listcell>
+					<datebox value="@bind(each.dateHisto)" disabled="true" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.libelleTypeHisto)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.idAgentHisto)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.sigle)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.label)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.labelCourt)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.typeEntite.label)" />
+				</listcell>
+				<listcell>
+					<datebox value="@bind(each.dateDeliberationActif)" disabled="true" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.refDeliberationActif)" />
+				</listcell>
+				<listcell>
+					<datebox value="@bind(each.dateDeliberationInactif)" disabled="true" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.refDeliberationInactif)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.sigleEntiteRemplace)" />
+				</listcell>
+			</listitem>
+		</template>
+	</listbox>
+</zk>

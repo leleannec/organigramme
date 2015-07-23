@@ -28,6 +28,7 @@ import java.util.List;
 
 import nc.noumea.mairie.organigramme.dto.ChangeStatutDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 
@@ -38,14 +39,14 @@ public interface IAdsWSConsumer {
 	 * @return l'entité root ainsi que tous ces enfants
 	 */
 	EntiteDto getCurrentTreeWithVDNRoot();
-	
+
 	/**
 	 * Appel le webservice ADS d'enregistrement de l'{@link EntiteDto} passé en paramètre
 	 * @param entiteDto : l'{@link EntiteDto} a créer ou à mettre à jour
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto saveOrUpdateEntite(EntiteDto entiteDto);
-	
+
 	/**
 	 * Renvoi la liste des types d'entités
 	 * @return la liste des types d'entités
@@ -65,32 +66,39 @@ public interface IAdsWSConsumer {
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto deleteTypeEntite(TypeEntiteDto typeEntiteDto);
-	
+
 	/**
 	 * Appel le webservice ADS de suppression de l'{@link EntiteDto} passé en paramètre
 	 * @param entiteDto : l'{@link EntiteDto} a supprimer
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto deleteEntite(EntiteDto entiteDto);
-	
+
 	/**
 	 * Appel le webservice ADS de changement de statut d'une entité
 	 * @param changeStatutDto : le dto contenant toutes les informations nécessaires
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto changeStatut(ChangeStatutDto changeStatutDto);
-	
+
 	/**
 	 * Appel le webservice ADS de récupération d'une {@link EntiteDto} à partir de son id
 	 * @param idEntite : l'id de l'{@link EntiteDto} qu'on souhaite récupérer
 	 * @return l'{@link EntiteDto}
 	 */
 	EntiteDto getEntite(Integer idEntite);
-	
+
 	/**
 	 * Renvoi l'entité dont l'id est en paramètre ainsi que tous ces enfants
 	 * @param idEntite : l'id de l'{@link EntiteDto} qu'on souhaite récupérer
 	 * @return l'entité ainsi que tous ces enfants
 	 */
 	EntiteDto getEntiteWithChildren(Integer idEntite);
+
+	/**
+	 * Renvoi l'historique de l'entité
+	 * @param idEntite : l'entité pour laquelle on souhaite l'historique
+	 * @return l'historique de l'entité
+	 */
+	List<EntiteHistoDto> getEntityHisto(Integer idEntite);
 }
