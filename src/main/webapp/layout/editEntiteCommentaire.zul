@@ -1,0 +1,4 @@
+<zk>
+	<textbox value="@bind(vm.entity.commentaire)" multiline="true" hflex="1" rows="10" 
+		maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'commentaire'))"/>
+</zk>

@@ -57,6 +57,8 @@ public class EntiteDto extends AbstractEntityDto {
 
 	@Column(length = 60)
 	private String			labelCourt;
+	@Column(length = 4000)
+	private String			commentaire;
 	private TypeEntiteDto	typeEntite;
 	private String			codeServi;
 	private List<EntiteDto>	enfants;
@@ -291,6 +293,14 @@ public class EntiteDto extends AbstractEntityDto {
 		this.statut = statut;
 	}
 
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
+	}
+
 	@Override
 	@JSON(include = false)
 	public String getLibelleCourt() {
@@ -444,6 +454,11 @@ public class EntiteDto extends AbstractEntityDto {
 			return this.sigle + " (" + this.getStatut().getLibelle() + ")";
 		}
 		return this.sigle;
+	}
+
+	@JSON(include = false)
+	public String getSigleEntiteRemplace() {
+		return this.entiteRemplacee != null ? this.entiteRemplacee.getSigle() : "";
 	}
 
 	@Override

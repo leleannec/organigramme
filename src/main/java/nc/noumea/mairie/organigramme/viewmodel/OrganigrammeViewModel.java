@@ -37,6 +37,7 @@ import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
@@ -51,7 +52,9 @@ import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
+import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zkoss.bind.BindUtils;
@@ -102,7 +105,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	private static final String[]			LISTE_PROP_A_NOTIFIER_ENTITE	= new String[] { "statut", "entity", "listeTransitionAutorise", "listeEntite",
 			"listeEntiteRemplace", "editable", "listeTypeEntiteActifInactif", "hauteurPanelEdition", "mapIdLiEntiteDto", "stylePanelEdition",
-			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "listeFicheDePoste", "selectedFiltreStatut" };
+			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "fichePosteGroupingModel", "selectedFiltreStatut",
+			"listeHistorique"												};
 
 	private OrganigrammeWorkflowViewModel	organigrammeWorkflowViewModel	= new OrganigrammeWorkflowViewModel(this);
 	public TreeViewModel					treeViewModel					= new TreeViewModel(this);
@@ -121,6 +125,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/** Le {@link FiltreStatut} représentant le filtre actif, par défaut, on affiche les ACTIFS #17105 **/
 	FiltreStatut							selectedFiltreStatut			= FiltreStatut.ACTIF;
+
+	/** Map permettant rapidement d'accèder à un nomPrenom d'agent à partir de son id agent **/
+	Map<Integer, String>					mapIdAgentNomPrenom				= new HashMap<Integer, String>();
 
 	/** Map permettant rapidement d'accèder à une {@link EntiteDto} à partir de son id html client **/
 	Map<String, EntiteDto>					mapIdLiEntiteDto;
@@ -141,6 +148,18 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private List<EntiteDto>					listeEntiteRemplace				= new ArrayList<EntiteDto>();
 
 	public List<EntiteDto> getListeEntite() {
+
+		// On filtre la liste des entités zoomables et accessibles selon le statut selectionné
+		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
+			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
+			listeEntiteClone.addAll(this.listeEntite);
+			for (EntiteDto entiteDto : listeEntiteClone) {
+				if (!this.selectedFiltreStatut.getListeStatut().contains(entiteDto.getStatut())) {
+					listeEntite.remove(entiteDto);
+				}
+			}
+		}
+
 		return listeEntite;
 	}
 
@@ -682,12 +701,31 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return null;
 	}
 
-	public List<FichePosteDto> getListeFicheDePoste() {
+	public FichePosteGroupingModel getFichePosteGroupingModel() {
 		if (this.entity == null) {
 			return null;
 		}
 
-		return sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+		List<FichePosteDto> listeFichePosteDto = sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+
+		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
+	}
+
+	public List<EntiteHistoDto> getListeHistorique() {
+		if (this.entity == null) {
+			return null;
+		}
+
+		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), mapIdAgentNomPrenom, sirhWsConsumer);
+	}
+
+	public String getTabCommentaireSclass() {
+
+		if (this.entity == null) {
+			return "";
+		}
+
+		return StringUtils.isNotBlank(this.entity.getCommentaire()) ? "tab-bold-red" : "";
 	}
 
 	@Command

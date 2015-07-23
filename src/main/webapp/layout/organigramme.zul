@@ -77,6 +77,8 @@
 								<tabs >
 									<tab label="Caractéristiques" />
 									<tab label="Fiches de postes" />
+									<tab label="Historique" />
+									<tab label="Commentaires" sclass="@load(vm.tabCommentaireSclass)" />
 								</tabs>
 								<tabpanels>
 									<tabpanel style="overflow:auto">
@@ -84,6 +86,12 @@
 									</tabpanel>
 									<tabpanel style="overflow:auto">
 										<include src="/layout/editEntiteFicheDePoste.zul" />
+									</tabpanel>
+									<tabpanel style="overflow:auto">
+										<include src="/layout/editEntiteHistorique.zul" />
+									</tabpanel>
+									<tabpanel style="overflow:auto">
+										<include src="/layout/editEntiteCommentaire.zul" />
 									</tabpanel>
 								</tabpanels>
 							</tabbox>
