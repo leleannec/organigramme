@@ -490,8 +490,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * @return true si l'entité est éditable, false sinon
 	 */
 	public boolean isEditable() {
-		// On ne peux modifier que si on a le rôle édition ET si l'entité n'est pas inactive ET si on est pas sur l'entité VDN racine
-		return profilAgentDto.isEdition() && (this.entity != null && !this.entity.isInactif() && !this.entity.getSigle().equals("VDN"));
+		// On ne peux modifier que si on a le rôle édition et si ce n'est pas l'entité VDN
+		// #17117 : En dehors du statut "prévision", une entité n'est pas modifiable
+		return profilAgentDto.isEdition() && (this.entity != null && this.entity.isPrevision() && !this.entity.getSigle().equals("VDN"));
 	}
 
 	/**
