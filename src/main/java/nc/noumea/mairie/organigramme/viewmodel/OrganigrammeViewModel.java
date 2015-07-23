@@ -509,16 +509,25 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * @param popup : la popup de changement de statut
 	 */
 	@GlobalCommand
-	public void saveStatutWithRefAndDateGenerique(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("transition") Transition transition,
-			@BindingParam("popup") Window popup) {
+	public void saveStatutWithRefAndDateGenerique(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("transition") final Transition transition,
+			@BindingParam("popup") final Window popup) {
 
 		if (entiteDto == null || !OrganigrammeUtil.sameIdAndNotNull(entiteDto.getId(), this.entity.getId())) {
 			return;
 		}
 
-		if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
-			popup.detach();
-		}
+		String messageConfirmation = "Êtes-vous sur de vouloir passer cette entité en statut 'ACTIF' ? Plus aucune information de cette entité ne pourra être modifiée.";
+		Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.EXCLAMATION,
+				new EventListener<Messagebox.ClickEvent>() {
+					@Override
+					public void onEvent(ClickEvent evt) {
+						if (evt.getName().equals("onYes")) {
+							if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
+								popup.detach();
+							}
+						}
+					}
+				});
 	}
 
 	public Map<String, EntiteDto> getMapIdLiEntiteDto() {
