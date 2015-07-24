@@ -159,6 +159,8 @@ function goToByScroll(id){
                 $('#panel-entier').height(hauteurFenetre);
                 $('#panel-entier').children(0).height(hauteurFenetre);
             }
+            
+            $(window).trigger('resize');
         }); 
     };
 
