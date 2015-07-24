@@ -57,7 +57,7 @@
 								<toolbar hflex="7">
 									<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer sur l'entité" onClick="@command('zoomSurEntite', entity=vm.entity)" />
 									<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier l'entité" onClick="@command('deplierEntite', entity=vm.entity)" />
-									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour l'entité" onClick="@command('updateEntite', entity=vm.entity)" visible="@load(vm.editable)" />  
+									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour l'entité" onClick="@command('updateEntite', entity=vm.entity)" />  
 									<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" />  
 									<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer cette entité" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" />
 									<toolbarbutton image="/imgs/icon/exporter.png" label="Export GraphML à partir de cette entité" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" />
