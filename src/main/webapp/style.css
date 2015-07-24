@@ -16,6 +16,11 @@
    background:#F0F8FF;
 }
 
+.tab-bold-red span { 
+	color : red !important;
+	font-weight: bold !important;
+}
+
 .hide { 
 	display : none;
 }
