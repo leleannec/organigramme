@@ -28,11 +28,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.transformer.MSDateTransformer;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.dto.ChangeStatutDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
+import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.Statut;
@@ -51,6 +54,9 @@ import flexjson.JSONSerializer;
 
 @Service("adsWSConsumer")
 public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
+
+	@Autowired
+	SirhWSConsumer			sirhWSConsumer;
 
 	private static Logger	log								= LoggerFactory.getLogger(AdsWSConsumer.class);
 	private final String	URL_TREE						= "api/arbre";
@@ -90,52 +96,50 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		}
 
 		EntiteDto entiteDtoRoot = readResponse(EntiteDto.class, res, url);
-		for(EntiteDto entiteDto : entiteDtoRoot.getEnfants()) {
-			if(entiteDto.getSigle().equals("VDN")) {
+		for (EntiteDto entiteDto : entiteDtoRoot.getEnfants()) {
+			if (entiteDto.getSigle().equals("VDN")) {
 				return entiteDto;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public EntiteDto getEntite(Integer idEntite) {
 		String url = adsWsBaseUrl + URL_GET_ENTITE + "/" + idEntite.toString();
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
 		EntiteDto entiteDto = readResponse(EntiteDto.class, res, url);
-		
-		//On se le statut de l'entité
+
+		// On se le statut de l'entité
 		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
-		
+
 		return entiteDto;
 	}
-	
+
 	@Override
 	public EntiteDto getEntiteWithChildren(Integer idEntite) {
 		String url = adsWsBaseUrl + URL_GET_ENTITE + "/" + idEntite.toString() + "/withChildren";
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
-		EntiteDto entiteDto = readResponse(EntiteDto.class, res, url);
-		
-		return entiteDto;
+		return readResponse(EntiteDto.class, res, url);
 	}
-	
+
 	@Override
 	public ReturnMessageDto saveOrUpdateEntite(EntiteDto entiteDto) {
 		if (!valideAdsWsBaseUrl()) {
 			return null;
-		} 
-		
+		}
+
 		entiteDto.setSigle(OrganigrammeUtil.majusculeSansAccentTrim(entiteDto.getSigle()));
-		
+
 		String url = adsWsBaseUrl + URL_SAVE_OR_UPDATE_ENTITE;
 		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class).deepSerialize(entiteDto);
 
 		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
-		return readResponse(ReturnMessageDto.class, res, url); 
+		return readResponse(ReturnMessageDto.class, res, url);
 	}
- 
-	@Override 
+
+	@Override
 	public List<TypeEntiteDto> getListeTypeEntite() {
 		if (!valideAdsWsBaseUrl()) {
 			return null;
@@ -151,9 +155,9 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		}
 
 		List<TypeEntiteDto> result = readResponseAsList(TypeEntiteDto.class, res, url);
-		
+
 		Collections.sort(result, new ComparatorUtil.TypeEntiteComparator());
-		
+
 		return result;
 	}
 
@@ -173,24 +177,47 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
 		return readResponse(ReturnMessageDto.class, res, url);
 	}
-	
+
 	@Override
 	public ReturnMessageDto deleteEntite(EntiteDto entiteDto) {
 		String url = adsWsBaseUrl + URL_DELETE_ENTITE + "/" + entiteDto.getId();
-		
-		HashMap<String, String> params = new HashMap<>(); 
+
+		HashMap<String, String> params = new HashMap<>();
 		params.put("idAgent", entiteDto.getIdAgentSuppression().toString());
-		
+
 		ClientResponse res = createAndFireGetRequest(params, url);
 		return readResponse(ReturnMessageDto.class, res, url);
 	}
-	
+
 	@Override
 	public ReturnMessageDto changeStatut(ChangeStatutDto changeStatutDto) {
 		String url = adsWsBaseUrl + URL_CHANGE_STATUT;
 		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class).deepSerialize(changeStatutDto);
-		
+
 		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
 		return readResponse(ReturnMessageDto.class, res, url);
+	}
+
+	@Override
+	public List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom) {
+		String url = adsWsBaseUrl + URL_GET_ENTITE + "/" + idEntite.toString() + "/histo";
+		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
+		List<EntiteHistoDto> result = readResponseAsList(EntiteHistoDto.class, res, url);
+
+		Collections.sort(result, new ComparatorUtil.EntiteHistoComparator());
+
+		for (EntiteHistoDto entiteHistoDto : result) {
+			Integer idAgent = entiteHistoDto.getIdAgentHisto();
+			String nomPrenomAgent = mapIdAgentNomPrenom.get(idAgent);
+			if (StringUtils.isBlank(nomPrenomAgent)) {
+				ProfilAgentDto profilAgentDto = sirhWSConsumer.getAgent(idAgent);
+				nomPrenomAgent = profilAgentDto.getPrenomNomUsage();
+				mapIdAgentNomPrenom.put(idAgent, nomPrenomAgent);
+			}
+
+			entiteHistoDto.setNomPrenomAgent(nomPrenomAgent);
+		}
+
+		return result;
 	}
 }

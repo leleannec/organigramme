@@ -66,7 +66,7 @@ public class AuthentificationFilter implements Filter {
 
 	private IRadiWSConsumer				radiWSConsumer;
 
-	private ISirhWSConsumer				sirhWsConsumer;
+	private ISirhWSConsumer				sirhWSConsumer;
 
 	public void init(FilterConfig config) throws ServletException {
 		ServletContext servletContext = config.getServletContext();
@@ -75,7 +75,7 @@ public class AuthentificationFilter implements Filter {
 		AutowireCapableBeanFactory autowireCapableBeanFactory = webApplicationContext.getAutowireCapableBeanFactory();
 
 		radiWSConsumer = (IRadiWSConsumer) autowireCapableBeanFactory.getBean("radiWSConsumer");
-		sirhWsConsumer = (ISirhWSConsumer) autowireCapableBeanFactory.getBean("sirhWsConsumer");
+		sirhWSConsumer = (ISirhWSConsumer) autowireCapableBeanFactory.getBean("sirhWSConsumer");
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class AuthentificationFilter implements Filter {
 	private AccessRightOrganigrammeDto recupereAccessRightOrganigramme(HttpServletRequest request, Integer employeeNumber) throws ServletException {
 		AccessRightOrganigrammeDto accessRightOrganigrammeDto = null;
 		try {
-			accessRightOrganigrammeDto = sirhWsConsumer.getAutorisationOrganigramme(employeeNumber);
+			accessRightOrganigrammeDto = sirhWSConsumer.getAutorisationOrganigramme(employeeNumber);
 		} catch (Exception e) {
 			// le SIRH-WS ne semble pas repondre
 			logger.debug("L'application SIRH-WS ne semble pas répondre.");
@@ -207,7 +207,7 @@ public class AuthentificationFilter implements Filter {
 	private ProfilAgentDto recupereProfilAgent(HttpServletRequest request, Integer employeeNumber) throws ServletException {
 		ProfilAgentDto profilAgent = null;
 		try {
-			profilAgent = sirhWsConsumer.getAgent(employeeNumber);
+			profilAgent = sirhWSConsumer.getAgent(employeeNumber);
 		} catch (Exception e) {
 			// le SIRH-WS ne semble pas repondre
 			logger.debug("L'application SIRH-WS ne semble pas répondre.");

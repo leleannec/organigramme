@@ -48,11 +48,11 @@ import org.zkoss.zul.Vlayout;
 /**
  * Classe utilitaire permettant de créer l'organigramme
  */
-public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Serializable{
+public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	private OrganigrammeViewModel			organigrammeViewModel;
+	private static final long		serialVersionUID	= 1L;
+
+	private OrganigrammeViewModel	organigrammeViewModel;
 
 	public TreeViewModel(OrganigrammeViewModel organigrammeViewModel) {
 		this.organigrammeViewModel = organigrammeViewModel;
@@ -87,53 +87,57 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		}
 		vlayout.appendChild(arbre);
 	}
-	
+
 	/**
 	 * Génére les composants {@link Ul}/{@link Li} qui forment l'arbre (ces {@link Ul}/{@link Li} html seront retravaillées par le plugin jQuery Org Chart afin
 	 * de les transformer en div/table/tr/td et de les afficher sous forme d'arbre)
 	 * @param entiteDto : le {@link EntiteDto} racine qui contient tout l'arbre
-	 * @param mapIdTypeEntiteCouleurEntite : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque type d'entité
-	 * @param mapIdTypeEntiteCouleurTexte : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque type d'entité
+	 * @param mapIdTypeEntiteCouleurEntite : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque
+	 *            type d'entité
+	 * @param mapIdTypeEntiteCouleurTexte : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque
+	 *            type d'entité
 	 * @return le {@link Ul} de plus haut niveau qui est ajouté au {@link Vlayout}
 	 */
 	public Component genereArbre(EntiteDto entiteDto, Map<Long, String> mapIdTypeEntiteCouleurEntite, Map<Long, String> mapIdTypeEntiteCouleurTexte) {
- 
+
 		if (entiteDto == null) {
 			return null;
 		}
-		
-		//On vide la map de correspondance id HTML<->EntiteDTO car on va la renseigner dans creeLiEntite() 
+
+		// On vide la map de correspondance id HTML<->EntiteDTO car on va la renseigner dans creeLiEntite()
 		organigrammeViewModel.mapIdLiEntiteDto = new HashMap<String, EntiteDto>();
-		
-		//On recrée la liste de toutes les entités
+
+		// On recrée la liste de toutes les entités
 		organigrammeViewModel.setListeEntite(new ArrayList<EntiteDto>());
-		
-		//Initialisation de l'entité ROOT
+
+		// Initialisation de l'entité ROOT
 		Ul ulRoot = new Ul();
-		ulRoot.setId("organigramme-root"); 
+		ulRoot.setId("organigramme-root");
 		ulRoot.setSclass("hide");
 		setStatutEtCouleur(mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte, entiteDto);
 		Li li = creeLiEntite(ulRoot, entiteDto);
 		organigrammeViewModel.getListeEntite().add(entiteDto);
-		
-		//Initialisation du reste de l'arbre
+
+		// Initialisation du reste de l'arbre
 		genereArborescenceHtml(entiteDto.getEnfants(), li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);
 
-		//Maintenant qu'on a setté la liste de entités disponibles à la recherche et/ou au zoom, on renseigne la ListModel
+		// Maintenant qu'on a setté la liste de entités disponibles à la recherche et/ou au zoom, on renseigne la ListModel
 		organigrammeViewModel.setEntiteDtoQueryListModel(new EntiteDtoQueryListModel(organigrammeViewModel.getListeEntite()));
-		
+
 		return ulRoot;
 	}
-	
+
 	/**
 	 * Méthode récursive pour générer tous les {@link Ul}/{@link Li} formant l'arbre
 	 * @param listeEntiteDTO : la liste des enfants de l'entité courante
 	 * @param component : le composant sous lequel ajouter les enfants
-	 * @param mapIdTypeEntiteCouleur : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque type d'entité
-	 * mapIdTypeEntiteCouleurTexte : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque type d'entité
+	 * @param mapIdTypeEntiteCouleur : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur de chaque type
+	 *            d'entité mapIdTypeEntiteCouleurTexte : la map des différentes couleurs pour les types d'entités qui va nous permettre de setter chaque couleur
+	 *            de chaque type d'entité
 	 * @return l'Ul représentant l'arbre complet (sans l'entité root qui est initialisée dans "genereArbre")
 	 */
-	public Component genereArborescenceHtml(List<EntiteDto> listeEntiteDTO, Component component, Map<Long, String> mapIdTypeEntiteCouleur, Map<Long, String> mapIdTypeEntiteCouleurTexte) {
+	public Component genereArborescenceHtml(List<EntiteDto> listeEntiteDTO, Component component, Map<Long, String> mapIdTypeEntiteCouleur,
+			Map<Long, String> mapIdTypeEntiteCouleurTexte) {
 
 		Ul ul = new Ul();
 		ul.setParent(component);
@@ -142,9 +146,9 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 			setStatutEtCouleur(mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte, entiteDto);
 
 			Li li = creeLiEntite(ul, entiteDto);
-			
+
 			organigrammeViewModel.getListeEntite().add(entiteDto);
-			
+
 			if (entiteDto.hasChildren()) {
 				genereArborescenceHtml(entiteDto.getEnfants(), li, mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte);
 			}
@@ -154,7 +158,7 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 	}
 
 	public void setStatutEtCouleur(Map<Long, String> mapIdTypeEntiteCouleurEntite, Map<Long, String> mapIdTypeEntiteCouleurTexte, final EntiteDto entiteDto) {
-		//On se le statut de l'entité
+		// On se le statut de l'entité
 		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
 		// On set la couleur du type d'entité
@@ -163,7 +167,7 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 			entiteDto.getTypeEntite().setCouleurTexte(mapIdTypeEntiteCouleurTexte.get(entiteDto.getTypeEntite().getId()));
 		}
 	}
-	
+
 	/**
 	 * Crée une feuille unitaire et lui ajoute un événement onClick qui permettra d'effecture des opérations sur cette feuille
 	 * @param ul : le {@link Ul} parent
@@ -171,7 +175,7 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 	 * @return le composant {@link Li} représentant l'entité
 	 */
 	public Li creeLiEntite(Ul ul, final EntiteDto entiteDto) {
-		
+
 		Li li = new Li();
 		String sigleSplit = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
 		li.appendChild(new Label(sigleSplit));
@@ -182,18 +186,18 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 			li.setStyle("background-color:" + entiteDto.getTypeEntite().getCouleurEntite() + "; color:" + entiteDto.getTypeEntite().getCouleurTexte() + ";");
 		} else {
 			li.setStyle("background-color:#FFFFCF; color:#000000;");
-		} 
-		 
+		}
+
 		li.setId("entite-id-" + entiteDto.getId().toString());
-		if(this.organigrammeViewModel.mapIdLiOuvert.get(li.getId()) == null) {
+		if (this.organigrammeViewModel.mapIdLiOuvert.get(li.getId()) == null) {
 			this.organigrammeViewModel.mapIdLiOuvert.put(li.getId(), false);
 		}
 
-		entiteDto.setLi(li); 
-		
-		//On maintient une map permettant d'aller plus vite lors d'un click event pour retrouver l'EntiteDto correspondant à l'id du Li
+		entiteDto.setLi(li);
+
+		// On maintient une map permettant d'aller plus vite lors d'un click event pour retrouver l'EntiteDto correspondant à l'id du Li
 		organigrammeViewModel.mapIdLiEntiteDto.put(li.getId(), entiteDto);
-		
+
 		return li;
 	}
 }

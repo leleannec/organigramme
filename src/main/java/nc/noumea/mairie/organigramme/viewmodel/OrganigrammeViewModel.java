@@ -37,6 +37,7 @@ import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
@@ -51,7 +52,9 @@ import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
+import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zkoss.bind.BindUtils;
@@ -89,7 +92,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	//@formatter:off
 	@WireVariable IAdsWSConsumer			adsWSConsumer;
-	@WireVariable ISirhWSConsumer			sirhWsConsumer;
+	@WireVariable ISirhWSConsumer			sirhWSConsumer;
 	@WireVariable ExportGraphMLService		exportGraphMLService;
 	@WireVariable OrganigrammeService		organigrammeService;
 	@WireVariable AuthentificationService	authentificationService;
@@ -102,7 +105,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	private static final String[]			LISTE_PROP_A_NOTIFIER_ENTITE	= new String[] { "statut", "entity", "listeTransitionAutorise", "listeEntite",
 			"listeEntiteRemplace", "editable", "listeTypeEntiteActifInactif", "hauteurPanelEdition", "mapIdLiEntiteDto", "stylePanelEdition",
-			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "listeFicheDePoste" };
+			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "fichePosteGroupingModel", "selectedFiltreStatut",
+			"listeHistorique", "tabCommentaireSclass"						};
 
 	private OrganigrammeWorkflowViewModel	organigrammeWorkflowViewModel	= new OrganigrammeWorkflowViewModel(this);
 	public TreeViewModel					treeViewModel					= new TreeViewModel(this);
@@ -119,8 +123,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** L'{@link EntiteDto} représentant l'entité zommé **/
 	EntiteDto								selectedEntiteDtoZoom;
 
-	/** Le {@link FiltreStatut} représentant le filtre actif, par défaut, on affiche tous les statuts **/
-	FiltreStatut							selectedFiltreStatut			= FiltreStatut.TOUS;
+	/** Le {@link FiltreStatut} représentant le filtre actif, par défaut, on affiche les ACTIFS #17105 **/
+	FiltreStatut							selectedFiltreStatut			= FiltreStatut.ACTIF;
+
+	/** Map permettant rapidement d'accèder à un nomPrenom d'agent à partir de son id agent **/
+	Map<Integer, String>					mapIdAgentNomPrenom				= new HashMap<Integer, String>();
 
 	/** Map permettant rapidement d'accèder à une {@link EntiteDto} à partir de son id html client **/
 	Map<String, EntiteDto>					mapIdLiEntiteDto;
@@ -141,6 +148,18 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private List<EntiteDto>					listeEntiteRemplace				= new ArrayList<EntiteDto>();
 
 	public List<EntiteDto> getListeEntite() {
+
+		// On filtre la liste des entités zoomables et accessibles selon le statut selectionné
+		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
+			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
+			listeEntiteClone.addAll(this.listeEntite);
+			for (EntiteDto entiteDto : listeEntiteClone) {
+				if (!this.selectedFiltreStatut.getListeStatut().contains(entiteDto.getStatut())) {
+					listeEntite.remove(entiteDto);
+				}
+			}
+		}
+
 		return listeEntite;
 	}
 
@@ -195,7 +214,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		profilAgentDto = authentificationService.getCurrentUser();
 
 		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-		creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
+		refreshArbreComplet();
 	}
 
 	/**
@@ -233,8 +252,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		Clients.evalJavaScript("refreshOrganigramme();");
 	}
 
-	private void creeArbreComplet(EntiteDto entiteDtoRootACharger) {
-		entiteDtoRoot = entiteDtoRootACharger;
+	private void refreshArbreComplet() {
+		majEntiteRootByFiltreAndZoom();
 		treeViewModel.creeArbre(entiteDtoRoot);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 		refreshListeEntiteRemplace();
@@ -324,7 +343,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@GlobalCommand
 	public void refreshArbreSuiteAjout(@BindingParam("entiteDtoParent") EntiteDto entiteDtoParent, @BindingParam("newEntiteDto") EntiteDto newEntiteDto) {
 
-		creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
+		// Comme on est en train de créer une entité en statut prévisionnel, on force l'affichage du statut pour pouvoir voir cette nouvelle entité
+		setSelectedFiltreStatut(FiltreStatut.ACTIF_PREVISION);
+		refreshArbreComplet();
 
 		// Vu qu'on vient de reconstruire l'arbre complet on recharge le nouveau DTO
 		newEntiteDto = OrganigrammeUtil.findEntiteDtoDansArbreById(entiteDtoRoot, newEntiteDto.getIdEntite(), null);
@@ -344,7 +365,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@NotifyChange("entity")
 	public boolean updateEntite(@BindingParam("entity") EntiteDto entiteDto) {
 
-		if (!profilAgentDto.isEdition()) {
+		if (!profilAgentDto.isEdition() || showErrorPopup(entiteDto)) {
 			return false;
 		}
 
@@ -357,7 +378,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		}
 
 		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-		creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
+		refreshArbreComplet();
 		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getLi().getId() + "');");
 
 		return true;
@@ -396,7 +417,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 						setEntity(null);
 						mapIdLiOuvert.remove(entiteDtoASupprimer.getLi().getId());
 						// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-						creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
+						refreshArbreComplet();
 
 						// Appel de la fonction javascript correscpondante
 						Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
@@ -490,8 +511,18 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * @return true si l'entité est éditable, false sinon
 	 */
 	public boolean isEditable() {
-		// On ne peux modifier que si on a le rôle édition ET si l'entité n'est pas inactive ET si on est pas sur l'entité VDN racine
-		return profilAgentDto.isEdition() && (this.entity != null && !this.entity.isInactif() && !this.entity.getSigle().equals("VDN"));
+		// On ne peux modifier que si on a le rôle édition et si ce n'est pas l'entité VDN
+		// #17117 : En dehors du statut "prévision", une entité n'est pas modifiable
+		return profilAgentDto.isEdition() && (this.entity != null && this.entity.isPrevision() && !this.entity.getSigle().equals("VDN"));
+	}
+
+	/**
+	 * L'entité est-elle créable ?
+	 * @return true si l'entité est créable, false sinon
+	 */
+	public boolean isCreable() {
+		// On ne peux créer que si on a le rôle édition
+		return profilAgentDto.isEdition();
 	}
 
 	/**
@@ -509,16 +540,25 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * @param popup : la popup de changement de statut
 	 */
 	@GlobalCommand
-	public void saveStatutWithRefAndDateGenerique(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("transition") Transition transition,
-			@BindingParam("popup") Window popup) {
+	public void saveStatutWithRefAndDateGenerique(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("transition") final Transition transition,
+			@BindingParam("popup") final Window popup) {
 
 		if (entiteDto == null || !OrganigrammeUtil.sameIdAndNotNull(entiteDto.getId(), this.entity.getId())) {
 			return;
 		}
 
-		if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
-			popup.detach();
-		}
+		String messageConfirmation = "Êtes-vous sur de vouloir passer cette entité en statut 'ACTIF' ? Plus aucune information de cette entité ne pourra être modifiée.";
+		Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.EXCLAMATION,
+				new EventListener<Messagebox.ClickEvent>() {
+					@Override
+					public void onEvent(ClickEvent evt) {
+						if (evt.getName().equals("onYes")) {
+							if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
+								popup.detach();
+							}
+						}
+					}
+				});
 	}
 
 	public Map<String, EntiteDto> getMapIdLiEntiteDto() {
@@ -555,7 +595,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.selectedEntiteDtoZoom = null;
 		setEntity(null);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-		creeArbreComplet(adsWSConsumer.getCurrentTreeWithVDNRoot());
+		refreshArbreComplet();
 		Clients.evalJavaScript("refreshOrganigrammeSuiteDezoom();");
 	}
 
@@ -564,10 +604,19 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		if (this.selectedEntiteDtoZoom != null) {
 			setEntity(null);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-			EntiteDto entiteDto = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
-			creeArbreComplet(entiteDto);
+			refreshArbreComplet();
 			Clients.evalJavaScript("refreshOrganigrammeSuiteZoom();");
 		}
+	}
+
+	/**
+	 * Permet de zoomer sur une entité
+	 * @param entiteDto : l'entité sur laquelle zoomer
+	 */
+	@Command
+	public void zoomSurEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		setSelectedEntiteDtoZoom(entiteDto);
+		selectionneEntiteZoom();
 	}
 
 	@Command
@@ -577,31 +626,33 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			// Si une entité était en édition, on vide pour ne pas se retrouver dans des cas bizarre d'entité ouverte en édition alors qu'elle n'est
 			// pas présente avec le fitre actif
 			setEntity(null);
-
-			// On recharge toujours à partir d'ADS avant de filtrer pour être sur de tout récupérer à jour
-			if (this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
-				// Si on est en zoom, on filtre uniquement sur les entités zoomées
-				if (this.selectedEntiteDtoZoom != null) {
-					entiteDtoRoot = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
-				} else {
-					entiteDtoRoot = adsWSConsumer.getCurrentTreeWithVDNRoot();
-				}
-			} else {
-				// Si on est en zoom, on filtre uniquement sur les entités zoomées
-				EntiteDto entiteDtoAFiltre = null;
-				if (this.selectedEntiteDtoZoom != null) {
-					entiteDtoAFiltre = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
-
-				} else {
-					entiteDtoAFiltre = adsWSConsumer.getCurrentTreeWithVDNRoot();
-				}
-				entiteDtoRoot = filtrerEntiteDtoRootParStatut(entiteDtoAFiltre, this.selectedFiltreStatut);
-			}
-
+			majEntiteRootByFiltreAndZoom();
 			treeViewModel.creeArbre(entiteDtoRoot);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 			refreshListeEntiteRemplace();
 			Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
+		}
+	}
+
+	private void majEntiteRootByFiltreAndZoom() {
+		// On recharge toujours à partir d'ADS avant de filtrer pour être sur de tout récupérer à jour
+		if (this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
+			// Si on est en zoom, on filtre uniquement sur les entités zoomées
+			if (this.selectedEntiteDtoZoom != null) {
+				entiteDtoRoot = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
+			} else {
+				entiteDtoRoot = adsWSConsumer.getCurrentTreeWithVDNRoot();
+			}
+		} else {
+			// Si on est en zoom, on filtre uniquement sur les entités zoomées
+			EntiteDto entiteDtoAFiltre = null;
+			if (this.selectedEntiteDtoZoom != null) {
+				entiteDtoAFiltre = adsWSConsumer.getEntiteWithChildren(this.selectedEntiteDtoZoom.getIdEntite());
+
+			} else {
+				entiteDtoAFiltre = adsWSConsumer.getCurrentTreeWithVDNRoot();
+			}
+			entiteDtoRoot = filtrerEntiteDtoRootParStatut(entiteDtoAFiltre, this.selectedFiltreStatut);
 		}
 	}
 
@@ -650,12 +701,31 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return null;
 	}
 
-	public List<FichePosteDto> getListeFicheDePoste() {
+	public FichePosteGroupingModel getFichePosteGroupingModel() {
 		if (this.entity == null) {
 			return null;
 		}
 
-		return sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite());
+		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+
+		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
+	}
+
+	public List<EntiteHistoDto> getListeHistorique() {
+		if (this.entity == null) {
+			return null;
+		}
+
+		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), mapIdAgentNomPrenom);
+	}
+
+	public String getTabCommentaireSclass() {
+
+		if (this.entity == null) {
+			return "";
+		}
+
+		return StringUtils.isNotBlank(this.entity.getCommentaire()) ? "tab-bold-red" : "";
 	}
 
 	@Command

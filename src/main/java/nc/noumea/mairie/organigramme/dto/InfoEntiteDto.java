@@ -1,4 +1,4 @@
-package nc.noumea.mairie.organigramme.core.ws;
+package nc.noumea.mairie.organigramme.dto;
 
 /*
  * #%L
@@ -24,20 +24,34 @@ package nc.noumea.mairie.organigramme.core.ws;
  * #L%
  */
 
+
+import java.util.ArrayList;
 import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
-import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
-import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+public class InfoEntiteDto {
 
-public interface ISirhWSConsumer {
+	public InfoEntiteDto() {
+		super();
+		this.listeInfoFDP = new ArrayList<InfoFichePosteDto>();
+	}
 
-	ProfilAgentDto getAgent(Integer idAgent);
+	private Integer idEntite;
+	private List<InfoFichePosteDto> listeInfoFDP;
 
-	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
+	public Integer getIdEntite() {
+		return idEntite;
+	}
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren);
+	public void setIdEntite(Integer idEntite) {
+		this.idEntite = idEntite;
+	}
 
-	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
+	public List<InfoFichePosteDto> getListeInfoFDP() {
+		return listeInfoFDP;
+	}
+
+	public void setListeInfoFDP(List<InfoFichePosteDto> listeInfoFDP) {
+		this.listeInfoFDP = listeInfoFDP;
+	}
+
 }

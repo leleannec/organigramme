@@ -1,4 +1,4 @@
-package nc.noumea.mairie.organigramme.core.ws;
+package nc.noumea.mairie.organigramme.viewmodel;
 
 /*
  * #%L
@@ -24,20 +24,26 @@ package nc.noumea.mairie.organigramme.core.ws;
  * #L%
  */
 
+
+import java.util.Comparator;
 import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
-import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
-import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 
-public interface ISirhWSConsumer {
+import org.zkoss.zul.GroupsModelArray;
 
-	ProfilAgentDto getAgent(Integer idAgent);
+public class FichePosteGroupingModel extends GroupsModelArray<FichePosteDto, String, String, Object> {
+	private static final long	serialVersionUID	= 1L;
 
-	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
+	public FichePosteGroupingModel(List<FichePosteDto> data, Comparator<FichePosteDto> cmpr) {
+		super(data.toArray(new FichePosteDto[0]), cmpr);
+	}
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren);
+	protected String createGroupHead(FichePosteDto[] groupdata, int index, int col) {
+		if (groupdata.length > 0) {
+			return groupdata[0].getSigle() + "(" + groupdata.length + ")";
+		}
 
-	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
+		return "";
+	}
 }

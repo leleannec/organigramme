@@ -1,4 +1,4 @@
-package nc.noumea.mairie.organigramme.core.ws;
+package nc.noumea.mairie.organigramme.dto;
 
 /*
  * #%L
@@ -24,20 +24,35 @@ package nc.noumea.mairie.organigramme.core.ws;
  * #L%
  */
 
-import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
-import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
-import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+public class InfoFichePosteDto {
 
-public interface ISirhWSConsumer {
+	private Integer nbFDP;
+	private String titreFDP;
+	private Double tauxETP;
 
-	ProfilAgentDto getAgent(Integer idAgent);
+	public Integer getNbFDP() {
+		return nbFDP;
+	}
 
-	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
+	public void setNbFDP(Integer nbFDP) {
+		this.nbFDP = nbFDP;
+	}
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren);
+	public String getTitreFDP() {
+		return titreFDP;
+	}
 
-	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
+	public void setTitreFDP(String titreFDP) {
+		this.titreFDP = titreFDP;
+	}
+
+	public Double getTauxETP() {
+		return tauxETP;
+	}
+
+	public void setTauxETP(Double tauxETP) {
+		this.tauxETP = tauxETP;
+	}
+
 }

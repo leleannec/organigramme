@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 
@@ -60,6 +61,16 @@ public class ComparatorUtil {
 		@Override
 		public int compare(FichePosteDto o1, FichePosteDto o2) {
 			return o1.getTitre().compareTo(o2.getTitre());
+		}
+	}
+
+	public static class EntiteHistoComparator implements Comparator<EntiteHistoDto>, Serializable {
+
+		private static final long	serialVersionUID	= 1L;
+
+		@Override
+		public int compare(EntiteHistoDto o1, EntiteHistoDto o2) {
+			return o1.getDateHisto().compareTo(o2.getDateHisto());
 		}
 	}
 }

@@ -42,6 +42,7 @@ import nc.noumea.mairie.organigramme.services.CouleurTypeEntiteService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
 
+import org.apache.commons.lang.StringUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -96,6 +97,11 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 
 		ProfilAgentDto profilAgentDto = authentificationService.getCurrentUser();
 
+		// #16902 : Ajouter le champ labelCourt limité à 60 caractères dans les propriétés d'une entité
+		if (StringUtils.isNotBlank(this.entity.getLabel())) {
+			this.entity.setLabelCourt(StringUtils.substring(this.entity.getLabel(), 0, 60));
+		}
+
 		if (!profilAgentDto.isEdition() || showErrorPopup(this.entity)) {
 			return;
 		}
@@ -135,6 +141,7 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 		newEntiteDto.setStatut(Statut.PREVISION);
 		newEntiteDto.setSigle(this.entity.getSigle());
 		newEntiteDto.setLabel(this.entity.getLabel());
+		newEntiteDto.setLabelCourt(this.entity.getLabelCourt());
 		newEntiteDto.setTypeEntite(this.entity.getTypeEntite());
 		newEntiteDto.setEntiteParent(entiteDtoParent);
 		newEntiteDto.setIdAgentCreation(idAgent);

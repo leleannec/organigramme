@@ -10,7 +10,7 @@
 			<rows>
 				<row>
 					<label class="mandatory" value="Sigle :" />
-					<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase" />
+					<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase" maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'sigle'))"/>
 				</row>
 				<row>
 					<label class="mandatory" value="Libellé :" />

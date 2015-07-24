@@ -15,11 +15,11 @@
 			</row>
 			<row>
 				<label class="mandatory" value="Couleur de l'entité :" />
-				<textbox value="@bind(vm.entity.couleurEntite)" hflex="1" />
+				<colorbox value="@bind(vm.entity.couleurEntite)" width="30px" height="25px" />
 			</row>
 			<row>
 				<label class="mandatory" value="Couleur du texte de l'entité :" />
-				<textbox value="@bind(vm.entity.couleurTexte)" hflex="1" />
+				<colorbox value="@bind(vm.entity.couleurTexte)" width="30px" height="25px" />
 			</row>
 		</rows>
 	</grid>

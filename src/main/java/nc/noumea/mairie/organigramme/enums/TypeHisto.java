@@ -1,4 +1,4 @@
-package nc.noumea.mairie.organigramme.core.ws;
+package nc.noumea.mairie.organigramme.enums;
 
 /*
  * #%L
@@ -24,20 +24,43 @@ package nc.noumea.mairie.organigramme.core.ws;
  * #L%
  */
 
-import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
-import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
-import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+public enum TypeHisto {
 
-public interface ISirhWSConsumer {
+	CREATION(0, "Création"),
+	MODIFICATION(1, "Modification"),
+	SUPPRESSION(2, "Suppression"),
+	CHANGEMENT_STATUT(3, "Chgt. Statut");
 
-	ProfilAgentDto getAgent(Integer idAgent);
+	private Integer	idRefTypeHisto;
+	private String	libelle;
 
-	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
+	TypeHisto(Integer idRefTypeHisto, String libelle) {
+		this.idRefTypeHisto = idRefTypeHisto;
+		this.libelle = libelle;
+	}
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren);
+	public static TypeHisto getTypeHistoEnum(Integer idRefTypeHisto) {
 
-	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
+		switch (idRefTypeHisto) {
+			case 0:
+				return CREATION;
+			case 1:
+				return MODIFICATION;
+			case 2:
+				return SUPPRESSION;
+			case 3:
+				return CHANGEMENT_STATUT;
+			default:
+				return null;
+		}
+	}
+
+	public Integer getIdRefTypeHisto() {
+		return idRefTypeHisto;
+	}
+
+	public String getLibelle() {
+		return libelle;
+	}
 }

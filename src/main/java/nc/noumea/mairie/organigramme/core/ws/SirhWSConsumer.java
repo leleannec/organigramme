@@ -30,6 +30,7 @@ import java.util.List;
 
 import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
+import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
@@ -40,7 +41,7 @@ import org.springframework.stereotype.Service;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-@Service("sirhWsConsumer")
+@Service("sirhWSConsumer")
 public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 
 	private Logger				logger							= LoggerFactory.getLogger(SirhWSConsumer.class);
@@ -51,6 +52,7 @@ public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 	private static final String	URL_AGENT						= "agents/getAgent";
 	private static final String	URL_AUTORISATION_ORGANIGRAMME	= "utilisateur/getAutorisationOrganigramme";
 	private static final String	URL_FICHE_POSTE_PAR_ENTITE		= "fichePostes/listFichePosteByIdEntite";
+	private static final String	URL_FICHE_POSTE_INFO_PAR_ENTITE	= "fichePostes/getInfoFDPByEntite";
 
 	public ProfilAgentDto getAgent(Integer idAgent) {
 		String url = String.format(sirhWsBaseUrl + URL_AGENT);
@@ -71,10 +73,11 @@ public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 		return readResponse(AccessRightOrganigrammeDto.class, res, url);
 	}
 
-	public List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite) {
+	public List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren) {
 		String url = String.format(sirhWsBaseUrl + URL_FICHE_POSTE_PAR_ENTITE);
 		HashMap<String, String> params = new HashMap<>();
 		params.put("idEntite", idEntite.toString());
+		params.put("withEntiteChildren", String.valueOf(withEntiteChildren));
 		logger.debug("getFichePosteByIdEntite with url " + url);
 		ClientResponse res = createAndFireGetRequest(params, url);
 		List<FichePosteDto> result = readResponseAsList(FichePosteDto.class, res, url);
@@ -82,5 +85,15 @@ public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 		Collections.sort(result, new ComparatorUtil.FichePosteComparator());
 
 		return result;
+	}
+
+	public InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren) {
+		String url = String.format(sirhWsBaseUrl + URL_FICHE_POSTE_INFO_PAR_ENTITE);
+		HashMap<String, String> params = new HashMap<>();
+		params.put("idEntite", idEntite.toString());
+		params.put("withEntiteChildren", String.valueOf(withEntiteChildren));
+		logger.debug("getInfoFDPByEntite with url " + url);
+		ClientResponse res = createAndFireGetRequest(params, url);
+		return readResponse(InfoEntiteDto.class, res, url);
 	}
 }
