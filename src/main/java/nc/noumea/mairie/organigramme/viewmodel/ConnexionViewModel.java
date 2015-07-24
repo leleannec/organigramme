@@ -49,20 +49,20 @@ import org.zkoss.zk.ui.select.annotation.WireVariable;
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class ConnexionViewModel implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long	serialVersionUID	= 1L;
 
-	private Logger			logger	= LoggerFactory.getLogger(ConnexionViewModel.class);
+	private Logger				logger				= LoggerFactory.getLogger(ConnexionViewModel.class);
 
 	//@formatter:off
 	@WireVariable private IRadiWSConsumer	radiWSConsumer;
-	@WireVariable private ISirhWSConsumer	sirhWsConsumer;
+	@WireVariable private ISirhWSConsumer	sirhWSConsumer;
 	//@formatter:on
-	
-	private ProfilAgentDto	currentUser;
 
-	private UserForm		userForm;
+	private ProfilAgentDto		currentUser;
 
-	private String			errorMessage;
+	private UserForm			userForm;
+
+	private String				errorMessage;
 
 	public ProfilAgentDto getCurrentUser() {
 		return currentUser;
@@ -88,7 +88,6 @@ public class ConnexionViewModel implements Serializable {
 		this.errorMessage = errorMessage;
 	}
 
-	
 	@Init
 	public void initMenu() {
 		currentUser = (ProfilAgentDto) Sessions.getCurrent().getAttribute("currentUser");
@@ -117,14 +116,13 @@ public class ConnexionViewModel implements Serializable {
 
 			ProfilAgentDto profilAgent = recupereProfilAgent(userDto);
 
-
 			AccessRightOrganigrammeDto accessRightOrganigrammeDto = recupereAccessRightOrganigramme(userDto.getEmployeeNumber());
 			if (accessRightOrganigrammeDto == null || accessRightOrganigrammeDto.isAucunRole()) {
 				return;
 			}
 
 			renseigneAccessRightOnUser(profilAgent, accessRightOrganigrammeDto);
-			
+
 			Sessions.getCurrent().setAttribute("currentUser", profilAgent);
 			logger.debug("Authentification du user ok : " + remoteUser);
 			Executions.getCurrent().getSession().setAttribute("logout", null);
@@ -133,11 +131,11 @@ public class ConnexionViewModel implements Serializable {
 
 		returnError();
 	}
-	
+
 	private AccessRightOrganigrammeDto recupereAccessRightOrganigramme(Integer employeeNumber) throws ServletException {
 		AccessRightOrganigrammeDto accessRightOrganigrammeDto = null;
 		try {
-			accessRightOrganigrammeDto = sirhWsConsumer.getAutorisationOrganigramme(employeeNumber);
+			accessRightOrganigrammeDto = sirhWSConsumer.getAutorisationOrganigramme(employeeNumber);
 		} catch (Exception e) {
 			// le SIRH-WS ne semble pas repondre
 			logger.debug("L'application SIRH-WS ne semble pas répondre.");
@@ -151,7 +149,7 @@ public class ConnexionViewModel implements Serializable {
 
 		return accessRightOrganigrammeDto;
 	}
-	
+
 	private void renseigneAccessRightOnUser(ProfilAgentDto profilAgent, AccessRightOrganigrammeDto accessRightOrganigrammeDto) {
 		profilAgent.setAdministrateur(accessRightOrganigrammeDto.isAdministrateur());
 		profilAgent.setEdition(accessRightOrganigrammeDto.isEdition());
@@ -161,7 +159,7 @@ public class ConnexionViewModel implements Serializable {
 	private ProfilAgentDto recupereProfilAgent(LightUserDto userDto) {
 		ProfilAgentDto profilAgent = null;
 		try {
-			profilAgent = sirhWsConsumer.getAgent(userDto.getEmployeeNumber());
+			profilAgent = sirhWSConsumer.getAgent(userDto.getEmployeeNumber());
 		} catch (Exception e) {
 			// le SIRH-WS ne semble pas repondre
 			logger.debug("L'application SIRH-WS ne semble pas répondre.");

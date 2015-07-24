@@ -51,29 +51,29 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 
 	@Autowired
 	ReturnMessageService	returnMessageService;
-	
+
 	@Autowired
 	AdsWSConsumer			adsWSConsumer;
-	
+
 	@Autowired
-	AuthentificationService authentificationService;
+	AuthentificationService	authentificationService;
 
 	@Override
 	public boolean updateStatut(EntiteDto entiteDto, Statut statutCible) {
 		if (entiteDto == null || statutCible == null) {
 			return false;
 		}
-		
+
 		ChangeStatutDto changeStatutDto = initChangeStatutDto(entiteDto, statutCible);
-		
+
 		ReturnMessageDto returnMessageDto = adsWSConsumer.changeStatut(changeStatutDto);
 		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
 			return false;
 		}
-		
+
 		return entiteDto.updateStatut(statutCible);
 	}
-	
+
 	/**
 	 * Initialise le dto de changement de statut avec les bonnes valeurs
 	 * @param entiteDto : l'{@link EntiteDto} sur laquelle on souhaite changer le statut
@@ -87,52 +87,52 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 		changeStatutDto.setMajEntitesEnfant(false);
 		changeStatutDto.setDateDeliberation(entiteDto.getDateDeliberationActif());
 		changeStatutDto.setRefDeliberation(entiteDto.getRefDeliberationActif());
-		
+
 		ProfilAgentDto profilAgentDto = authentificationService.getCurrentUser();
-		
+
 		changeStatutDto.setIdAgent(profilAgentDto.getIdAgent());
-		
-		if(statut == Statut.INACTIF) {
+
+		if (statut == Statut.INACTIF) {
 			changeStatutDto.setDateDeliberation(entiteDto.getDateDeliberationInactif());
 			changeStatutDto.setRefDeliberation(entiteDto.getRefDeliberationInactif());
 		}
-		
+
 		return changeStatutDto;
 	}
 
 	public boolean deleteEntite(EntiteDto entiteDto) {
-		
+
 		ReturnMessageDto returnMessageDto = adsWSConsumer.deleteEntite(entiteDto);
 		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
 			return false;
 		}
-		
+
 		entiteDto.getLi().getParent().removeChild(entiteDto.getLi());
-		
+
 		return true;
 	}
-	
+
 	public List<EntiteDto> findAllNotPrevision() {
 		EntiteDto entiteDtoRoot = adsWSConsumer.getCurrentTreeWithVDNRoot();
 		List<EntiteDto> result = getAllEntiteNotPrevision(entiteDtoRoot.getEnfants(), new ArrayList<EntiteDto>());
-		
+
 		Collections.sort(result, new ComparatorUtil.EntiteComparator());
-		
+
 		return result;
 	}
-	
+
 	private List<EntiteDto> getAllEntiteNotPrevision(List<EntiteDto> listeEnfant, List<EntiteDto> result) {
-		for(EntiteDto entiteDto : listeEnfant) {
-			//On se le statut de l'entité
+		for (EntiteDto entiteDto : listeEnfant) {
+			// On se le statut de l'entité
 			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
-			
-			if(entiteDto.getStatut() != Statut.PREVISION) {
+
+			if (entiteDto.getStatut() != Statut.PREVISION) {
 				result.add(entiteDto);
 			}
-			
+
 			getAllEntiteNotPrevision(entiteDto.getEnfants(), result);
 		}
-		
+
 		return result;
 	}
 }

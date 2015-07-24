@@ -27,14 +27,14 @@ package nc.noumea.mairie.organigramme.services.impl;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
-import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
+import nc.noumea.mairie.organigramme.core.ws.SirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ExportDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
+import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
+import nc.noumea.mairie.organigramme.dto.InfoFichePosteDto;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 
@@ -42,18 +42,19 @@ import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
-import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.springframework.util.CollectionUtils;
 import org.zkoss.zul.Filedownload;
 
 @Service("exportGraphMLService")
 @Scope(value = "singleton", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
-	@WireVariable
-	ISirhWSConsumer	sirhWsConsumer;
+	@Autowired
+	SirhWSConsumer	sirhWSConsumer;
 
 	public void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
 		Filedownload.save(exportGraphML(exportDto, mapIdLiOuvert), null, "exportGraphML.graphml");
@@ -110,30 +111,17 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	 */
 	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, boolean avecFichePoste, Map<String, Boolean> mapIdLiOuvert) {
 
-		List<FichePosteDto> listeFichePosteEntite = null;
-		if (avecFichePoste) {
-			listeFichePosteEntite = sirhWsConsumer.getFichePosteByIdEntite(entiteDto.getIdEntite(), false);
-		}
-
 		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite() : "#FFFFCF";
 		String couleurTexte = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurTexte() : "#000000";
 		String forme = "roundrectangle";
 
 		Element el = graph.addElement("node").addAttribute("id", String.valueOf(entiteDto.getId()));
-
-		String libelle = entiteDto.getSigle();
-		if (avecFichePoste) {
-			libelle += ""; // TODO
-		}
-
 		el.addElement("data").addAttribute("key", "d4").setText(entiteDto.getSigle());
 		el.addElement("data").addAttribute("key", "d5").setText(entiteDto.getLabel());
 
 		Element elD6 = el.addElement("data").addAttribute("key", "d6");
 		Element elGenericNode = elD6.addElement("y:ShapeNode");
 		elGenericNode.addElement("y:Geometry").addAttribute("height", "40.0").addAttribute("width", "80.0");
-		String sigleSplit = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
-		elGenericNode.addElement("y:NodeLabel").addAttribute("textColor", couleurTexte).setText(sigleSplit);
 
 		if (entiteDto.getStatut() == Statut.PREVISION) {
 			elGenericNode.addElement("y:BorderStyle").addAttribute("type", "dashed");
@@ -149,16 +137,52 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		elGenericNode.addElement("y:Fill").addAttribute("color", couleurEntite);
 		elGenericNode.addElement("y:Shape").addAttribute("type", forme);
 
+		String libelleCase = "";
+
 		// Si l'entité est dépliée, on affiche ses enfants
 		if (mapIdLiOuvert.get(entiteDto.getLi().getId())) {
 			for (EntiteDto enfant : entiteDto.getEnfants()) {
 				buildGraphMlTree(graph, enfant, avecFichePoste, mapIdLiOuvert);
 				genereEdge(graph, entiteDto, enfant);
 			}
+
+			libelleCase = getLibelleCase(entiteDto, avecFichePoste, false);
+
 		} else {
-			// TODO
 			// Sinon, si elle a des enfants on ne les affiche pas mais on agrége les FDP de ses enfants
+			libelleCase = getLibelleCase(entiteDto, avecFichePoste, true);
 		}
+
+		elGenericNode.addElement("y:NodeLabel").addAttribute("textColor", couleurTexte).setText(libelleCase);
+	}
+
+	/**
+	 * Renvoie le libellé à mettre dans la case Yed
+	 * @param entiteDto : l'entité
+	 * @param avecFichePoste : doit-on afficher les fiches de postes ?
+	 * @param withEntiteChildren : selon si l'entité est dépliée ou non on affiche les FDP des enfants ou non
+	 * @return le libellé à mettre dans la case Yed
+	 */
+	private String getLibelleCase(EntiteDto entiteDto, boolean avecFichePoste, boolean withEntiteChildren) {
+
+		String libelleCase = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
+
+		if (avecFichePoste) {
+			InfoEntiteDto infoEntiteDto = sirhWSConsumer.getInfoFDPByEntite(entiteDto.getIdEntite(), withEntiteChildren);
+			if (infoEntiteDto != null && !CollectionUtils.isEmpty(infoEntiteDto.getListeInfoFDP())) {
+
+				libelleCase += "\n";
+
+				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
+					libelleCase += infoFichePosteDto.getNbFDP() + " " + infoFichePosteDto.getTitreFDP();
+					if (new Double(infoFichePosteDto.getNbFDP()) != infoFichePosteDto.getTauxETP()) {
+						libelleCase += " (" + infoFichePosteDto.getTauxETP() + " ETP)\n";
+					}
+				}
+			}
+		}
+
+		return libelleCase;
 	}
 
 	private void genereEdge(Element graph, EntiteDto entiteDto, EntiteDto enfant) {

@@ -55,6 +55,9 @@ import flexjson.JSONSerializer;
 @Service("adsWSConsumer")
 public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 
+	@Autowired
+	SirhWSConsumer			sirhWSConsumer;
+
 	private static Logger	log								= LoggerFactory.getLogger(AdsWSConsumer.class);
 	private final String	URL_TREE						= "api/arbre";
 	private final String	URL_LISTE_ENTITE				= "api/typeEntite";
@@ -196,7 +199,7 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 	}
 
 	@Override
-	public List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom, ISirhWSConsumer sirhWsConsumer) {
+	public List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom) {
 		String url = adsWsBaseUrl + URL_GET_ENTITE + "/" + idEntite.toString() + "/histo";
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
 		List<EntiteHistoDto> result = readResponseAsList(EntiteHistoDto.class, res, url);
@@ -207,7 +210,7 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 			Integer idAgent = entiteHistoDto.getIdAgentHisto();
 			String nomPrenomAgent = mapIdAgentNomPrenom.get(idAgent);
 			if (StringUtils.isBlank(nomPrenomAgent)) {
-				ProfilAgentDto profilAgentDto = sirhWsConsumer.getAgent(idAgent);
+				ProfilAgentDto profilAgentDto = sirhWSConsumer.getAgent(idAgent);
 				nomPrenomAgent = profilAgentDto.getPrenomNomUsage();
 				mapIdAgentNomPrenom.put(idAgent, nomPrenomAgent);
 			}

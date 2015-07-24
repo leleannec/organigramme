@@ -100,8 +100,7 @@ public interface IAdsWSConsumer {
 	 * Renvoi l'historique de l'entité
 	 * @param idEntite : l'entité pour laquelle on souhaite l'historique
 	 * @param mapIdAgentNomPrenom : la map contenant les id des agents et leurs noms prénoms
-	 * @param sirhWsConsumer : le sirhWsConsumer car l'autowired ne veux pas fonctionne dans un autre consumer
 	 * @return l'historique de l'entité
 	 */
-	List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom, ISirhWSConsumer sirhWsConsumer);
+	List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom);
 }

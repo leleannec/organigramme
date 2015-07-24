@@ -92,7 +92,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	//@formatter:off
 	@WireVariable IAdsWSConsumer			adsWSConsumer;
-	@WireVariable ISirhWSConsumer			sirhWsConsumer;
+	@WireVariable ISirhWSConsumer			sirhWSConsumer;
 	@WireVariable ExportGraphMLService		exportGraphMLService;
 	@WireVariable OrganigrammeService		organigrammeService;
 	@WireVariable AuthentificationService	authentificationService;
@@ -706,7 +706,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			return null;
 		}
 
-		List<FichePosteDto> listeFichePosteDto = sirhWsConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
 
 		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
 	}
@@ -716,7 +716,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			return null;
 		}
 
-		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), mapIdAgentNomPrenom, sirhWsConsumer);
+		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), mapIdAgentNomPrenom);
 	}
 
 	public String getTabCommentaireSclass() {
