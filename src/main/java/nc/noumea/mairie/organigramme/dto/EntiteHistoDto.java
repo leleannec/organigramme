@@ -86,4 +86,5 @@ public class EntiteHistoDto extends EntiteDto {
 	public void setNomPrenomAgent(String nomPrenomAgent) {
 		this.nomPrenomAgent = nomPrenomAgent;
 	}
+
 }

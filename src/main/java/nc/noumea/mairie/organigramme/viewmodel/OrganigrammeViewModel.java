@@ -246,9 +246,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	@GlobalCommand
 	public void creeArbreEtRafraichiClient() {
-		treeViewModel.creeArbre(entiteDtoRoot);
-		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-		refreshListeEntiteRemplace();
+		refreshArbreComplet();
 		Clients.evalJavaScript("refreshOrganigramme();");
 	}
 
@@ -547,18 +545,24 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			return;
 		}
 
-		String messageConfirmation = "Êtes-vous sur de vouloir passer cette entité en statut 'ACTIF' ? Plus aucune information de cette entité ne pourra être modifiée.";
-		Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.EXCLAMATION,
-				new EventListener<Messagebox.ClickEvent>() {
-					@Override
-					public void onEvent(ClickEvent evt) {
-						if (evt.getName().equals("onYes")) {
-							if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
-								popup.detach();
+		if (transition.getStatut().equals(Statut.ACTIF)) {
+			String messageConfirmation = "Êtes-vous sur de vouloir passer cette entité en statut 'ACTIF' ? Plus aucune information de cette entité ne pourra être modifiée.";
+			Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
+					Messagebox.EXCLAMATION, new EventListener<Messagebox.ClickEvent>() {
+						@Override
+						public void onEvent(ClickEvent evt) {
+							if (evt.getName().equals("onYes")) {
+								if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
+									popup.detach();
+								}
 							}
 						}
-					}
-				});
+					});
+		} else {
+			if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
+				popup.detach();
+			}
+		}
 	}
 
 	public Map<String, EntiteDto> getMapIdLiEntiteDto() {

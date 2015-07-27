@@ -70,7 +70,7 @@ public class ComparatorUtil {
 
 		@Override
 		public int compare(EntiteHistoDto o1, EntiteHistoDto o2) {
-			return o1.getDateHisto().compareTo(o2.getDateHisto());
+			return o2.getDateHisto().compareTo(o1.getDateHisto());
 		}
 	}
 }
