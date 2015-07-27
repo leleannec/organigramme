@@ -31,6 +31,7 @@ import java.util.Map;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractEditViewModel;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
 
@@ -48,12 +49,12 @@ import org.zkoss.zul.Messagebox.ClickEvent;
  * @author AgileSoft.NC
  */
 public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteDto> implements Serializable {
- 
-	private static final long serialVersionUID = 1L;
-	
-	private OrganigrammeViewModel			organigrammeViewModel;
 
-	public static Logger					log	= LoggerFactory.getLogger(OrganigrammeWorkflowViewModel.class);
+	private static final long		serialVersionUID	= 1L;
+
+	private OrganigrammeViewModel	organigrammeViewModel;
+
+	public static Logger			log					= LoggerFactory.getLogger(OrganigrammeWorkflowViewModel.class);
 
 	public OrganigrammeWorkflowViewModel(OrganigrammeViewModel organigrammeViewModel) {
 		this.organigrammeViewModel = organigrammeViewModel;
@@ -106,12 +107,12 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 		Map<String, Object> args = new HashMap<>();
 		args.put("entity", entity());
 		args.put("transition", transition);
-		
+
 		Map<String, Object> arguments = new HashMap<String, Object>();
-        arguments.put("entity", entity);
-        Executions.createComponents("/layout/popupStatutWithRefAndDate.zul", null, arguments);
-		
-		BindUtils.postGlobalCommand(null, null, "ouvrirPopupStatutWithRefAndDate", args); 
+		arguments.put("entity", entity);
+		Executions.createComponents("/layout/popupStatutWithRefAndDate.zul", null, arguments);
+
+		BindUtils.postGlobalCommand(null, null, "ouvrirPopupStatutWithRefAndDate", args);
 	}
 
 	private void verifieTransitionPossible(Transition transition) {
@@ -127,16 +128,24 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 	 */
 	public boolean executerTransitionGeneric(Transition transition) {
 		verifieTransitionPossible(transition);
-		if(this.organigrammeViewModel.organigrammeService.updateStatut(this.entity(), transition.getStatut())) {
-			//On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
+		if (this.organigrammeViewModel.organigrammeService.updateStatut(this.entity(), transition.getStatut())) {
+			// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
 			this.organigrammeViewModel.entiteDtoRoot = this.organigrammeViewModel.adsWSConsumer.getCurrentTreeWithVDNRoot();
+
+			// On force l'affichage du statut pour pouvoir voir cette entité dans son nouvel état
+			if (transition.getStatut().equals(Statut.TRANSITOIRE)) {
+				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE);
+			}
+			if (transition.getStatut().equals(Statut.INACTIF)) {
+				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF);
+			}
 			this.organigrammeViewModel.creeArbreEtRafraichiClient();
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Transition générique simple, après confirmation
 	 * 
@@ -154,7 +163,7 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 					@Override
 					public void onEvent(ClickEvent evt) {
 						if (evt.getName().equals("onYes")) {
-							executerTransitionGeneric(transitionAExecuter); 
+							executerTransitionGeneric(transitionAExecuter);
 						}
 					}
 				});

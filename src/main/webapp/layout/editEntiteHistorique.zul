@@ -13,6 +13,7 @@
 			<listheader label="Date inactivation" sort="auto(dateDeliberationInactif)" width="130px"/>
 			<listheader label="Réf. inactivation" sort="auto(refDeliberationInactif)" />
 			<listheader label="Entité remplacé" sort="auto(sigleEntiteRemplace)" />
+			<listheader label="Commentaire" sort="auto(commentaire)" />
 		</listhead>
 		<template name="model">
 			<listitem>
@@ -51,6 +52,9 @@
 				</listcell>
 				<listcell>
 					<label value="@bind(each.sigleEntiteRemplace)" />
+				</listcell>
+				<listcell>
+					<label value="@bind(each.commentaire)" />
 				</listcell>
 			</listitem>
 		</template>

@@ -62,7 +62,7 @@
 									<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer cette entité" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" />
 									<toolbarbutton image="/imgs/icon/exporter.png" label="Export GraphML à partir de cette entité" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" />
 								</toolbar>
-								<toolbar hflex="4" sclass="align-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.editable)">
+								<toolbar hflex="4" sclass="align-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
 									<template name="children"> 
 										<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}">
 											<custom-attributes statut="${each.statut.name}" />
