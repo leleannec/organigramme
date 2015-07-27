@@ -7,3 +7,9 @@ Interface permettant aux RH de gérer l'organigrammes de la Ville Nouméa.
 ![Global Organizational View](src/site/resources/images/organigramme_screenshot_2.jpg)
 
 ![Color configuraton](src/site/resources/images/organigramme_screenshot_1.jpg)
+
+# Acknowledgement
+
+We'd like to thank [ZK](http://www.zkoss.org/) for having given us the
+[ZK ZOL](http://www.zkoss.org/license#zol) license, hence making it possible to
+use ZK EE for free.
