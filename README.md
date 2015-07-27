@@ -4,6 +4,6 @@ Interface permettant aux RH de gérer l'organigrammes de la Ville Nouméa.
 
 # Screenshots
 
-![Global Organizational View](src/site/resources/resources/images/organigramme_screenshot_2.jpg)
+![Global Organizational View](src/site/resources/images/organigramme_screenshot_2.jpg)
 
-![Color configuraton](src/site/resources/resources/images/organigramme_screenshot_1.jpg)
+![Color configuraton](src/site/resources/images/organigramme_screenshot_1.jpg)
