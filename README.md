@@ -13,3 +13,8 @@ Interface permettant aux RH de gérer l'organigrammes de la Ville Nouméa.
 We'd like to thank [ZK](http://www.zkoss.org/) for having given us the
 [ZK ZOL](http://www.zkoss.org/license#zol) license, hence making it possible to
 use ZK EE for free.
+
+# Partners
+
+We'd like to thank [AgileSoft](http://www.agilesoft.nc/) team for developing
+for us this software.
