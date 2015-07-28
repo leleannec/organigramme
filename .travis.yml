@@ -14,3 +14,5 @@ script:
   - mvn test jacoco:report
 after_success:
   - mvn coveralls:report
+notifications:
+  slack: dsi-mairie-noumea:Oq3rv2rp4DfFLmsV5F7WHQKj
