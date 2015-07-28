@@ -3,7 +3,8 @@
 		<listhead menupopup="auto" sizable="true">
 			<listheader label="Date" sort="auto(dateHisto)" width="130px"/>
 			<listheader label="Action" sort="auto(libelleTypeHisto)" />
-			<listheader label="Agent" sort="auto(nomPrenomAgent)" />
+			<listheader label="Action" sort="auto(statut.libelle)" />
+			<listheader label="Utilisateur" sort="auto(nomPrenomAgent)" />
 			<listheader label="Sigle" sort="auto(sigle)" />
 			<listheader label="Libellé" sort="auto(label)" />
 			<listheader label="Libellé court" sort="auto(labelCourt)" />
@@ -18,43 +19,46 @@
 		<template name="model">
 			<listitem>
 				<listcell>
-					<label value="@bind(each.dateHisto) @converter('formatedDate',format='dd/MM/yyyy')" />
+					<label value="@load(each.dateHisto) @converter('formatedDate',format='dd/MM/yyyy HH:mm')" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.libelleTypeHisto)" />
+					<label value="@load(statut.libelle)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.nomPrenomAgent)" />
+					<label value="@load(each.libelleTypeHisto)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.sigle)" />
+					<label value="@load(each.nomPrenomAgent)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.label)" />
+					<label value="@load(each.sigle)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.labelCourt)" />
+					<label value="@load(each.label)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.typeEntite.label)" />
+					<label value="@load(each.labelCourt)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.dateDeliberationActif) @converter('formatedDate',format='dd/MM/yyyy')" />
+					<label value="@load(each.typeEntite.label)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.refDeliberationActif)" />
+					<label value="@load(each.dateDeliberationActif) @converter('formatedDate',format='dd/MM/yyyy')" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.dateDeliberationInactif) @converter('formatedDate',format='dd/MM/yyyy')" />
+					<label value="@load(each.refDeliberationActif)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.refDeliberationInactif)" />
+					<label value="@load(each.dateDeliberationInactif) @converter('formatedDate',format='dd/MM/yyyy')" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.sigleEntiteRemplace)" />
+					<label value="@load(each.refDeliberationInactif)" />
 				</listcell>
 				<listcell>
-					<label value="@bind(each.commentaire)" />
+					<label value="@load(each.sigleEntiteRemplace)" />
+				</listcell>
+				<listcell>
+					<label value="@load(each.commentaire)" />
 				</listcell>
 			</listitem>
 		</template>

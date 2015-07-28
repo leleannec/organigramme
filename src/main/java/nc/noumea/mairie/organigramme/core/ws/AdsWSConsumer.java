@@ -216,6 +216,9 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 			}
 
 			entiteHistoDto.setNomPrenomAgent(nomPrenomAgent);
+
+			// On se le statut de l'entité
+			entiteHistoDto.setStatut(Statut.getStatutById(entiteHistoDto.getIdStatut()));
 		}
 
 		return result;

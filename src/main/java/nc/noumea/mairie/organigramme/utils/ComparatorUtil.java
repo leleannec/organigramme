@@ -60,7 +60,7 @@ public class ComparatorUtil {
 
 		@Override
 		public int compare(FichePosteDto o1, FichePosteDto o2) {
-			return o1.getTitre().compareTo(o2.getTitre());
+			return o1.getSigle().compareTo(o2.getSigle());
 		}
 	}
 

@@ -16,8 +16,8 @@
 		</grid>
 
 		<toolbar mold="panel" align="center">
-			<toolbarbutton onClick="@command('export')" image="/imgs/icon/exporter.png" label="Exporter" />
-			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+			<toolbarbutton onClick="@command('export')" image="/imgs/icon/exporter.png" label="Exporter" autodisable="self" />
+			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" autodisable="self" />
 		</toolbar>
 	</vlayout>
 </window>

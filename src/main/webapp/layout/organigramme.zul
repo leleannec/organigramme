@@ -19,12 +19,12 @@
 				<h:div id="div-toolbar"> 
 					<hlayout hflex="1" sclass="no-padding-right">
 						<toolbar mold="default"> 
-							<toolbarbutton image="/imgs/icon/deplier.png" onClick="@command('deplierTout')" label="Tout déplier" /> 
-							<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTout')" label="Tout replier" /> 
+							<toolbarbutton image="/imgs/icon/deplier.png" onClick="@command('deplierTout')" label="Tout déplier" autodisable="self" /> 
+							<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTout')" label="Tout replier" autodisable="self" /> 
 						</toolbar>
 						<toolbar hflex="1" sclass="align-right">
 							<label value="Zoomer sur :" visible="@load(vm.selectedEntiteDtoZoom eq null)"/>
-							<toolbarbutton image="/imgs/icon/back.png" onClick="@command('dezoomer')" label="Dézoomer" visible="@load(vm.selectedEntiteDtoZoom ne null)" /> 
+							<toolbarbutton image="/imgs/icon/back.png" onClick="@command('dezoomer')" label="Dézoomer" visible="@load(vm.selectedEntiteDtoZoom ne null)" autodisable="self" /> 
 							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.entiteDtoQueryListModel)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')" autodrop="true" buttonVisible="false" visible="@load(vm.selectedEntiteDtoZoom eq null)">
 								<template name="model">
@@ -55,16 +55,16 @@
 						<vlayout hflex="1" vflex="1">
 							<hlayout sclass="no-padding-right"> 
 								<toolbar hflex="7">
-									<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer sur l'entité" onClick="@command('zoomSurEntite', entity=vm.entity)" />
-									<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier l'entité" onClick="@command('deplierEntite', entity=vm.entity)" />
-									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour l'entité" onClick="@command('updateEntite', entity=vm.entity)" />  
-									<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" />  
-									<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer cette entité" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" />
-									<toolbarbutton image="/imgs/icon/exporter.png" label="Export GraphML à partir de cette entité" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" />
+									<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer sur l'entité" onClick="@command('zoomSurEntite', entity=vm.entity)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier l'entité" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour l'entité" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" />  
+									<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous-entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" autodisable="self" />  
+									<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer cette entité" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/exporter.png" label="Export GraphML à partir de cette entité" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" autodisable="self" />
 								</toolbar>
 								<toolbar hflex="4" sclass="align-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
 									<template name="children"> 
-										<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}">
+										<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}" autodisable="self">
 											<custom-attributes statut="${each.statut.name}" />
 										</toolbarbutton>
 									</template>

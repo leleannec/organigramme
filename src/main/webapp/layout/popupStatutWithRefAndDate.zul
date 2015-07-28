@@ -13,14 +13,14 @@
 				<datebox value="@bind(vmEtape.dateDeliberation)" hflex="1"/>
 			</row>
 			<row>
-				<label value="Référence de la délibération : " sclass="@load(vmEtape.cssLabelAndDate)" />
+				<label value="Référence de la délibération / CTP : " sclass="@load(vmEtape.cssLabelAndDate)" />
 				<textbox value="@bind(vmEtape.refDeliberation)" hflex="1"/>
 			</row>
 		</rows> 
 	</grid>
 	
 	<toolbar mold="panel" align="center">
-		<toolbarbutton onClick="@command('saveStatutWithRefAndDate')" image="/imgs/icon/save.png" label="Enregistrer" />
-		<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+		<toolbarbutton onClick="@command('saveStatutWithRefAndDate')" image="/imgs/icon/save.png" label="Enregistrer" autodisable="self" />
+		<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" autodisable="self" />
 	</toolbar>
 </window>
