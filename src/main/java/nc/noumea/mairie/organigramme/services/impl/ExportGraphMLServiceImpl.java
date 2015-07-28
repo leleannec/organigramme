@@ -175,7 +175,7 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
 					libelleCase += infoFichePosteDto.getNbFDP() + " " + infoFichePosteDto.getTitreFDP();
-					if (new Double(infoFichePosteDto.getNbFDP()) != infoFichePosteDto.getTauxETP()) {
+					if (!new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
 						libelleCase += " (" + infoFichePosteDto.getTauxETP() + " ETP)\n";
 					}
 				}

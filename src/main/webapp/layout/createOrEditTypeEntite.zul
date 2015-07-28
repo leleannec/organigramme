@@ -6,8 +6,8 @@
 		<include src="/layout/typeEntite.zul" />
 	
 		<toolbar mold="panel" align="center">
-			<toolbarbutton onClick="@command('saveOrUpdate')" image="/imgs/icon/save.png" label="Enregistrer" />
-			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" />
+			<toolbarbutton onClick="@command('saveOrUpdate')" image="/imgs/icon/save.png" label="Enregistrer" autodisable="self" />
+			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" autodisable="self" />
 		</toolbar>
 
 	</vlayout>

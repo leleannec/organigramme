@@ -2,9 +2,9 @@
 	vflex="1" contentStyle="overflow:auto">
 	<vlayout vflex="1">
 		<toolbar mold="default">
-			<toolbarbutton onClick="@command('createTypeEntite')" image="/imgs/icon/add.png" label="Nouveau" />
-			<toolbarbutton onClick="@command('editTypeEntite')" image="/imgs/icon/edit.png" label="Modifier" />
-			<toolbarbutton onClick="@command('deleteTypeEntite')" image="/imgs/icon/delete.png" label="Supprimer" visible="@load(vm.entity ne null and not vm.entity.entiteAs400)"/>
+			<toolbarbutton onClick="@command('createTypeEntite')" image="/imgs/icon/add.png" label="Nouveau" autodisable="self" />
+			<toolbarbutton onClick="@command('editTypeEntite')" image="/imgs/icon/edit.png" label="Modifier" autodisable="self" />
+			<toolbarbutton onClick="@command('deleteTypeEntite')" image="/imgs/icon/delete.png" label="Supprimer" visible="@load(vm.entity ne null and not vm.entity.entiteAs400)" autodisable="self"/>
 		</toolbar>
 		<space height="10px" />
 		<vlayout hflex="1" vflex="1">
