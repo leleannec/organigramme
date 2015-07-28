@@ -42,11 +42,11 @@ public class LogoutController extends SelectorComposer<Component> {
 
 	@Wire
 	Label						labelDeconnexion;
-	@Wire 
+	@Wire
 	Label						labelPrenomNomUsageEtRole;
 
 	@WireVariable
-	AuthentificationService		authentificationService; 
+	AuthentificationService		authentificationService;
 
 	/**
 	 * Passe l'attribut currentUser stocké en session à null et redirige vers la fenêtre de login
@@ -68,9 +68,15 @@ public class LogoutController extends SelectorComposer<Component> {
 		if (currentUser != null) {
 			labelDeconnexion.setVisible(true);
 			String role = "";
-			if(currentUser.isVisualisation()) { role = "Visualisation";}
-			if(currentUser.isEdition()) { role = "Edition";}
-			if(currentUser.isAdministrateur()) { role = "Administrateur";} 
+			if (currentUser.isVisualisation()) {
+				role = "Visualisation";
+			}
+			if (currentUser.isEdition()) {
+				role = "Edition";
+			}
+			if (currentUser.isAdministrateur()) {
+				role = "Administrateur";
+			}
 			labelPrenomNomUsageEtRole.setValue(currentUser.getPrenomNomUsage() + " (" + role + ")");
 		}
 	}

@@ -51,6 +51,7 @@ public class AuthentificationServiceImpl implements AuthentificationService {
 		ProfilAgentDto currentUser = getCurrentUser();
 		log.debug("Disconnect User : " + currentUser.getIdAgent());
 		Executions.getCurrent().getSession().setAttribute("logout", "logout");
-		Executions.sendRedirect("/login.zul");
+		Executions.getCurrent().getSession().setAttribute("currentUser", null);
+		Executions.sendRedirect("/");
 	}
 }

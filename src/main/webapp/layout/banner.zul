@@ -9,7 +9,7 @@
 			</div>
 			
 			<hbox apply="nc.noumea.mairie.organigramme.controller.LogoutController" 
-				hflex="1" vflex="1" pack="end" align="end" visible="@load(vm.currentUser ne null)" >
+				hflex="1" vflex="1" pack="end" align="end" visible="@load(sessionScope.currentUser ne null)" >
 				<label id="labelPrenomNomUsageEtRole" />
 				<label id="labelDeconnexion" value="Déconnexion" sclass="logout" visible="false" />
 			</hbox>
