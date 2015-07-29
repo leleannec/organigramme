@@ -27,8 +27,10 @@ package nc.noumea.mairie.organigramme.services.impl;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.Map;
 
+import nc.noumea.mairie.organigramme.core.utility.DateUtil;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.ws.SirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
@@ -57,7 +59,8 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	SirhWSConsumer	sirhWSConsumer;
 
 	public void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
-		Filedownload.save(exportGraphML(exportDto, mapIdLiOuvert), null, "exportGraphML.graphml");
+		String nomFichier = "Export-" + exportDto.getEntiteDto().getSigle() + "-" + DateUtil.formatDateForFile(new Date()) + ".graphml";
+		Filedownload.save(exportGraphML(exportDto, mapIdLiOuvert), null, nomFichier);
 	}
 
 	private byte[] exportGraphML(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {

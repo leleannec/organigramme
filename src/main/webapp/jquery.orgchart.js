@@ -14,6 +14,7 @@
  */ 
 
 var $selectedEntite; 
+var dirty = false;
 var $root;
 var DELAY = 700, clicks = 0, timer = null;
 

@@ -36,6 +36,7 @@ public class DateUtil {
 	private static final DateTimeFormatter	YEAR_FORMATTER				= dateTimeFormatterNCForPattern("yyyy");
 	private static final DateTimeFormatter	TIME_FORMATTER				= dateTimeFormatterNCForPattern("HH:mm");
 	private static final DateTimeFormatter	TIME_FORMATTER_H			= dateTimeFormatterNCForPattern("HH'h'mm");
+	private static final DateTimeFormatter	DATE_FORMATTER_FOR_FILE		= dateTimeFormatterNCForPattern("yyyy-MM-dd");
 	private static final DateTimeFormatter	DATE_FORMATTER				= dateTimeFormatterNCForPattern("dd/MM/yyyy");
 	private static final DateTimeFormatter	DATETIME_FORMATTER			= dateTimeFormatterNCForPattern("dd/MM/yyyy HH:mm");
 	private static final DateTimeFormatter	DATETIME_FORMATTER_FRIENDLY	= dateTimeFormatterNCForPattern("dd/MM/yyyy 'à' HH'h'mm");
@@ -112,6 +113,19 @@ public class DateUtil {
 			return "";
 		}
 		return DATETIME_FORMATTER_FRIENDLY.print(new DateTime(date));
+	}
+
+	/**
+	 * Retourne la date/heure représentée au format yyyy-MM-dd
+	 * 
+	 * @param date date
+	 * @return une représentation de la date en paramètre, ou "" si date est null
+	 */
+	public static String formatDateForFile(Date date) {
+		if (date == null) {
+			return "";
+		}
+		return DATE_FORMATTER_FOR_FILE.print(new DateTime(date));
 	}
 
 	/**
@@ -216,7 +230,6 @@ public class DateUtil {
 		}
 		return LISTE_MOIS[monthOfYear - 1];
 	}
-
 
 	public static int compare(Date date1, Date date2) {
 		if (date1 == null && date2 == null) {

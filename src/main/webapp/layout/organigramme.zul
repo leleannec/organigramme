@@ -54,7 +54,8 @@
 						<caption label="@load(vm.entity.label)" />
 						<vlayout hflex="1" vflex="1"> 
 							<hlayout sclass="no-padding-right"> 
-								<toolbar hflex="8"> 
+								<toolbar hflex="8">
+									<toolbarbutton image="/imgs/icon/save.png" label="Dirty?" onClick="@command('checkDirty')" /> 
 									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" />  
 									<toolbarbutton image="/imgs/icon/edit.png" label="Ouvrir le détail" onClick="@command('ouvreOnglet', entity=vm.entity)" autodisable="self" />
 									<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous-entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" autodisable="self" />  
