@@ -52,15 +52,16 @@
 				<h:div id="div-edit-entite"> 
 					<groupbox hflex="1" vflex="1" mold="3d" closable="false" style="@load(vm.stylePanelEdition)">
 						<caption label="@load(vm.entity.label)" />
-						<vlayout hflex="1" vflex="1">
+						<vlayout hflex="1" vflex="1"> 
 							<hlayout sclass="no-padding-right"> 
-								<toolbar hflex="7">
-									<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer sur l'entité" onClick="@command('zoomSurEntite', entity=vm.entity)" autodisable="self" />
-									<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier l'entité" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" />
-									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour l'entité" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" />  
+								<toolbar hflex="8"> 
+									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" />  
+									<toolbarbutton image="/imgs/icon/edit.png" label="Ouvrir le détail" onClick="@command('ouvreOnglet', entity=vm.entity)" autodisable="self" />
 									<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous-entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" autodisable="self" />  
-									<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer cette entité" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" autodisable="self" />
-									<toolbarbutton image="/imgs/icon/exporter.png" label="Export GraphML à partir de cette entité" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer" onClick="@command('zoomSurEntite', entity=vm.entity)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" />
+									<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" autodisable="self" />
 								</toolbar>
 								<toolbar hflex="4" sclass="align-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
 									<template name="children"> 
