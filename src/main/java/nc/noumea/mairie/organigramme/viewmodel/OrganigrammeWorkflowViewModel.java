@@ -133,17 +133,39 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 			this.organigrammeViewModel.entiteDtoRoot = this.organigrammeViewModel.adsWSConsumer.getCurrentTreeWithVDNRoot();
 
 			// On force l'affichage du statut pour pouvoir voir cette entité dans son nouvel état
-			if (transition.getStatut().equals(Statut.TRANSITOIRE)) {
-				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE);
-			}
-			if (transition.getStatut().equals(Statut.INACTIF)) {
-				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF);
-			}
+			forcerAffichageStatut(transition);
+
 			this.organigrammeViewModel.creeArbreEtRafraichiClient();
 			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Force le filtre pour que l'entité soit visible dans son nouveau statut et affiche un message d'information
+	 * @param transition : la transition a executer
+	 */
+	private void forcerAffichageStatut(Transition transition) {
+		if (transition.getStatut().equals(Statut.TRANSITOIRE)) {
+			boolean filtreStatutTransitoireVisible = this.organigrammeViewModel.getSelectedFiltreStatut() != null
+					&& (this.organigrammeViewModel.getSelectedFiltreStatut().equals(FiltreStatut.ACTIF_TRANSITOIRE)
+							|| this.organigrammeViewModel.getSelectedFiltreStatut().equals(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF) || this.organigrammeViewModel
+							.getSelectedFiltreStatut().equals(FiltreStatut.TOUS));
+			if (!filtreStatutTransitoireVisible) {
+				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE);
+				Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser l'entité en statut transitoire");
+			}
+		}
+		if (transition.getStatut().equals(Statut.INACTIF)) {
+			boolean filtreStatutInactifVisible = this.organigrammeViewModel.getSelectedFiltreStatut() != null
+					&& (this.organigrammeViewModel.getSelectedFiltreStatut().equals(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF) || this.organigrammeViewModel
+							.getSelectedFiltreStatut().equals(FiltreStatut.TOUS));
+			if (!filtreStatutInactifVisible) {
+				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF);
+				Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser l'entité en statut inactif");
+			}
+		}
 	}
 
 	/**

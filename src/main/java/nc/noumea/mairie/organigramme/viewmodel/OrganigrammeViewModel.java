@@ -342,7 +342,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	public void refreshArbreSuiteAjout(@BindingParam("entiteDtoParent") EntiteDto entiteDtoParent, @BindingParam("newEntiteDto") EntiteDto newEntiteDto) {
 
 		// Comme on est en train de créer une entité en statut prévisionnel, on force l'affichage du statut pour pouvoir voir cette nouvelle entité
-		setSelectedFiltreStatut(FiltreStatut.ACTIF_PREVISION);
+		boolean filtreStatutPrevisionVisible = selectedFiltreStatut != null
+				&& (selectedFiltreStatut.equals(FiltreStatut.ACTIF_PREVISION) || selectedFiltreStatut.equals(FiltreStatut.TOUS));
+		if (!filtreStatutPrevisionVisible) {
+			setSelectedFiltreStatut(FiltreStatut.ACTIF_PREVISION);
+		}
 		refreshArbreComplet();
 
 		// Vu qu'on vient de reconstruire l'arbre complet on recharge le nouveau DTO
@@ -352,6 +356,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		mapIdLiOuvert.put(newEntiteDto.getLi().getId(), false);
 		// Appel de la fonction javascript correspondante
 		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getLi().getId() + "', '" + entiteDtoParent.getLi().getId() + "');");
+
+		if (!filtreStatutPrevisionVisible) {
+			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
+		}
 	}
 
 	/**
