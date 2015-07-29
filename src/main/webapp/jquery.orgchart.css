@@ -62,11 +62,6 @@ div.orgChart div.entite {
     background-color      : #ffffcf;
     line-height           : 85%;
     border-radius         : 8px;
-    box-shadow            : 4px 4px 6px #888888;
-    -moz-border-radius    : 8px;
-    -moz-box-shadow       : 4px 4px 6px #888888;
-    -webkit-border-radius : 8px;
-    -webkit-box-shadow    : 4px 4px 6px #888888;
 }
 
 div.orgChart div.hasChildren {
@@ -85,9 +80,7 @@ div.orgChart.interactive div.hasChildren {
 }
 
 div.orgChart div.entite.edit {
-	background-color      : white !important; 
-    border-color		  : red;
-    border-width		  : 1px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05) inset, 0px 0px 20px #FF0000;
 }
 
 div.orgChart div.adjunct.entite {

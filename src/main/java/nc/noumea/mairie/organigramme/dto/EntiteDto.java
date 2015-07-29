@@ -304,7 +304,7 @@ public class EntiteDto extends AbstractEntityDto {
 	@Override
 	@JSON(include = false)
 	public String getLibelleCourt() {
-		return label;
+		return sigle;
 	}
 
 	@Override
@@ -459,6 +459,11 @@ public class EntiteDto extends AbstractEntityDto {
 	@JSON(include = false)
 	public String getSigleEntiteRemplace() {
 		return this.entiteRemplacee != null ? this.entiteRemplacee.getSigle() : "";
+	}
+
+	@JSON(include = false)
+	public String getLibelleTypeEntite() {
+		return this.typeEntite != null ? this.typeEntite.getLabelWithActifInactif() : "";
 	}
 
 	@Override

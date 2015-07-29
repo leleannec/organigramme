@@ -713,6 +713,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return null;
 	}
 
+	/**
+	 * Renvoie la liste des fiches de postes groupées par Sigle
+	 * @return la liste des fiches de postes groupées par Sigle
+	 */
 	public FichePosteGroupingModel getFichePosteGroupingModel() {
 		if (this.entity == null) {
 			return null;
@@ -723,6 +727,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
 	}
 
+	/**
+	 * Renvoie la liste de l'historique de l'entité
+	 * @return la liste de l'historique de l'entité
+	 */
 	public List<EntiteHistoDto> getListeHistorique() {
 		if (this.entity == null) {
 			return null;
