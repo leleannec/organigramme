@@ -7,9 +7,10 @@
 			<column width="35%" />
 		</columns>
 		<rows>
-			<row vflex="1" hflex="1" valign="top"> 
+			<row vflex="1" hflex="1" valign="top">
 				<label class="mandatory" value="Sigle :" />
-				<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase" disabled="@load(not vm.editable)" maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'sigle'))"/>
+				<textbox value="@bind(vm.entity.sigle)" hflex="1" sclass="uppercase"  
+				disabled="@load(not vm.editable)" maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'sigle'))"/>
 				<label value="Date délib. activation / CTP :" visible="@load(not vm.entity.prevision)"/>
 				<datebox value="@bind(vm.entity.dateDeliberationActif)" visible="@load(not vm.entity.prevision)" disabled="@load(not vm.editable)"/>
 			</row>

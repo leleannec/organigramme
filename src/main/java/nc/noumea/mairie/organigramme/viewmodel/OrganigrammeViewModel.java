@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.services.AuthentificationService;
+import nc.noumea.mairie.organigramme.core.utility.DateUtil;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
@@ -58,6 +59,7 @@ import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -212,6 +214,114 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.entiteOngletSelectionne = entiteOngletSelectionne;
 	}
 
+	@Override
+	public void setEntity(EntiteDto entiteDto) {
+		final EntiteDto entiteDtoPrecedente = this.entity;
+		if (entiteDtoPrecedente != null && entiteDto != null) {
+			// Si une ancienne entité était selectionnée on regarde si elle n'a pas été modifiée
+			List<String> listeDifferenceFromBdd = listeDifferenceFromBdd(entiteDtoPrecedente);
+			if (!CollectionUtils.isEmpty(listeDifferenceFromBdd)) {
+				Messagebox.show(
+						"Des modifications ont-été faite sur l'entité précédente, voulez-vous enregistrer ces modifications ? \n\n"
+								+ StringUtils.join(listeDifferenceFromBdd, "\n"), "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES,
+								Messagebox.Button.NO }, Messagebox.EXCLAMATION, new EventListener<Messagebox.ClickEvent>() {
+							@Override
+							public void onEvent(ClickEvent evt) {
+								if (evt.getName().equals("onYes")) {
+									adsWSConsumer.saveOrUpdateEntite(entiteDtoPrecedente);
+								}
+							}
+						});
+			}
+		}
+		this.entity = entiteDto;
+	}
+
+	// TODO : factoriser des choses de cette méthode et faire le test unitaire qui va bien ! A déplacer dans Utilitaire ?
+	/**
+	 * Permet de liste les différences entre l'entité en paramètre et sa version en base de donnée (uniquement au niveau des champs que l'on peut mettre à jour
+	 * via l'interface)
+	 * @param entiteDto : l'entité qu'on souhaite comparer avec sa version en base
+	 * @return : une liste de différences, null si aucune différences
+	 */
+	private List<String> listeDifferenceFromBdd(EntiteDto entiteDto) {
+		List<String> result = new ArrayList<String>();
+		EntiteDto entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
+
+		if (!entiteDto.getSigle().equals(entiteDtoFromBdd.getSigle())) {
+			result.add("ancien sigle : " + entiteDtoFromBdd.getSigle() + "; nouveau sigle : " + entiteDto.getSigle());
+		}
+
+		if (!entiteDto.getLabel().equals(entiteDtoFromBdd.getLabel())) {
+			result.add("ancien libellé : " + entiteDtoFromBdd.getLabel() + "; nouveau libellé : " + entiteDto.getLabel());
+		}
+
+		if (!entiteDto.getLabelCourt().equals(entiteDtoFromBdd.getLabelCourt())) {
+			result.add("ancien libellé court : " + entiteDtoFromBdd.getLabelCourt() + "; nouveau libellé court : " + entiteDto.getLabelCourt());
+		}
+
+		if (!entiteDto.getTypeEntite().equals(entiteDtoFromBdd.getTypeEntite())) {
+			result.add("ancien type : " + entiteDtoFromBdd.getTypeEntite().getLabel() + "; nouveau type : " + entiteDto.getTypeEntite().getLabel());
+		}
+
+		if (entiteDto.getEntiteRemplacee() != null) {
+			if (!entiteDto.getEntiteRemplacee().equals(entiteDtoFromBdd.getEntiteRemplacee())) {
+				result.add("ancienne entité remplacé : "
+						+ (entiteDtoFromBdd.getEntiteRemplacee() == null ? "aucune" : entiteDtoFromBdd.getEntiteRemplacee().getSigle())
+						+ "; nouvelle entité remplacée : " + entiteDto.getEntiteRemplacee().getSigle());
+			}
+		} else if (entiteDtoFromBdd.getEntiteRemplacee() != null) {
+			result.add("ancienne entité remplacé : " + entiteDtoFromBdd.getEntiteRemplacee().getSigle() + "; nouvelle entité remplacée : aucune");
+		}
+
+		if (entiteDto.getDateDeliberationActif() != null) {
+			if (!entiteDto.getDateDeliberationActif().equals(entiteDtoFromBdd.getDateDeliberationActif())) {
+				result.add("ancienne date délib. activation / CTP : "
+						+ (entiteDtoFromBdd.getDateDeliberationActif() == null ? "aucune" : DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationActif()))
+						+ "; nouvelle date délib. activation / CTP : " + DateUtil.formatDate(entiteDto.getDateDeliberationActif()));
+			}
+		} else if (entiteDtoFromBdd.getDateDeliberationActif() != null) {
+			result.add("ancienne date délib. activation / CTP : " + DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationActif())
+					+ "; nouvelle date délib. activation / CTP : aucune");
+		}
+
+		if (StringUtils.isNotBlank(entiteDto.getRefDeliberationActif())) {
+			if (!entiteDto.getRefDeliberationActif().equals(entiteDtoFromBdd.getRefDeliberationActif())) {
+				result.add("ancienne réf délib. activation / CTP : "
+						+ (StringUtils.isBlank(entiteDtoFromBdd.getRefDeliberationActif()) ? "aucune" : entiteDtoFromBdd.getRefDeliberationActif())
+						+ "; nouvelle réf délib. activation / CTP : " + entiteDto.getRefDeliberationActif());
+			}
+		} else if (StringUtils.isNotBlank(entiteDtoFromBdd.getRefDeliberationActif())) {
+			result.add("ancienne réf délib. activation / CTP : " + entiteDtoFromBdd.getRefDeliberationActif()
+					+ "; nouvelle réf délib. activation / CTP : aucune");
+		}
+
+		if (entiteDto.getDateDeliberationInactif() != null) {
+			if (!entiteDto.getDateDeliberationInactif().equals(entiteDtoFromBdd.getDateDeliberationInactif())) {
+				result.add("ancienne date délib. inactivation / CTP : "
+						+ (entiteDtoFromBdd.getDateDeliberationInactif() == null ? "aucune"
+								: DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationInactif())) + "; nouvelle date délib. inactivation / CTP : "
+						+ DateUtil.formatDate(entiteDto.getDateDeliberationInactif()));
+			}
+		} else if (entiteDtoFromBdd.getDateDeliberationInactif() != null) {
+			result.add("ancienne date délib. inactivation : " + DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationInactif())
+					+ "; nouvelle date délib. inactivation : aucune");
+		}
+
+		if (StringUtils.isNotBlank(entiteDto.getRefDeliberationInactif())) {
+			if (!entiteDto.getRefDeliberationInactif().equals(entiteDtoFromBdd.getRefDeliberationInactif())) {
+				result.add("ancienne réf délib. inactivation / CTP : "
+						+ (StringUtils.isBlank(entiteDtoFromBdd.getRefDeliberationInactif()) ? "aucune" : entiteDtoFromBdd.getRefDeliberationInactif())
+						+ "; nouvelle réf délib. inactivation / CTP : " + entiteDto.getRefDeliberationInactif());
+			}
+		} else if (StringUtils.isNotBlank(entiteDtoFromBdd.getRefDeliberationInactif())) {
+			result.add("ancienne réf délib. inactivation / CTP : " + entiteDtoFromBdd.getRefDeliberationInactif()
+					+ "; nouvelle réf délib. inactivation / CTP : aucune");
+		}
+
+		return result;
+	}
+
 	/**
 	 * Point d'entrée du viewModel. Fait un appel à ADS afin de récupérer l'arbre et le crée
 	 * @param view : la vue permettant de récuperer le {@link Vlayout} dans lequel sera ajouté l'arbre
@@ -276,7 +386,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@Listen("onClickEntite = #organigramme")
 	public void onClickEntite(Event event) {
 		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
-		setEntity(entiteDto);
+		EntiteDto entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
+		entiteDtoFromBdd.setLi(entiteDto.getLi());
+		setEntity(entiteDtoFromBdd);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 	}
 
