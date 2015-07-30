@@ -43,6 +43,7 @@ import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
+import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
@@ -106,7 +107,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private static final String[]			LISTE_PROP_A_NOTIFIER_ENTITE	= new String[] { "statut", "entity", "listeTransitionAutorise", "listeEntite",
 			"listeEntiteRemplace", "editable", "listeTypeEntiteActifInactif", "hauteurPanelEdition", "mapIdLiEntiteDto", "stylePanelEdition",
 			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "fichePosteGroupingModel", "selectedFiltreStatut",
-			"listeHistorique", "tabCommentaireSclass"						};
+			"listeHistorique", "tabCommentaireSclass", "entiteOngletSelectionne" };
 
 	private OrganigrammeWorkflowViewModel	organigrammeWorkflowViewModel	= new OrganigrammeWorkflowViewModel(this);
 	public TreeViewModel					treeViewModel					= new TreeViewModel(this);
@@ -146,6 +147,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/** Liste des entités remplaçables **/
 	private List<EntiteDto>					listeEntiteRemplace				= new ArrayList<EntiteDto>();
+
+	/** L'onglet en cours de sélection (par défaut, quand on ouvre une entité c'est caractéristique) **/
+	private EntiteOnglet					entiteOngletSelectionne			= EntiteOnglet.CARACTERISTIQUE;
 
 	public List<EntiteDto> getListeEntite() {
 
@@ -198,6 +202,14 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public void setEntiteDtoQueryListModel(EntiteDtoQueryListModel entiteDtoQueryListModel) {
 		this.entiteDtoQueryListModel = entiteDtoQueryListModel;
+	}
+
+	public EntiteOnglet getEntiteOngletSelectionne() {
+		return entiteOngletSelectionne;
+	}
+
+	public void setEntiteOngletSelectionne(EntiteOnglet entiteOngletSelectionne) {
+		this.entiteOngletSelectionne = entiteOngletSelectionne;
 	}
 
 	/**
@@ -307,6 +319,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			mapIdLiOuvert.put(entiteDto.getLi().getId(), ouvert);
 			setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
 		}
+	}
+
+	@Command
+	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel" })
+	public void selectOnglet(@BindingParam("onglet") int onglet) {
+		setEntiteOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
 	}
 
 	/**
@@ -718,7 +736,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * @return la liste des fiches de postes groupées par Sigle
 	 */
 	public FichePosteGroupingModel getFichePosteGroupingModel() {
-		if (this.entity == null) {
+		if (this.entity == null || !this.entiteOngletSelectionne.equals(EntiteOnglet.FDP)) {
 			return null;
 		}
 
@@ -732,7 +750,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * @return la liste de l'historique de l'entité
 	 */
 	public List<EntiteHistoDto> getListeHistorique() {
-		if (this.entity == null) {
+		if (this.entity == null || !this.entiteOngletSelectionne.equals(EntiteOnglet.HISTORIQUE)) {
 			return null;
 		}
 
