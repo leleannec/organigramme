@@ -1,0 +1,17 @@
+<?meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" ?>
+<window title="Session expirée" mode="modal"
+	action="show: slideDown;hide: slideUp" width="50%">
+	<style>
+		.z-window {background-color: #0077FF;}
+
+		.fond { background-color:#F0F8FF; padding-left: 10px;
+		padding-top: 10px; padding-bottom: 10px; padding-right: 10px; }
+	</style>
+	<div sclass="fond" height="100%">
+		<vbox>Votre session a expirée</vbox>
+		<div align="center">
+			<button label="Retour" href="/" />
+		</div>
+	</div>
+
+</window>

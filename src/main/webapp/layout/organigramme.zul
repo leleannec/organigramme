@@ -54,7 +54,7 @@
 						<caption label="@load(vm.entity.label)" />
 						<vlayout hflex="1" vflex="1"> 
 							<hlayout sclass="no-padding-right"> 
-								<toolbar hflex="8"> 
+								<toolbar hflex="8">
 									<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" />  
 									<toolbarbutton image="/imgs/icon/edit.png" label="Ouvrir le détail" onClick="@command('ouvreOnglet', entity=vm.entity)" autodisable="self" />
 									<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous-entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" autodisable="self" />  
@@ -76,10 +76,10 @@
 							</hlayout>
 							<tabbox vflex="1" hflex="1">
 								<tabs >
-									<tab label="Caractéristiques" />
-									<tab label="Fiches de postes" />
-									<tab label="Commentaires" sclass="@load(vm.tabCommentaireSclass)" />
-									<tab label="Historique" />
+									<tab label="Caractéristiques" onClick="@command('selectOnglet', onglet=0)" />
+									<tab label="Fiches de postes" onClick="@command('selectOnglet', onglet=1)" />
+									<tab label="Commentaires" sclass="@load(vm.tabCommentaireSclass)" onClick="@command('selectOnglet', onglet=2)" />
+									<tab label="Historique" id="tabHistorique" onClick="@command('selectOnglet', onglet=3)" />
 								</tabs>
 								<tabpanels>
 									<tabpanel style="overflow:auto">

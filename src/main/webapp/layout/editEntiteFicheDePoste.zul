@@ -5,7 +5,7 @@
 			<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
 			<column label="Titre" sort="auto(titre)" />
 			<column label="Statut" sort="auto(statutFDP)" />
-			<column label="Catégorie" sort="auto(categorie)" />
+			<column label="Catégorie" sort="auto(libelleCategorie)" />
 			<column label="Agent" sort="auto(agent)"/>
 			<column label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
 		</columns>
@@ -19,7 +19,7 @@
                 <label value="@load(each.numero)" />
                 <label value="@load(each.titre)" />
                 <label value="@load(each.statutFDP)" />
-                <label value="@load(each.categorie)" />
+                <label value="@load(each.libelleCategorie)" />
                 <label value="@load(each.agent)" />
                 <label value="@load(each.reglementaire)" />
             </row>

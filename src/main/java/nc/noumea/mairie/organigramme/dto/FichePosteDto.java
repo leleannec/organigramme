@@ -1,5 +1,7 @@
 package nc.noumea.mairie.organigramme.dto;
 
+import org.apache.commons.lang.StringUtils;
+
 /*
  * #%L
  * Logiciel de Gestion des Organigrammes de la Ville de Nouméa
@@ -35,6 +37,7 @@ public class FichePosteDto {
 	private String	reglementaire;
 	private String	agent;
 	public String	sigle;
+	private String	gradePoste;
 
 	public FichePosteDto() {
 	}
@@ -111,4 +114,16 @@ public class FichePosteDto {
 		this.sigle = sigle;
 	}
 
+	public String getGradePoste() {
+		return gradePoste;
+	}
+
+	public void setGradePoste(String gradePoste) {
+		this.gradePoste = gradePoste;
+	}
+
+	public String getLibelleCategorie() {
+		String suffixe = StringUtils.isNotBlank(this.categorie) ? " (" + this.categorie + ")" : "";
+		return StringUtils.trimToNull(StringUtils.trimToEmpty(this.gradePoste) + suffixe);
+	}
 }
