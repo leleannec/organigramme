@@ -150,15 +150,12 @@ function goToByScroll(id){
             }
             
             //On calcule les hauteurs pour s'adapter à toutes les résolutions
-            var hauteurEditEntite = $("#div-edit-entite").height();
             var hauteurFenetre = $("#panel-entier").parent().height();
             var hauteurToolbar = $("#div-toolbar").parent().height();
             
-            if(hauteurEditEntite != 0) {
-            	$('#chart').height(hauteurFenetre - hauteurEditEntite - hauteurToolbar - 10);
-                $('#panel-entier').height(hauteurFenetre);
-                $('#panel-entier').children(0).height(hauteurFenetre);
-            }
+        	$('#chart').height(hauteurFenetre - hauteurToolbar - 10);
+            $('#panel-entier').height(hauteurFenetre);
+            $('#panel-entier').children(0).height(hauteurFenetre);
             
             $(window).trigger('resize');
         }); 
@@ -263,19 +260,24 @@ function goToByScroll(id){
 
             if(clicks === 1) { 
                 timer = setTimeout(function() {
-            		if($entiteDiv.hasClass("edit")) {
-            			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null)); 
-                    	removeEditEntite(opts);  
-            		}
-            		else {
-            			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', $entiteDiv.attr("id"))); 
-                		editEntite($entiteDiv, opts);  
-            		}
+                	 
+                	if(e.target.classList[0] == "hasChildren") {
+                		expandEntite($entiteDiv); 
+                	}
+                	else {
+                		if($entiteDiv.hasClass("edit")) {
+                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null)); 
+                        	removeEditEntite(opts);  
+                		}
+                		else {
+                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', $entiteDiv.attr("id"))); 
+                    		editEntite($entiteDiv, opts);  
+                		}
+                	}
                     clicks = 0;             //after action performed, reset counter
                 }, DELAY);
             } else { 
             	clearTimeout(timer);		//prevent single-click action
-            	expandEntite($entiteDiv); 
                 clicks = 0;             	//after action performed, reset counter
                 zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onDblClickEntite', $entiteDiv.attr("id"))); 
             	removeEditEntite(opts);  

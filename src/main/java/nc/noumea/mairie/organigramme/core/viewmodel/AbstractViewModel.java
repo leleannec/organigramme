@@ -161,7 +161,7 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	 */
 	@Command
 	public void updateOnglet(@BindingParam("entity") T abstractEntity) {
-		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new UpdateOngletAbstractEntityEvent(abstractEntity));
+		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new UpdateOngletAbstractEntityEvent(abstractEntity, null));
 	}
 
 	/**

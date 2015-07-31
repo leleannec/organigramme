@@ -39,6 +39,7 @@ import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.utility.ZkUtil;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 
+import org.apache.commons.lang.StringUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Components;
@@ -77,13 +78,13 @@ import org.zkoss.zul.Tabs;
 public class MainController extends SelectorComposer<Component> {
 
 	@Wire
-	Grid						sideBarGrid;
+	Grid					sideBarGrid;
 
 	@Wire
-	Borderlayout				mainBorderLayout;
+	Borderlayout			mainBorderLayout;
 
 	@WireVariable
-	AuthentificationService		authentificationService;
+	AuthentificationService	authentificationService;
 
 	/**
 	 * Rempli la sidebar avec les items par défaut de l'application
@@ -150,7 +151,8 @@ public class MainController extends SelectorComposer<Component> {
 				}
 				if (event instanceof UpdateOngletAbstractEntityEvent) {
 					AbstractEntity abstractEntity = ((UpdateOngletAbstractEntityEvent) event).getAbstractEntity();
-					updateLibelleOnglet(abstractEntity);
+					String suffixe = ((UpdateOngletAbstractEntityEvent) event).getSuffixe();
+					updateLibelleOnglet(abstractEntity, suffixe);
 				}
 			}
 
@@ -337,8 +339,9 @@ public class MainController extends SelectorComposer<Component> {
 	 * Met à jour le libellé de l'onglet qui gère l'entity passée en argument
 	 * 
 	 * @param abstractEntity abstractEntity description
+	 * @param suffixe : un suffixe facultatif
 	 */
-	public void updateLibelleOnglet(AbstractEntity abstractEntity) {
+	public void updateLibelleOnglet(AbstractEntity abstractEntity, String suffixe) {
 		if (abstractEntity == null) {
 			return;
 		}
@@ -348,7 +351,7 @@ public class MainController extends SelectorComposer<Component> {
 		Tabs mainTabboxTabs = getMainTabboxTabs(currentPage);
 		for (Tab tab : mainTabboxTabs.<Tab> getChildren()) {
 			if (abstractEntity.getId() != null && abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
-				tab.setLabel(abstractEntity.getLibelleCourt());
+				tab.setLabel(abstractEntity.getLibelleCourt() + StringUtils.trimToEmpty(suffixe));
 				return;
 			}
 		}

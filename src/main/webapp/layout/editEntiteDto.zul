@@ -1,29 +1,27 @@
 <window xmlns:h="native" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('nc.noumea.mairie.organigramme.viewmodel.EditEntiteDtoViewModel')" border="none" hflex="1"
 	vflex="1" contentStyle="overflow:auto">
-	<vlayout hflex="1" vflex="1">
-		<groupbox>
-			<caption>Caractéristiques</caption>
-			<include src="/layout/editEntiteCaracteristique.zul" />
-			<grid>
-				<columns>
-					<column width="15%" /> 
-					<column width="85%" /> 
-				</columns>
-				<rows>
-					<row> 
-						<label value="Commentaire" />
-						<include src="/layout/editEntiteCommentaire.zul" />
-					</row>
-				</rows>
-			</grid>
-		</groupbox>
-		<groupbox hflex="1" vflex="1" contentStyle="overflow:auto"> 
-			<caption>Fiches de postes</caption>
-			<include src="/layout/editEntiteFicheDePoste.zul" />
-		</groupbox>
-		<groupbox hflex="1" vflex="1" contentStyle="overflow:auto">
-			<caption>Historique</caption>
-			<include src="/layout/editEntiteHistorique.zul" />
-		</groupbox>
-	</vlayout>
+	<vlayout height="100%">
+		<toolbar hflex="1">
+			<toolbarbutton image="/imgs/icon/save.png" label="Mettre à jour" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" disabled="@load(not vm.dirty)"/>  
+			<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" autodisable="self" />
+		</toolbar>		
+		<tabbox vflex="1">
+			<tabs>
+				<tab label="Caractéristiques" onClick="@command('selectOnglet', onglet=0)" />
+				<tab label="Fiches de postes" onClick="@command('selectOnglet', onglet=1)" />
+				<tab label="Historique" id="tabHistorique" onClick="@command('selectOnglet', onglet=2)" />
+			</tabs>
+			<tabpanels>
+				<tabpanel style="overflow:auto">
+					<include src="/layout/editEntiteCaracteristique.zul" />
+				</tabpanel>
+				<tabpanel style="overflow:auto">
+					<include src="/layout/editEntiteFicheDePoste.zul" />
+				</tabpanel>
+				<tabpanel style="overflow:auto">
+					<include src="/layout/editEntiteHistorique.zul" />
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+	</vlayout> 
 </window>

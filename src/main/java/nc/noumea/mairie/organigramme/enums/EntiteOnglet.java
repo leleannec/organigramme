@@ -31,8 +31,7 @@ public enum EntiteOnglet {
 
 	CARACTERISTIQUE(0),
 	FDP(1),
-	COMMENTAIRE(2),
-	HISTORIQUE(3);
+	HISTORIQUE(2);
 
 	final int	position;
 
@@ -44,8 +43,6 @@ public enum EntiteOnglet {
 			case 1:
 				return FDP;
 			case 2:
-				return COMMENTAIRE;
-			case 3:
 				return HISTORIQUE;
 			default:
 				return null;

@@ -39,12 +39,20 @@ public class UpdateOngletAbstractEntityEvent extends Event {
 
 	private final AbstractEntity	abstractEntity;
 
-	public UpdateOngletAbstractEntityEvent(AbstractEntity abstractEntity) {
+	private final String			suffixe;
+
+	public UpdateOngletAbstractEntityEvent(AbstractEntity abstractEntity, String suffixe) {
 		super("updateOngletAbstractEntity", null, abstractEntity);
 		this.abstractEntity = abstractEntity;
+		this.suffixe = suffixe;
 	}
 
 	public AbstractEntity getAbstractEntity() {
 		return abstractEntity;
 	}
+
+	public String getSuffixe() {
+		return suffixe;
+	}
+
 }
