@@ -48,17 +48,19 @@ import org.springframework.util.CollectionUtils;
 
 public class OrganigrammeUtil {
 
-	private static final String			HEX_PATTERN													= "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
-	private static Logger				log															= LoggerFactory.getLogger(OrganigrammeUtil.class);
+	private static final String HEX_PATTERN = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
+	private static Logger log = LoggerFactory.getLogger(OrganigrammeUtil.class);
 
 	public static String capitalizeFullyFrench(String str) {
 		return WordUtils.capitalizeFully(str, new char[] { '-', ' ' });
 	}
 
 	/**
-	 * Convertit la chaine en entrée en majuscule sans accent, et sans blanc devant/derrière.
+	 * Convertit la chaine en entrée en majuscule sans accent, et sans blanc
+	 * devant/derrière.
 	 * 
-	 * @param str chaîne concernée
+	 * @param str
+	 *            chaîne concernée
 	 * @return "" si la chaine en entrée est null
 	 */
 	public static String majusculeSansAccentTrim(String str) {
@@ -103,7 +105,9 @@ public class OrganigrammeUtil {
 
 	/**
 	 * Méthode pour "charger" un élément, pour éviter pb de lazy loading
-	 * @param element élément à charger
+	 * 
+	 * @param element
+	 *            élément à charger
 	 */
 	public static void chargeElement(Object element) {
 		// ne pas enlever cette ligne de debug, volontaire
@@ -114,7 +118,9 @@ public class OrganigrammeUtil {
 
 	/**
 	 * Méthode pour "charger" une collection, pour éviter pb de lazy loading
-	 * @param collection collection à charger
+	 * 
+	 * @param collection
+	 *            collection à charger
 	 */
 	public static void chargeCollection(@SuppressWarnings("rawtypes") Collection collection) {
 		// ne pas enlever cette ligne de debug, volontaire
@@ -125,10 +131,14 @@ public class OrganigrammeUtil {
 
 	/**
 	 * retourne la taille maximale annotée sur la propriété d'un objet
-	 * @param object objet
-	 * @param property nom de la propriété concernée
+	 * 
+	 * @param object
+	 *            objet
+	 * @param property
+	 *            nom de la propriété concernée
 	 * @return taille max. déclarée
-	 * @throws Exception exception en cas d'erreur
+	 * @throws Exception
+	 *             exception en cas d'erreur
 	 */
 	public static Integer getMaxLength(Object object, String property) throws Exception {
 		if (object == null) {
@@ -148,19 +158,21 @@ public class OrganigrammeUtil {
 	public static Object getLastOrNull(List<?> liste) {
 		return CollectionUtils.isEmpty(liste) ? null : liste.get(liste.size() - 1);
 	}
-	
+
 	public static String getSimpleNameOfClass(@SuppressWarnings("rawtypes") Class clazz) {
 		if (clazz == null) {
 			return null;
 		}
 		String result = clazz.getSimpleName();
-		String marqueur = "_$$"; // quelquefois le simple name contient _$$ suivi d'une chaîne générée, cette méthode permet de ne pas en tenir compte
+		String marqueur = "_$$"; // quelquefois le simple name contient _$$
+									// suivi d'une chaîne générée, cette méthode
+									// permet de ne pas en tenir compte
 		if (result.contains(marqueur)) {
 			result = result.substring(0, result.indexOf(marqueur));
 		}
 		return result;
 	}
-	
+
 	public static String getSimpleClassNameOfObject(Object object) {
 		if (object == null) {
 			return null;
@@ -185,7 +197,9 @@ public class OrganigrammeUtil {
 
 	/**
 	 * Valide via une regexp un code couleur Html
-	 * @param couleurHtml : le code couleur
+	 * 
+	 * @param couleurHtml
+	 *            : le code couleur
 	 * @return true si le code est dans le format #XXXXXX, false sinon
 	 */
 	public static boolean isCodeCouleurHtmlValide(String couleurHtml) {
@@ -193,43 +207,52 @@ public class OrganigrammeUtil {
 		Matcher matcher = pattern.matcher(couleurHtml);
 		return matcher.matches();
 	}
-	
+
 	/**
-	 * Permet de découper une chaine de caractère en bloc d'une certaine taille, reliés par un séparateur
-	 * @param texte : le texte à découper
-	 * @param number : la taille de chaque bloc
-	 * @param separator : le séparateur permettant de relier chacun des blocx
-	 * @return une chaine de caractère en bloc d'une certaine taille, reliés par un séparateur
+	 * Permet de découper une chaine de caractère en bloc d'une certaine taille,
+	 * reliés par un séparateur
+	 * 
+	 * @param texte
+	 *            : le texte à découper
+	 * @param number
+	 *            : la taille de chaque bloc
+	 * @param separator
+	 *            : le séparateur permettant de relier chacun des blocx
+	 * @return une chaine de caractère en bloc d'une certaine taille, reliés par
+	 *         un séparateur
 	 */
 	public static String splitByNumberAndSeparator(String texte, int number, String separator) {
 		List<String> result = new ArrayList<String>();
 		int index = 0;
 		while (index < texte.length()) {
-			result.add(texte.substring(index, Math.min(index + number,texte.length())));
-		    index += number;
+			result.add(texte.substring(index, Math.min(index + number, texte.length())));
+			index += number;
 		}
-		
-		return StringUtils.join(result, separator); 
+
+		return StringUtils.join(result, separator);
 	}
-	
+
 	/**
 	 * Permet de retrouver une entiteDto par son id
-	 * @param entiteDto : l'arbre dans lequel on souhaite rechercher
-	 * @param idEntite : l'id de l'entité recherché
-	 * @param result : utile pour la récursivité, doit être appelé avec null
+	 * 
+	 * @param entiteDto
+	 *            : l'arbre dans lequel on souhaite rechercher
+	 * @param idEntite
+	 *            : l'id de l'entité recherché
+	 * @param result
+	 *            : utile pour la récursivité, doit être appelé avec null
 	 * @return l'entité correspondant à l'id passé en paramètre, null sinon
 	 */
 	public static EntiteDto findEntiteDtoDansArbreById(EntiteDto entiteDto, Integer idEntite, EntiteDto result) {
-		
-		if(entiteDto.getIdEntite().equals(idEntite)) {
+
+		if (entiteDto.getIdEntite().equals(idEntite)) {
 			return entiteDto;
-		}
-		else {
-			for(EntiteDto entiteDtoEnfant : entiteDto.getEnfants()) {
+		} else {
+			for (EntiteDto entiteDtoEnfant : entiteDto.getEnfants()) {
 				result = findEntiteDtoDansArbreById(entiteDtoEnfant, idEntite, result);
 			}
 		}
-		
+
 		return result;
 	}
 }

@@ -66,24 +66,33 @@ import org.zkoss.zul.Messagebox.ClickEvent;
 @VariableResolver(DelegatingVariableResolver.class)
 public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	//@formatter:off
-	@WireVariable IAdsWSConsumer			adsWSConsumer;
-	@WireVariable ISirhWSConsumer			sirhWSConsumer;
-	@WireVariable TypeEntiteService			typeEntiteService; 
-	@WireVariable OrganigrammeService		organigrammeService;
-	@WireVariable AuthentificationService	authentificationService;
-	@WireVariable ReturnMessageService		returnMessageService;
-	//@formatter:on
+	// @formatter:off
+	@WireVariable
+	IAdsWSConsumer adsWSConsumer;
+	@WireVariable
+	ISirhWSConsumer sirhWSConsumer;
+	@WireVariable
+	TypeEntiteService typeEntiteService;
+	@WireVariable
+	OrganigrammeService organigrammeService;
+	@WireVariable
+	AuthentificationService authentificationService;
+	@WireVariable
+	ReturnMessageService returnMessageService;
+	// @formatter:on
 
 	/** Le currentUser connecté **/
-	private ProfilAgentDto		profilAgentDto;
+	private ProfilAgentDto profilAgentDto;
 
-	/** L'onglet en cours de sélection (par défaut, quand on ouvre une entité c'est caractéristique) **/
-	private EntiteOnglet		ongletSelectionne	= EntiteOnglet.CARACTERISTIQUE;
+	/**
+	 * L'onglet en cours de sélection (par défaut, quand on ouvre une entité
+	 * c'est caractéristique)
+	 **/
+	private EntiteOnglet ongletSelectionne = EntiteOnglet.CARACTERISTIQUE;
 
-	private boolean				dirty				= false;
+	private boolean dirty = false;
 
 	public boolean isDirty() {
 		return dirty;
@@ -99,7 +108,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private void updateTitreOnglet() {
 		String suffixe = this.dirty ? " (*)" : null;
-		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new UpdateOngletAbstractEntityEvent(this.entity, suffixe));
+		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
+				new UpdateOngletAbstractEntityEvent(this.entity, suffixe));
 	}
 
 	@Override
@@ -122,12 +132,16 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	/**
 	 * L'entité est-elle éditable ?
+	 * 
 	 * @return true si l'entité est éditable, false sinon
 	 */
 	public boolean isEditable() {
-		// On ne peux modifier que si on a le rôle édition et si ce n'est pas l'entité VDN
-		// #17117 : En dehors du statut "prévision", une entité n'est pas modifiable
-		return profilAgentDto.isEdition() && (this.entity != null && this.entity.isPrevision() && !this.entity.getSigle().equals("VDN"));
+		// On ne peux modifier que si on a le rôle édition et si ce n'est pas
+		// l'entité VDN
+		// #17117 : En dehors du statut "prévision", une entité n'est pas
+		// modifiable
+		return profilAgentDto.isEdition()
+				&& (this.entity != null && this.entity.isPrevision() && !this.entity.getSigle().equals("VDN"));
 	}
 
 	public EntiteOnglet getOngletSelectionne() {
@@ -139,7 +153,9 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	/**
-	 * Renvoie la liste des types d'entités actifs et inactifs triés par nom (d'abord les actifs, puis les inactifs postfixés par "(inactif)"
+	 * Renvoie la liste des types d'entités actifs et inactifs triés par nom
+	 * (d'abord les actifs, puis les inactifs postfixés par "(inactif)"
+	 * 
 	 * @return la liste des types d'entités actifs et inactifs triés par nom
 	 */
 	public List<TypeEntiteDto> getListeTypeEntiteActifInactif() {
@@ -147,8 +163,11 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	/**
-	 * Affiche la liste des entités remplaçables, ie. la liste de toutes les entités qui ne sont pas dans un statut "prévision". Elle ne contient pas l'entité
-	 * selectionnée (une entité ne peux pas être remplacée par elle-même).
+	 * Affiche la liste des entités remplaçables, ie. la liste de toutes les
+	 * entités qui ne sont pas dans un statut "prévision". Elle ne contient pas
+	 * l'entité selectionnée (une entité ne peux pas être remplacée par
+	 * elle-même).
+	 * 
 	 * @return la liste des entités remplaçables
 	 */
 	public List<EntiteDto> getListeEntiteRemplace() {
@@ -160,6 +179,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	/**
 	 * Renvoie la liste des fiches de postes groupées par Sigle
+	 * 
 	 * @return la liste des fiches de postes groupées par Sigle
 	 */
 	public FichePosteGroupingModel getFichePosteGroupingModel() {
@@ -167,13 +187,15 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer
+				.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
 
 		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
 	}
 
 	/**
 	 * Renvoie la liste de l'historique de l'entité
+	 * 
 	 * @return la liste de l'historique de l'entité
 	 */
 	public List<EntiteHistoDto> getListeHistorique() {
@@ -197,8 +219,11 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	/**
-	 * Met à jour le {@link EntiteDto} avec les informations renseignées côté client
-	 * @param entiteDto : l'{@link EntiteDto} à mettre à jour
+	 * Met à jour le {@link EntiteDto} avec les informations renseignées côté
+	 * client
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} à mettre à jour
 	 * @return true si tout s'est bien passé, false sinon
 	 */
 	@Command
@@ -217,7 +242,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return false;
 		}
 
-		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
+		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on
+		// est sur d'avoir une version bien à jour
 		final Map<String, Object> mapEntite = new HashMap<String, Object>();
 		mapEntite.put("entiteDto", entiteDto);
 		BindUtils.postGlobalCommand(null, null, "refreshOrganigrammeSuiteAjout", mapEntite);
@@ -227,8 +253,11 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	/**
-	 * Supprime l'{@link EntiteDto} de l'arbre DTO représentée par l'{@link EntiteDto} entiteDtoRoot et rafraichie côté client
-	 * @param entiteDto : l'{@link EntiteDto} à supprimer
+	 * Supprime l'{@link EntiteDto} de l'arbre DTO représentée par l'
+	 * {@link EntiteDto} entiteDtoRoot et rafraichie côté client
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} à supprimer
 	 */
 	@Command
 	public void deleteEntite(@BindingParam("entity") EntiteDto entiteDto) {
@@ -240,21 +269,25 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		entiteDto.setIdAgentSuppression(profilAgentDto.getIdAgent());
 		final EntiteDto entiteDtoASupprimer = entiteDto;
 
-		Messagebox.show("Voulez-vous vraiment supprimer l'entité '" + entiteDto.getLabel() + "' ?", "Suppression", new Messagebox.Button[] {
-				Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION, new EventListener<Messagebox.ClickEvent>() {
+		Messagebox.show("Voulez-vous vraiment supprimer l'entité '" + entiteDto.getLabel() + "' ?", "Suppression",
+				new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION,
+				new EventListener<Messagebox.ClickEvent>() {
 
-			@Override
-			public void onEvent(ClickEvent evt) {
-				if (evt.getName().equals("onYes")) {
-					if (organigrammeService.deleteEntite(entiteDtoASupprimer)) {
-						fermeOnglet(entity);
-						setEntity(null);
-						// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-						BindUtils.postGlobalCommand(null, null, "refreshOrganigrammeWithoutSelectedEntite", null);
+					@Override
+					public void onEvent(ClickEvent evt) {
+						if (evt.getName().equals("onYes")) {
+							if (organigrammeService.deleteEntite(entiteDtoASupprimer)) {
+								fermeOnglet(entity);
+								setEntity(null);
+								// On recharge l'arbre complet d'ADS et on
+								// rafraichi le client. Ainsi on est sur d'avoir
+								// une version bien à jour
+								BindUtils.postGlobalCommand(null, null, "refreshOrganigrammeWithoutSelectedEntite",
+										null);
+							}
+						}
 					}
-				}
-			}
-		});
+				});
 
 	}
 }

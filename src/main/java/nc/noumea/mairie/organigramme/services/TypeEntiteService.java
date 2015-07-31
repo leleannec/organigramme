@@ -33,12 +33,15 @@ public interface TypeEntiteService extends GenericService<TypeEntiteDto> {
 
 	/**
 	 * Renvoie la liste des types d'entités actifs triés par nom
+	 * 
 	 * @return la liste des types d'entités actifs triés par nom
 	 */
 	List<TypeEntiteDto> getListeTypeEntiteActif();
 
 	/**
-	 * Renvoie la liste des types d'entités actifs et inactifs triés par nom (d'abord les actifs, puis les inactifs postfixés par "(inactif)"
+	 * Renvoie la liste des types d'entités actifs et inactifs triés par nom
+	 * (d'abord les actifs, puis les inactifs postfixés par "(inactif)"
+	 * 
 	 * @return la liste des types d'entités actifs et inactifs triés par nom
 	 */
 	List<TypeEntiteDto> getListeTypeEntiteActifInactif();

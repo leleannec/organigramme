@@ -39,7 +39,7 @@ import org.zkoss.zk.ui.Sessions;
 @Scope(value = "singleton", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AuthentificationServiceImpl implements AuthentificationService {
 
-	private static Logger	log	= LoggerFactory.getLogger(AuthentificationServiceImpl.class);
+	private static Logger log = LoggerFactory.getLogger(AuthentificationServiceImpl.class);
 
 	@Override
 	public ProfilAgentDto getCurrentUser() {

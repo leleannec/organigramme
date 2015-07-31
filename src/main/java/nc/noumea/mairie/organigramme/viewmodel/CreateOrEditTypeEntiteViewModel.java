@@ -58,27 +58,31 @@ public class CreateOrEditTypeEntiteViewModel extends AbstractPopupViewModel<Type
 	private static final long serialVersionUID = 1L;
 
 	@WireVariable
-	AdsWSConsumer							adsWSConsumer;
-	
-	//@formatter:off
-	@WireVariable CouleurTypeEntiteService	couleurTypeEntiteService;
-	@WireVariable ReturnMessageService		returnMessageService;
-	@WireVariable AuthentificationService	authentificationService;
-	//@formatter:on
-	
+	AdsWSConsumer adsWSConsumer;
+
+	// @formatter:off
+	@WireVariable
+	CouleurTypeEntiteService couleurTypeEntiteService;
+	@WireVariable
+	ReturnMessageService returnMessageService;
+	@WireVariable
+	AuthentificationService authentificationService;
+
+	// @formatter:on
+
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		setPopup((Window) Selectors.iterable(view, "#createUpdateTypeEntite").iterator().next());
 		setEntity(new TypeEntiteDto());
 	}
-	
+
 	@GlobalCommand
 	@NotifyChange("entity")
 	public void ouvrePopupEditionTypeEntiteDto(@BindingParam("entity") TypeEntiteDto typeEntiteDto) {
 		setEntity(typeEntiteDto);
 		getPopup().doModal();
 	}
-	
+
 	@Command
 	@NotifyChange("entity")
 	public void saveOrUpdate() {

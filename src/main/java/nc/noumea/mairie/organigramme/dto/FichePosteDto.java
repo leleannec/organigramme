@@ -28,16 +28,16 @@ import org.apache.commons.lang.StringUtils;
 
 public class FichePosteDto {
 
-	private Integer	idFichePoste;
-	private String	numero;
-	private Integer	idServiceADS;
-	private String	statutFDP;
-	private String	titre;
-	private String	categorie;
-	private String	reglementaire;
-	private String	agent;
-	public String	sigle;
-	private String	gradePoste;
+	private Integer idFichePoste;
+	private String numero;
+	private Integer idServiceADS;
+	private String statutFDP;
+	private String titre;
+	private String categorie;
+	private String reglementaire;
+	private String agent;
+	public String sigle;
+	private String gradePoste;
 
 	public FichePosteDto() {
 	}

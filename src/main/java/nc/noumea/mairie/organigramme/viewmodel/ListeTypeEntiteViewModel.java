@@ -49,17 +49,22 @@ import org.zkoss.zul.Messagebox.ClickEvent;
 
 @VariableResolver(DelegatingVariableResolver.class)
 public class ListeTypeEntiteViewModel extends AbstractListeViewModel<TypeEntiteDto> implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private static final String CREATE_OR_EDIT_TYPE_ENTITE_VIEW = "/layout/createOrEditTypeEntite.zul";
 
-	//@formatter:off
-	@WireVariable	AdsWSConsumer 				adsWSConsumer;
-	@WireVariable	CouleurTypeEntiteService 	couleurTypeEntiteService;
-	@WireVariable	ReturnMessageService 		returnMessageService;
-	@WireVariable 	AuthentificationService		authentificationService;
-	//@formatter:on
+	// @formatter:off
+	@WireVariable
+	AdsWSConsumer adsWSConsumer;
+	@WireVariable
+	CouleurTypeEntiteService couleurTypeEntiteService;
+	@WireVariable
+	ReturnMessageService returnMessageService;
+	@WireVariable
+	AuthentificationService authentificationService;
+
+	// @formatter:on
 
 	@Override
 	@Init(superclass = true)
@@ -75,25 +80,25 @@ public class ListeTypeEntiteViewModel extends AbstractListeViewModel<TypeEntiteD
 		if (!authentificationService.getCurrentUser().isAdministrateur()) {
 			return;
 		}
-		
+
 		ouvrePopupCreation(CREATE_OR_EDIT_TYPE_ENTITE_VIEW);
 	}
-	
+
 	@Command
 	@NotifyChange("entity")
 	public void editTypeEntite() throws InstantiationException, IllegalAccessException {
 
-		if(this.entity == null) {
+		if (this.entity == null) {
 			return;
 		}
-		
+
 		if (!authentificationService.getCurrentUser().isAdministrateur()) {
 			return;
 		}
-		
+
 		initPopupEdition(this.entity, CREATE_OR_EDIT_TYPE_ENTITE_VIEW);
 	}
-	
+
 	@GlobalCommand
 	public void refreshListeTypeEntiteDto() {
 		refreshListe();
@@ -105,29 +110,31 @@ public class ListeTypeEntiteViewModel extends AbstractListeViewModel<TypeEntiteD
 		if (!authentificationService.getCurrentUser().isAdministrateur()) {
 			return;
 		}
- 
+
 		final TypeEntiteDto typeEntiteDtoASupprimer = this.entity;
 
-		Messagebox.show("Êtes-vous sur de vouloir supprimer ce type d'entité ?", "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES,
-				Messagebox.Button.NO }, Messagebox.QUESTION, new EventListener<Messagebox.ClickEvent>() {
-			@Override
-			public void onEvent(ClickEvent evt) {
-				if (evt.getName().equals("onYes")) {
+		Messagebox.show("Êtes-vous sur de vouloir supprimer ce type d'entité ?", "Confirmation",
+				new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION,
+				new EventListener<Messagebox.ClickEvent>() {
+					@Override
+					public void onEvent(ClickEvent evt) {
+						if (evt.getName().equals("onYes")) {
 
-					ReturnMessageDto returnMessageDto = adsWSConsumer.deleteTypeEntite(typeEntiteDtoASupprimer);
-					if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
-						return;
-					}
+							ReturnMessageDto returnMessageDto = adsWSConsumer.deleteTypeEntite(typeEntiteDtoASupprimer);
+							if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
+								return;
+							}
 
-					CouleurTypeEntite couleurTypeEntite = couleurTypeEntiteService.findByIdTypeEntite(typeEntiteDtoASupprimer.getId());
-					if (couleurTypeEntite != null) {
-						couleurTypeEntiteService.delete(couleurTypeEntite);
+							CouleurTypeEntite couleurTypeEntite = couleurTypeEntiteService
+									.findByIdTypeEntite(typeEntiteDtoASupprimer.getId());
+							if (couleurTypeEntite != null) {
+								couleurTypeEntiteService.delete(couleurTypeEntite);
+							}
+							refreshListe();
+							BindUtils.postGlobalCommand(null, null, "creeArbreEtRafraichiClient", null);
+						}
 					}
-					refreshListe();
-					BindUtils.postGlobalCommand(null, null, "creeArbreEtRafraichiClient", null);
-				}
-			}
-		});
+				});
 	}
 
 	@Override
@@ -137,12 +144,12 @@ public class ListeTypeEntiteViewModel extends AbstractListeViewModel<TypeEntiteD
 
 		for (TypeEntiteDto typeEntiteDto : this.listeEntity) {
 			CouleurTypeEntite couleurTypeEntite = couleurTypeEntiteService.findByIdTypeEntite(typeEntiteDto.getId());
-			if (couleurTypeEntite != null) { 
+			if (couleurTypeEntite != null) {
 				typeEntiteDto.setCouleurEntite(couleurTypeEntite.getCouleurEntite());
 				typeEntiteDto.setCouleurTexte(couleurTypeEntite.getCouleurTexte());
 			}
 		}
-		
+
 		notifyChange("listeEntity");
 	}
 }

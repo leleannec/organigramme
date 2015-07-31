@@ -30,9 +30,13 @@ import nc.noumea.mairie.organigramme.entity.CouleurTypeEntite;
 public interface CouleurTypeEntiteDao extends GenericDao<CouleurTypeEntite> {
 
 	/**
-	 * Recherche une couleur type entité par id du type d'entité (qui provient d'ADS)
-	 * @param idTypeEntite : l'id du type d'entité à rechercher
-	 * @return la {@link CouleurTypeEntite} correspondante à l'id du type d'entité passé en paramètre
+	 * Recherche une couleur type entité par id du type d'entité (qui provient
+	 * d'ADS)
+	 * 
+	 * @param idTypeEntite
+	 *            : l'id du type d'entité à rechercher
+	 * @return la {@link CouleurTypeEntite} correspondante à l'id du type
+	 *         d'entité passé en paramètre
 	 */
 	CouleurTypeEntite findByIdTypeEntite(Long idTypeEntite);
 

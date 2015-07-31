@@ -49,20 +49,22 @@ import org.zkoss.zk.ui.select.annotation.WireVariable;
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class ConnexionViewModel implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private Logger				logger				= LoggerFactory.getLogger(ConnexionViewModel.class);
+	private Logger logger = LoggerFactory.getLogger(ConnexionViewModel.class);
 
-	//@formatter:off
-	@WireVariable private IRadiWSConsumer	radiWSConsumer;
-	@WireVariable private ISirhWSConsumer	sirhWSConsumer;
-	//@formatter:on
+	// @formatter:off
+	@WireVariable
+	private IRadiWSConsumer radiWSConsumer;
+	@WireVariable
+	private ISirhWSConsumer sirhWSConsumer;
+	// @formatter:on
 
-	private ProfilAgentDto		currentUser;
+	private ProfilAgentDto currentUser;
 
-	private UserForm			userForm;
+	private UserForm userForm;
 
-	private String				errorMessage;
+	private String errorMessage;
 
 	public ProfilAgentDto getCurrentUser() {
 		return currentUser;
@@ -116,7 +118,8 @@ public class ConnexionViewModel implements Serializable {
 
 			ProfilAgentDto profilAgent = recupereProfilAgent(userDto);
 
-			AccessRightOrganigrammeDto accessRightOrganigrammeDto = recupereAccessRightOrganigramme(userDto.getEmployeeNumber());
+			AccessRightOrganigrammeDto accessRightOrganigrammeDto = recupereAccessRightOrganigramme(userDto
+					.getEmployeeNumber());
 			if (accessRightOrganigrammeDto == null || accessRightOrganigrammeDto.isAucunRole()) {
 				return;
 			}
@@ -150,7 +153,8 @@ public class ConnexionViewModel implements Serializable {
 		return accessRightOrganigrammeDto;
 	}
 
-	private void renseigneAccessRightOnUser(ProfilAgentDto profilAgent, AccessRightOrganigrammeDto accessRightOrganigrammeDto) {
+	private void renseigneAccessRightOnUser(ProfilAgentDto profilAgent,
+			AccessRightOrganigrammeDto accessRightOrganigrammeDto) {
 		profilAgent.setAdministrateur(accessRightOrganigrammeDto.isAdministrateur());
 		profilAgent.setEdition(accessRightOrganigrammeDto.isEdition());
 		profilAgent.setVisualisation(accessRightOrganigrammeDto.isVisualisation());

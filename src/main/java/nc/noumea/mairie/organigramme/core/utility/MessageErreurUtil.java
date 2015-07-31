@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.core.utility;
  * #L%
  */
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,13 +46,15 @@ import org.springframework.util.CollectionUtils;
  */
 public class MessageErreurUtil {
 
-	private static final ValidatorFactory	factory	= Validation.buildDefaultValidatorFactory();
+	private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
 	/**
 	 * Retourne une liste de violations concernant l'entity
 	 * 
-	 * @param entity entité concernée
-	 * @return une liste de ConstraintViolation (null si aucune violation, ou si l'entité en entrée est null)
+	 * @param entity
+	 *            entité concernée
+	 * @return une liste de ConstraintViolation (null si aucune violation, ou si
+	 *         l'entité en entrée est null)
 	 */
 	private static <T> Set<ConstraintViolation<?>> validate(final T entity) {
 		if (entity == null) {
@@ -64,10 +65,13 @@ public class MessageErreurUtil {
 	}
 
 	/**
-	 * Construit une liste de message d'erreurs (de type violation de contrainte) concernant l'entité
+	 * Construit une liste de message d'erreurs (de type violation de
+	 * contrainte) concernant l'entité
 	 * 
-	 * @param entity entité concernée
-	 * @return liste de message d'erreur, liste vide si aucune erreur (jamais null)
+	 * @param entity
+	 *            entité concernée
+	 * @return liste de message d'erreur, liste vide si aucune erreur (jamais
+	 *         null)
 	 */
 	public static List<MessageErreur> construitListeMessageErreurViolationContrainte(final AbstractEntity entity) {
 
@@ -77,7 +81,8 @@ public class MessageErreurUtil {
 			return result;
 		}
 
-		// On ajoute ensuite les contraintes de violoation (typiquement les champs qui ne peuvent être null)
+		// On ajoute ensuite les contraintes de violoation (typiquement les
+		// champs qui ne peuvent être null)
 		final Set<ConstraintViolation<?>> listeConstraintViolation = MessageErreurUtil.validate(entity);
 		if (listeConstraintViolation != null) {
 			for (final ConstraintViolation<?> violation : listeConstraintViolation) {
@@ -88,10 +93,14 @@ public class MessageErreurUtil {
 	}
 
 	/**
-	 * Retourne une représentation textuelle de la liste des messages d'erreurs (un message par ligne, préfixés par des tirets s'il y a plusieurs messages)
+	 * Retourne une représentation textuelle de la liste des messages d'erreurs
+	 * (un message par ligne, préfixés par des tirets s'il y a plusieurs
+	 * messages)
 	 * 
-	 * @param listeMessageErreur liste concernée
-	 * @return une représentation multi-lignes, "" si la liste en entrée est vide ou null
+	 * @param listeMessageErreur
+	 *            liste concernée
+	 * @return une représentation multi-lignes, "" si la liste en entrée est
+	 *         vide ou null
 	 */
 	public static String construitReprListeMessageErreur(List<MessageErreur> listeMessageErreur) {
 		if (CollectionUtils.isEmpty(listeMessageErreur)) {
@@ -103,7 +112,8 @@ public class MessageErreurUtil {
 			if (messageErreur == null) {
 				continue; // ne devrait pas arriver
 			}
-			if (plusieursErreurs) { // tirets seulement intéressants visuellement si plusieurs erreurs
+			if (plusieursErreurs) { // tirets seulement intéressants
+									// visuellement si plusieurs erreurs
 				result.append("- ");
 			}
 			result.append(messageErreur.getMessage());
@@ -113,12 +123,17 @@ public class MessageErreurUtil {
 	}
 
 	/**
-	 * Méthode pratique, pour construire une liste de message d'erreur sur une liste d'entité
+	 * Méthode pratique, pour construire une liste de message d'erreur sur une
+	 * liste d'entité
 	 * 
-	 * @param collectionEntity liste des entités concernées, si null, la méthode retourne une liste vide
-	 * @return une liste (jamais null) de messages d'erreur concernant la liste des entités
+	 * @param collectionEntity
+	 *            liste des entités concernées, si null, la méthode retourne une
+	 *            liste vide
+	 * @return une liste (jamais null) de messages d'erreur concernant la liste
+	 *         des entités
 	 */
-	public static List<MessageErreur> construitListeMessageErreurCollection(Collection<? extends AbstractEntity> collectionEntity) {
+	public static List<MessageErreur> construitListeMessageErreurCollection(
+			Collection<? extends AbstractEntity> collectionEntity) {
 		List<MessageErreur> result = new ArrayList<MessageErreur>();
 		if (CollectionUtils.isEmpty(collectionEntity)) {
 			return result; // liste vide

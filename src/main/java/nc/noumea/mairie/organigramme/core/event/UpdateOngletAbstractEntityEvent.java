@@ -29,17 +29,18 @@ import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
 import org.zkoss.zk.ui.event.Event;
 
 /**
- * Evènement pour demander la mise à jour du libellé d'un onglet concernant une entité particulière.
+ * Evènement pour demander la mise à jour du libellé d'un onglet concernant une
+ * entité particulière.
  * 
  * @author AgileSoft.NC
  */
 public class UpdateOngletAbstractEntityEvent extends Event {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private final AbstractEntity	abstractEntity;
+	private final AbstractEntity abstractEntity;
 
-	private final String			suffixe;
+	private final String suffixe;
 
 	public UpdateOngletAbstractEntityEvent(AbstractEntity abstractEntity, String suffixe) {
 		super("updateOngletAbstractEntity", null, abstractEntity);

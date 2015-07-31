@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.dto;
  * #L%
  */
 
-
 import java.util.ArrayList;
 import java.util.List;
 

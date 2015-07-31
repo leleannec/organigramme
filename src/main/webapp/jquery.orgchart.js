@@ -155,9 +155,7 @@ function goToByScroll(id){
             
         	$('#chart').height(hauteurFenetre - hauteurToolbar - 10);
             $('#panel-entier').height(hauteurFenetre);
-            $('#panel-entier').children(0).height(hauteurFenetre);
-            
-            $(window).trigger('resize');
+            $(window).trigger('resize'); 
         }); 
     };
 

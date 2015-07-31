@@ -36,70 +36,95 @@ import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 public interface IAdsWSConsumer {
 
 	/**
-	 * Renvoi l'entité root ainsi que tous ces enfants représentant l'arbre en cours
+	 * Renvoi l'entité root ainsi que tous ces enfants représentant l'arbre en
+	 * cours
+	 * 
 	 * @return l'entité root ainsi que tous ces enfants
 	 */
 	EntiteDto getCurrentTreeWithVDNRoot();
 
 	/**
-	 * Appel le webservice ADS d'enregistrement de l'{@link EntiteDto} passé en paramètre
-	 * @param entiteDto : l'{@link EntiteDto} a créer ou à mettre à jour
+	 * Appel le webservice ADS d'enregistrement de l'{@link EntiteDto} passé en
+	 * paramètre
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} a créer ou à mettre à jour
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto saveOrUpdateEntite(EntiteDto entiteDto);
 
 	/**
 	 * Renvoi la liste des types d'entités
+	 * 
 	 * @return la liste des types d'entités
 	 */
 	List<TypeEntiteDto> getListeTypeEntite();
 
 	/**
-	 * Appel le webservice ADS d'enregistrement du {@link TypeEntiteDto} passé en paramètre
-	 * @param typeEntiteDto: le {@link TypeEntiteDto} a créer ou à mettre à jour
+	 * Appel le webservice ADS d'enregistrement du {@link TypeEntiteDto} passé
+	 * en paramètre
+	 * 
+	 * @param typeEntiteDto
+	 *            : le {@link TypeEntiteDto} a créer ou à mettre à jour
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto saveOrUpdateTypeEntite(TypeEntiteDto typeEntiteDto);
 
 	/**
-	 * Appel le webservice ADS de suppression du {@link TypeEntiteDto} passé en paramètre
-	 * @param typeEntiteDto : le {@link TypeEntiteDto} a supprimer
+	 * Appel le webservice ADS de suppression du {@link TypeEntiteDto} passé en
+	 * paramètre
+	 * 
+	 * @param typeEntiteDto
+	 *            : le {@link TypeEntiteDto} a supprimer
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto deleteTypeEntite(TypeEntiteDto typeEntiteDto);
 
 	/**
-	 * Appel le webservice ADS de suppression de l'{@link EntiteDto} passé en paramètre
-	 * @param entiteDto : l'{@link EntiteDto} a supprimer
+	 * Appel le webservice ADS de suppression de l'{@link EntiteDto} passé en
+	 * paramètre
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} a supprimer
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto deleteEntite(EntiteDto entiteDto);
 
 	/**
 	 * Appel le webservice ADS de changement de statut d'une entité
-	 * @param changeStatutDto : le dto contenant toutes les informations nécessaires
+	 * 
+	 * @param changeStatutDto
+	 *            : le dto contenant toutes les informations nécessaires
 	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
 	 */
 	ReturnMessageDto changeStatut(ChangeStatutDto changeStatutDto);
 
 	/**
-	 * Appel le webservice ADS de récupération d'une {@link EntiteDto} à partir de son id
-	 * @param idEntite : l'id de l'{@link EntiteDto} qu'on souhaite récupérer
+	 * Appel le webservice ADS de récupération d'une {@link EntiteDto} à partir
+	 * de son id
+	 * 
+	 * @param idEntite
+	 *            : l'id de l'{@link EntiteDto} qu'on souhaite récupérer
 	 * @return l'{@link EntiteDto}
 	 */
 	EntiteDto getEntite(Integer idEntite);
 
 	/**
 	 * Renvoi l'entité dont l'id est en paramètre ainsi que tous ces enfants
-	 * @param idEntite : l'id de l'{@link EntiteDto} qu'on souhaite récupérer
+	 * 
+	 * @param idEntite
+	 *            : l'id de l'{@link EntiteDto} qu'on souhaite récupérer
 	 * @return l'entité ainsi que tous ces enfants
 	 */
 	EntiteDto getEntiteWithChildren(Integer idEntite);
 
 	/**
 	 * Renvoi l'historique de l'entité
-	 * @param idEntite : l'entité pour laquelle on souhaite l'historique
-	 * @param mapIdAgentNomPrenom : la map contenant les id des agents et leurs noms prénoms
+	 * 
+	 * @param idEntite
+	 *            : l'entité pour laquelle on souhaite l'historique
+	 * @param mapIdAgentNomPrenom
+	 *            : la map contenant les id des agents et leurs noms prénoms
 	 * @return l'historique de l'entité
 	 */
 	List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom);

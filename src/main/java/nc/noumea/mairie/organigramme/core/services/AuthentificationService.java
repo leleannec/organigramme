@@ -36,6 +36,9 @@ public interface AuthentificationService {
 	/** Déconnecte l'utilisateur courant connecté **/
 	void logout();
 
-	/** @return l'utilisateur courant connecté, null si pas d'utilisateur connnecté **/
+	/**
+	 * @return l'utilisateur courant connecté, null si pas d'utilisateur
+	 *         connnecté
+	 **/
 	ProfilAgentDto getCurrentUser();
 }

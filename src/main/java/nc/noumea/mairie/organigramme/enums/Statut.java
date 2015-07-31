@@ -24,27 +24,23 @@ package nc.noumea.mairie.organigramme.enums;
  * #L%
  */
 
-
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 
 /**
  * Le statut d'une {@link EntiteDto}
  */
 public enum Statut {
-	
-	PREVISION(		"Prévision"		, 0),
-	ACTIF(			"Actif"			, 1),
-	TRANSITOIRE(	"Transitoire"	, 2),
-	INACTIF(		"Inactif"		, 3);
 
-	final String	libelle;
-	final Integer 	idStatut;
+	PREVISION("Prévision", 0), ACTIF("Actif", 1), TRANSITOIRE("Transitoire", 2), INACTIF("Inactif", 3);
+
+	final String libelle;
+	final Integer idStatut;
 
 	Statut(String libelle, Integer idStatut) {
 		this.libelle = libelle;
 		this.idStatut = idStatut;
 	}
-	
+
 	public static Statut getStatutById(Integer idStatut) {
 
 		if (idStatut == null)

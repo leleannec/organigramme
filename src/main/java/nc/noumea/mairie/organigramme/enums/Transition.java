@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.enums;
  * #L%
  */
 
-
 /**
  * Modélise une transition de workflow (libellé, statut source, statut cible).
  * 
@@ -32,14 +31,13 @@ package nc.noumea.mairie.organigramme.enums;
  */
 public enum Transition {
 	// @formatter:off
-	TRANSITOIRE											("Transitoire", 				Statut.ACTIF, 			 	Statut.TRANSITOIRE),
-	ACTIF_APRES_PREVISION								("Activer", 					Statut.PREVISION, 			Statut.ACTIF),
-	INACTIF_APRES_TRANSITOIRE							("Inactif", 					Statut.TRANSITOIRE, 		Statut.INACTIF),
-	INACTIF_APRES_ACTIF									("Inactif", 					Statut.ACTIF, 				Statut.INACTIF); // @formatter:on
+	TRANSITOIRE("Transitoire", Statut.ACTIF, Statut.TRANSITOIRE), ACTIF_APRES_PREVISION("Activer", Statut.PREVISION,
+			Statut.ACTIF), INACTIF_APRES_TRANSITOIRE("Inactif", Statut.TRANSITOIRE, Statut.INACTIF), INACTIF_APRES_ACTIF(
+			"Inactif", Statut.ACTIF, Statut.INACTIF); // @formatter:on
 
-	String	libelle;
-	Statut	statutSource;
-	Statut	statut;
+	String libelle;
+	Statut statutSource;
+	Statut statut;
 
 	Transition(String libelle, Statut statutSource, Statut statut) {
 		this.libelle = libelle;

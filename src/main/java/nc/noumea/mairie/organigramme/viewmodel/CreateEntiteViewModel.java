@@ -65,15 +65,21 @@ import org.zkoss.zul.Window;
 @VariableResolver(DelegatingVariableResolver.class)
 public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	//@formatter:off
-	@WireVariable AdsWSConsumer				adsWSConsumer;
-	@WireVariable CouleurTypeEntiteService	couleurTypeEntiteService;
-	@WireVariable ReturnMessageService		returnMessageService;
-	@WireVariable AuthentificationService	authentificationService;
-	@WireVariable TypeEntiteService			typeEntiteService;
-	//@formatter:on
+	// @formatter:off
+	@WireVariable
+	AdsWSConsumer adsWSConsumer;
+	@WireVariable
+	CouleurTypeEntiteService couleurTypeEntiteService;
+	@WireVariable
+	ReturnMessageService returnMessageService;
+	@WireVariable
+	AuthentificationService authentificationService;
+	@WireVariable
+	TypeEntiteService typeEntiteService;
+
+	// @formatter:on
 
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
@@ -88,8 +94,10 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 	}
 
 	/**
-	 * Crée une entité en fonction de ce qui a été indiqué dans la popup de création. L'ajoute à l'arbre DTO représenté par l'{@link EntiteDto} "entiteDtoRoot"
-	 * et l'ajoute aussi à l'arborescence {@link Ul}/{@link Li} qui est utilisée pour rafraîchir l'arbre en retour de cette méthode
+	 * Crée une entité en fonction de ce qui a été indiqué dans la popup de
+	 * création. L'ajoute à l'arbre DTO représenté par l'{@link EntiteDto}
+	 * "entiteDtoRoot" et l'ajoute aussi à l'arborescence {@link Ul}/{@link Li}
+	 * qui est utilisée pour rafraîchir l'arbre en retour de cette méthode
 	 */
 	@Command
 	@NotifyChange("entity")
@@ -97,7 +105,8 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 
 		ProfilAgentDto profilAgentDto = authentificationService.getCurrentUser();
 
-		// #16902 : Ajouter le champ labelCourt limité à 60 caractères dans les propriétés d'une entité
+		// #16902 : Ajouter le champ labelCourt limité à 60 caractères dans les
+		// propriétés d'une entité
 		if (StringUtils.isNotBlank(this.entity.getLabel())) {
 			this.entity.setLabelCourt(StringUtils.substring(this.entity.getLabel(), 0, 60));
 		}
@@ -115,13 +124,15 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 			return;
 		}
 
-		// On recharge le dto directement depuis ADS pour être sur d'avoir la version bien à jour
+		// On recharge le dto directement depuis ADS pour être sur d'avoir la
+		// version bien à jour
 		newEntiteDto = adsWSConsumer.getEntite(returnMessageDto.getId());
 
 		// #16861 : On force le sigle en majuscule
 		newEntiteDto.setSigle(OrganigrammeUtil.majusculeSansAccentTrim(newEntiteDto.getSigle()));
 
-		// On ajoute l'entité à l'arbre déjà existant pour que le côté client puisse reconstruire l'arbre complet
+		// On ajoute l'entité à l'arbre déjà existant pour que le côté client
+		// puisse reconstruire l'arbre complet
 		final Map<String, Object> mapEntite = new HashMap<String, Object>();
 		mapEntite.put("entiteDtoParent", entiteDtoParent);
 		mapEntite.put("newEntiteDto", newEntiteDto);
@@ -131,9 +142,13 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 	}
 
 	/**
-	 * Renvoi une nouvelle instance d'{@link EntiteDto} initialisée avec les valeurs de la popup de création
-	 * @param entiteDtoParent : l'{@link EntiteDto} parente
-	 * @param idAgent : l'idAgent qui fait la création
+	 * Renvoi une nouvelle instance d'{@link EntiteDto} initialisée avec les
+	 * valeurs de la popup de création
+	 * 
+	 * @param entiteDtoParent
+	 *            : l'{@link EntiteDto} parente
+	 * @param idAgent
+	 *            : l'idAgent qui fait la création
 	 * @return une nouvelle instance d'{@link EntiteDto}
 	 */
 	private EntiteDto createAndInitNewEntiteDto(EntiteDto entiteDtoParent, Integer idAgent) {
@@ -150,6 +165,7 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 
 	/**
 	 * Renvoie la liste des types d'entités actifs triés par nom
+	 * 
 	 * @return la liste des types d'entités actifs triés par nom
 	 */
 	public List<TypeEntiteDto> getListeTypeEntiteActifInactif() {

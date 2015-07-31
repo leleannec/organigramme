@@ -56,20 +56,20 @@ import flexjson.JSONSerializer;
 public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 
 	@Autowired
-	SirhWSConsumer			sirhWSConsumer;
+	SirhWSConsumer sirhWSConsumer;
 
-	private static Logger	log								= LoggerFactory.getLogger(AdsWSConsumer.class);
-	private final String	URL_TREE						= "api/arbre";
-	private final String	URL_LISTE_ENTITE				= "api/typeEntite";
-	private final String	URL_GET_ENTITE					= "api/entite";
-	private final String	URL_SAVE_OR_UPDATE_ENTITE		= "api/entite/save";
-	private final String	URL_SAVE_OR_UPDATE_TYPE_ENTITE	= "api/typeEntite/save";
-	private final String	URL_DELETE_ENTITE				= "api/entite/delete";
-	private final String	URL_DELETE_TYPE_ENTITE			= "api/typeEntite/deleteOrDisable";
-	private final String	URL_CHANGE_STATUT				= "api/statut/change";
+	private static Logger log = LoggerFactory.getLogger(AdsWSConsumer.class);
+	private final String URL_TREE = "api/arbre";
+	private final String URL_LISTE_ENTITE = "api/typeEntite";
+	private final String URL_GET_ENTITE = "api/entite";
+	private final String URL_SAVE_OR_UPDATE_ENTITE = "api/entite/save";
+	private final String URL_SAVE_OR_UPDATE_TYPE_ENTITE = "api/typeEntite/save";
+	private final String URL_DELETE_ENTITE = "api/entite/delete";
+	private final String URL_DELETE_TYPE_ENTITE = "api/typeEntite/deleteOrDisable";
+	private final String URL_CHANGE_STATUT = "api/statut/change";
 
 	@Autowired(required = true)
-	String					adsWsBaseUrl;
+	String adsWsBaseUrl;
 
 	private boolean valideAdsWsBaseUrl() {
 		if (StringUtils.isBlank(adsWsBaseUrl)) {
@@ -133,7 +133,8 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		entiteDto.setSigle(OrganigrammeUtil.majusculeSansAccentTrim(entiteDto.getSigle()));
 
 		String url = adsWsBaseUrl + URL_SAVE_OR_UPDATE_ENTITE;
-		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class).deepSerialize(entiteDto);
+		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class)
+				.deepSerialize(entiteDto);
 
 		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
 		return readResponse(ReturnMessageDto.class, res, url);
@@ -165,7 +166,8 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 	public ReturnMessageDto saveOrUpdateTypeEntite(TypeEntiteDto typeEntiteDto) {
 
 		String url = adsWsBaseUrl + URL_SAVE_OR_UPDATE_TYPE_ENTITE;
-		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class).deepSerialize(typeEntiteDto);
+		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class)
+				.deepSerialize(typeEntiteDto);
 
 		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
 		return readResponse(ReturnMessageDto.class, res, url);
@@ -192,7 +194,8 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 	@Override
 	public ReturnMessageDto changeStatut(ChangeStatutDto changeStatutDto) {
 		String url = adsWsBaseUrl + URL_CHANGE_STATUT;
-		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class).deepSerialize(changeStatutDto);
+		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class)
+				.deepSerialize(changeStatutDto);
 
 		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
 		return readResponse(ReturnMessageDto.class, res, url);

@@ -49,43 +49,43 @@ import flexjson.JSON;
 @XmlRootElement
 public class EntiteDto extends AbstractEntityDto {
 
-	private Integer			idEntite;
+	private Integer idEntite;
 
 	@Column(length = 20)
-	private String			sigle;
-	private String			label;
+	private String sigle;
+	private String label;
 
 	@Column(length = 60)
-	private String			labelCourt;
+	private String labelCourt;
 	@Column(length = 4000)
-	private String			commentaire;
-	private TypeEntiteDto	typeEntite;
-	private String			codeServi;
-	private List<EntiteDto>	enfants;
-	private EntiteDto		entiteParent;
-	private EntiteDto		entiteRemplacee;
+	private String commentaire;
+	private TypeEntiteDto typeEntite;
+	private String codeServi;
+	private List<EntiteDto> enfants;
+	private EntiteDto entiteParent;
+	private EntiteDto entiteRemplacee;
 
-	private Integer			idStatut;
-	private Integer			idAgentCreation;
+	private Integer idStatut;
+	private Integer idAgentCreation;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date			dateCreation;
-	private Integer			idAgentModification;
+	private Date dateCreation;
+	private Integer idAgentModification;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date			dateModification;
-	private String			refDeliberationActif;
+	private Date dateModification;
+	private String refDeliberationActif;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date			dateDeliberationActif;
-	private String			refDeliberationInactif;
+	private Date dateDeliberationActif;
+	private String refDeliberationInactif;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date			dateDeliberationInactif;
+	private Date dateDeliberationInactif;
 
-	private Li				li;
-	private Statut			statut;
-	private Integer			idAgentSuppression;
+	private Li li;
+	private Statut statut;
+	private Integer idAgentSuppression;
 
 	public EntiteDto() {
 		enfants = new ArrayList<>();
@@ -352,13 +352,15 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	/**
-	 * @return la liste des transitions autorisées pour cette entité, en tenant compte du statut courant de l'entité et de règles de gestion, ne retourne jamais
-	 *         null.
+	 * @return la liste des transitions autorisées pour cette entité, en tenant
+	 *         compte du statut courant de l'entité et de règles de gestion, ne
+	 *         retourne jamais null.
 	 */
 	@JSON(include = false)
 	public List<Transition> getListeTransitionAutorise() {
 
-		// construit la liste de toutes les transitions possibles depuis le statut source
+		// construit la liste de toutes les transitions possibles depuis le
+		// statut source
 		List<Transition> listeTransition = new ArrayList<>();
 		for (Transition transition : Transition.values()) {
 			boolean transitionDepuisStatutCourant = this.getStatut().equals(transition.getStatutSource());
@@ -369,7 +371,8 @@ public class EntiteDto extends AbstractEntityDto {
 					this.getEntiteParent().setStatut(Statut.getStatutById(this.getEntiteParent().getIdStatut()));
 				}
 
-				boolean statutParentNotPrevisionOrInactif = this.getEntiteParent() != null && this.getEntiteParent().getStatut() != Statut.PREVISION
+				boolean statutParentNotPrevisionOrInactif = this.getEntiteParent() != null
+						&& this.getEntiteParent().getStatut() != Statut.PREVISION
 						&& this.getEntiteParent().getStatut() != Statut.INACTIF;
 				if (statutParentNotPrevisionOrInactif) {
 					if (transition.getStatut() == Statut.ACTIF) {
@@ -382,7 +385,8 @@ public class EntiteDto extends AbstractEntityDto {
 							listeTransition.add(transition);
 						}
 					} else if (transition.getStatut() == Statut.TRANSITOIRE) {
-						// tous les noeuds descendants doivent être transitoire ou inactifs
+						// tous les noeuds descendants doivent être transitoire
+						// ou inactifs
 						List<Statut> listeStatut = new ArrayList<Statut>();
 						listeStatut.add(Statut.TRANSITOIRE);
 						listeStatut.add(Statut.INACTIF);
@@ -398,8 +402,11 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	/**
-	 * Teste si tous les enfants sont obligatoirement dans les statuts passés en paramètre
-	 * @param listeStatut : la liste des statuts qu'on souhaite tester
+	 * Teste si tous les enfants sont obligatoirement dans les statuts passés en
+	 * paramètre
+	 * 
+	 * @param listeStatut
+	 *            : la liste des statuts qu'on souhaite tester
 	 * @return true si tous les enfants sont dans ces statuts, false sinon
 	 */
 	public boolean tousEnfantEnStatut(List<Statut> listeStatut, List<EntiteDto> listeEnfant) {
@@ -414,7 +421,8 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	/**
-	 * @param nouveauStatut nouveau statut du projet
+	 * @param nouveauStatut
+	 *            nouveau statut du projet
 	 * @return true si le statut a vraiment changé
 	 */
 	public boolean updateStatut(Statut nouveauStatut) {
@@ -435,7 +443,8 @@ public class EntiteDto extends AbstractEntityDto {
 
 	@JSON(include = false)
 	public boolean isTransitoireOuInactif() {
-		return this.getStatut() != null && (this.getStatut() == Statut.TRANSITOIRE || this.getStatut() == Statut.INACTIF);
+		return this.getStatut() != null
+				&& (this.getStatut() == Statut.TRANSITOIRE || this.getStatut() == Statut.INACTIF);
 	}
 
 	@JSON(include = false)

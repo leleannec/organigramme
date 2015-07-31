@@ -42,8 +42,8 @@ import flexjson.JSONException;
 @Component
 public class JsonDateDeserializer extends JsonDeserializer<Date> {
 
-	private static final String		msDateFormat		= "/[Dd][Aa][Tt][Ee]\\((\\-?[0-9]+)([\\+\\-]{1}[0-9]{4})*\\)/";
-	private static final Pattern	msDateFormatPattern	= Pattern.compile(msDateFormat);
+	private static final String msDateFormat = "/[Dd][Aa][Tt][Ee]\\((\\-?[0-9]+)([\\+\\-]{1}[0-9]{4})*\\)/";
+	private static final Pattern msDateFormatPattern = Pattern.compile(msDateFormat);
 
 	@Override
 	public Date deserialize(JsonParser arg0, DeserializationContext arg1) throws IOException, JsonProcessingException {
@@ -69,7 +69,8 @@ public class JsonDateDeserializer extends JsonDeserializer<Date> {
 
 			return dt.toDate();
 		} catch (Exception ex) {
-			throw new JSONException(String.format("Unable to parse '%s' as a valid date time. Expected format is '%s'", arg0.toString(), msDateFormat), ex);
+			throw new JSONException(String.format("Unable to parse '%s' as a valid date time. Expected format is '%s'",
+					arg0.toString(), msDateFormat), ex);
 		}
 	}
 

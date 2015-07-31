@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.dto;
  * #L%
  */
 
-
 public class InfoFichePosteDto {
 
 	private Integer nbFDP;

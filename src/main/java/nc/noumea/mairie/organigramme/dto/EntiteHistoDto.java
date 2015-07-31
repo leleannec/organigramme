@@ -35,13 +35,13 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 public class EntiteHistoDto extends EntiteDto {
 
-	private Integer	idEntiteHisto;
+	private Integer idEntiteHisto;
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
-	private Date	dateHisto;
-	private Integer	idAgentHisto;
-	private String	nomPrenomAgent;
-	private Integer	typeHisto;
+	private Date dateHisto;
+	private Integer idAgentHisto;
+	private String nomPrenomAgent;
+	private Integer typeHisto;
 
 	public Integer getIdEntiteHisto() {
 		return idEntiteHisto;

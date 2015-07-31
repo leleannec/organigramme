@@ -36,7 +36,7 @@ public class ComparatorUtil {
 
 	public static class TypeEntiteComparator implements Comparator<TypeEntiteDto>, Serializable {
 
-		private static final long	serialVersionUID	= 1L;
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(TypeEntiteDto o1, TypeEntiteDto o2) {
@@ -46,7 +46,7 @@ public class ComparatorUtil {
 
 	public static class EntiteComparator implements Comparator<EntiteDto>, Serializable {
 
-		private static final long	serialVersionUID	= 1L;
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(EntiteDto o1, EntiteDto o2) {
@@ -56,7 +56,7 @@ public class ComparatorUtil {
 
 	public static class FichePosteComparator implements Comparator<FichePosteDto>, Serializable {
 
-		private static final long	serialVersionUID	= 1L;
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(FichePosteDto o1, FichePosteDto o2) {
@@ -66,7 +66,7 @@ public class ComparatorUtil {
 
 	public static class EntiteHistoComparator implements Comparator<EntiteHistoDto>, Serializable {
 
-		private static final long	serialVersionUID	= 1L;
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(EntiteHistoDto o1, EntiteHistoDto o2) {

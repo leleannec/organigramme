@@ -34,22 +34,30 @@ public interface OrganigrammeService extends GenericService<EntiteDto> {
 
 	/**
 	 * Met à jour le statut de l'entité
-	 * @param entiteDto {@link EntiteDto} concerné
-	 * @param statutCible Statut cible (opération ignorée si null)
+	 * 
+	 * @param entiteDto
+	 *            {@link EntiteDto} concerné
+	 * @param statutCible
+	 *            Statut cible (opération ignorée si null)
 	 * @return true si l'entité a changé de statut
 	 */
 	boolean updateStatut(EntiteDto entiteDto, Statut statutCible);
 
 	/**
-	 * Supprime l'{@link EntiteDto} de l'arbre 
-	 * @param entiteDto : l'{@link EntiteDto} a supprimer
+	 * Supprime l'{@link EntiteDto} de l'arbre
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} a supprimer
 	 * @return true si l'entité a bien été supprimée
 	 */
 	boolean deleteEntite(EntiteDto entiteDto);
-	
+
 	/**
-	 * Renvoi la liste de toutes les {@link EntiteDto} qui ne sont pas en prévision
-	 * @return la liste de toutes les {@link EntiteDto} qui ne sont pas en prévision
+	 * Renvoi la liste de toutes les {@link EntiteDto} qui ne sont pas en
+	 * prévision
+	 * 
+	 * @return la liste de toutes les {@link EntiteDto} qui ne sont pas en
+	 *         prévision
 	 */
 	List<EntiteDto> findAllNotPrevision();
 }

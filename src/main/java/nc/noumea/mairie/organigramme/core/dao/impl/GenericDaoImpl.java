@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.core.dao.impl;
  * #L%
  */
 
-
 import java.util.List;
 
 import nc.noumea.mairie.organigramme.core.dao.GenericDao;
@@ -39,10 +38,10 @@ import org.springframework.stereotype.Repository;
 @Repository("genericDao")
 public class GenericDaoImpl<T> implements GenericDao<T> {
 
-	private static Logger			log	= LoggerFactory.getLogger(GenericDaoImpl.class);
+	private static Logger log = LoggerFactory.getLogger(GenericDaoImpl.class);
 
 	@Autowired
-	protected PersistentManager<T>	persistentManager;
+	protected PersistentManager<T> persistentManager;
 
 	@Override
 	public T save(T abstractEntity) {
@@ -85,7 +84,8 @@ public class GenericDaoImpl<T> implements GenericDao<T> {
 	}
 
 	@Override
-	public List<T> findAllByPropertyOrderBy(Class<? extends T> classe, String property, Object value, String orderByProperty) {
+	public List<T> findAllByPropertyOrderBy(Class<? extends T> classe, String property, Object value,
+			String orderByProperty) {
 		return persistentManager.findAllByPropertyOrderBy(classe, property, value, orderByProperty);
 	}
 

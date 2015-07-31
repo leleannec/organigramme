@@ -30,14 +30,16 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.zul.ListModelList;
 
 /**
- * ViewModel abstrait parent des ViewModel de liste (qui permettent de visualiser dans une grille des entités).
+ * ViewModel abstrait parent des ViewModel de liste (qui permettent de
+ * visualiser dans une grille des entités).
  * 
  * @author AgileSoft.NC
- * @param <T> Type paramétré (représente une classe d'entité en pratique)
+ * @param <T>
+ *            Type paramétré (représente une classe d'entité en pratique)
  */
 public abstract class AbstractListeViewModel<T extends AbstractEntityDto> extends AbstractViewModel<T> {
 
-	protected ListModelList<T>	listeEntity;
+	protected ListModelList<T> listeEntity;
 
 	/**
 	 * @return la liste des entités affichées
@@ -66,7 +68,8 @@ public abstract class AbstractListeViewModel<T extends AbstractEntityDto> extend
 	/**
 	 * Met à jour l'entity dans la liste (si elle s'y trouve)
 	 * 
-	 * @param abstractEntity entité concernée
+	 * @param abstractEntity
+	 *            entité concernée
 	 */
 	protected void updateEntity(T abstractEntity) {
 		if (abstractEntity == null) {

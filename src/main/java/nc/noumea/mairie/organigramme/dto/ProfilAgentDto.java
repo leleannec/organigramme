@@ -26,13 +26,13 @@ package nc.noumea.mairie.organigramme.dto;
 
 public class ProfilAgentDto extends AccessRightOrganigrammeDto {
 
-	private Integer	idAgent;
-	private String	nomMarital;
-	private String	nomPatronymique;
-	private String	nomUsage;
-	private Integer	nomatr;
-	private String	prenom;
-	private String	prenomUsage;
+	private Integer idAgent;
+	private String nomMarital;
+	private String nomPatronymique;
+	private String nomUsage;
+	private Integer nomatr;
+	private String prenom;
+	private String prenomUsage;
 
 	public Integer getIdAgent() {
 		return idAgent;

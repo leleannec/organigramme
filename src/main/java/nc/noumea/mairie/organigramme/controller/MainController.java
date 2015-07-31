@@ -70,7 +70,9 @@ import org.zkoss.zul.Tabpanels;
 import org.zkoss.zul.Tabs;
 
 /**
- * MainController permettant de gérer tous les comportements généraux de l'application. Construction de la sidebar, gestion des ouvertures d'onglets, ...
+ * MainController permettant de gérer tous les comportements généraux de
+ * l'application. Construction de la sidebar, gestion des ouvertures d'onglets,
+ * ...
  * 
  * @author Thomas
  */
@@ -78,18 +80,19 @@ import org.zkoss.zul.Tabs;
 public class MainController extends SelectorComposer<Component> {
 
 	@Wire
-	Grid					sideBarGrid;
+	Grid sideBarGrid;
 
 	@Wire
-	Borderlayout			mainBorderLayout;
+	Borderlayout mainBorderLayout;
 
 	@WireVariable
-	AuthentificationService	authentificationService;
+	AuthentificationService authentificationService;
 
 	/**
 	 * Rempli la sidebar avec les items par défaut de l'application
 	 * 
-	 * @param comp Component description
+	 * @param comp
+	 *            Component description
 	 */
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
@@ -139,7 +142,8 @@ public class MainController extends SelectorComposer<Component> {
 					AbstractEntity abstractEntity = ouvreOngletAbstractEntityEvent.getAbstractEntity();
 					Integer selectedTabIndex = ouvreOngletAbstractEntityEvent.getSelectedTabIndex();
 
-					ouvreOnglet(abstractEntity, abstractEntity.getLibelleCourt(), getEditViewURI(abstractEntity), false, false, selectedTabIndex);
+					ouvreOnglet(abstractEntity, abstractEntity.getLibelleCourt(), getEditViewURI(abstractEntity),
+							false, false, selectedTabIndex);
 				}
 				if (event instanceof FermeOngletAbstractEntityEvent) {
 					AbstractEntity abstractEntity = ((FermeOngletAbstractEntityEvent) event).getAbstractEntity();
@@ -162,7 +166,8 @@ public class MainController extends SelectorComposer<Component> {
 	private void messageBoxAccesRefuse() {
 		Messagebox
 				.show("Vous avez bien été authentifié, mais votre compte n'est pas configuré pour vous permettre d'accéder à l'application. Veuillez demander les droits à l'administrateur",
-						"Accès refusé", new Messagebox.Button[] { Messagebox.Button.OK }, Messagebox.ERROR, new EventListener<Messagebox.ClickEvent>() {
+						"Accès refusé", new Messagebox.Button[] { Messagebox.Button.OK }, Messagebox.ERROR,
+						new EventListener<Messagebox.ClickEvent>() {
 							@Override
 							public void onEvent(ClickEvent evt) {
 								authentificationService.logout();
@@ -182,10 +187,12 @@ public class MainController extends SelectorComposer<Component> {
 	private List<SidebarItem> initSideBar() {
 
 		List<SidebarItem> listeItems = new ArrayList<SidebarItem>();
-		//@formatter:off
-		listeItems.add(new SidebarItem("Organigramme", 	"/imgs/icon/organigramme.png", 	"/layout/organigramme.zul", 	true, 	false));
-		listeItems.add(new SidebarItem("Type d'entité", "/imgs/icon/settings.png", 		"/layout/listeTypeEntite.zul",	false, 	true));
-		//@formatter:on
+		// @formatter:off
+		listeItems.add(new SidebarItem("Organigramme", "/imgs/icon/organigramme.png", "/layout/organigramme.zul", true,
+				false));
+		listeItems.add(new SidebarItem("Type d'entité", "/imgs/icon/settings.png", "/layout/listeTypeEntite.zul",
+				false, true));
+		// @formatter:on
 
 		return listeItems;
 	}
@@ -193,9 +200,12 @@ public class MainController extends SelectorComposer<Component> {
 	/**
 	 * Renvoie un item (i.e. une ligne) à ajouter dans la sidebar
 	 * 
-	 * @param label : le libellé de l'item
-	 * @param imageSrc : l'url de l'icone
-	 * @param locationUri : l'url de la vue à afficher
+	 * @param label
+	 *            : le libellé de l'item
+	 * @param imageSrc
+	 *            : l'url de l'icone
+	 * @param locationUri
+	 *            : l'url de la vue à afficher
 	 * @return une ligne prêt a être ajoutée à la sidebar
 	 */
 	private Row constructSidebarRow(final String label, final String imageSrc, final String locationUri) {
@@ -213,7 +223,7 @@ public class MainController extends SelectorComposer<Component> {
 
 		// new and register listener for events
 		EventListener<Event> onActionListener = new SerializableEventListener<Event>() {
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void onEvent(Event event) throws Exception {
@@ -234,6 +244,7 @@ public class MainController extends SelectorComposer<Component> {
 
 	/**
 	 * Recharge l'onglet couramment sélectionné
+	 * 
 	 * @param abstractEntity
 	 */
 	private void rechargeOnglet(AbstractEntity abstractEntity, Integer selectedTabIndex) {
@@ -274,21 +285,27 @@ public class MainController extends SelectorComposer<Component> {
 	}
 
 	/**
-	 * Ouvre un onglet et le sélectionne (ou le sélectionne uniquement si il est déjà ouvert)
+	 * Ouvre un onglet et le sélectionne (ou le sélectionne uniquement si il est
+	 * déjà ouvert)
 	 * 
-	 * @param abstractEntity : l'entity rattachée à l'onglet. null si c'est un onglet "simple" sans entity
-	 * @param labelOnglet : le libellé a afficher dans l'onglet
-	 * @param locationUri : l'url de la vue
+	 * @param abstractEntity
+	 *            : l'entity rattachée à l'onglet. null si c'est un onglet
+	 *            "simple" sans entity
+	 * @param labelOnglet
+	 *            : le libellé a afficher dans l'onglet
+	 * @param locationUri
+	 *            : l'url de la vue
 	 * @param selectedTabIndex
 	 */
-	private void ouvreOnglet(final AbstractEntity abstractEntity, final String labelOnglet, final String locationUri, final boolean ongletFixe,
-			boolean disabled, Integer selectedTabIndex) {
+	private void ouvreOnglet(final AbstractEntity abstractEntity, final String labelOnglet, final String locationUri,
+			final boolean ongletFixe, boolean disabled, Integer selectedTabIndex) {
 		Page currentPage = sideBarGrid.getPage();
 		Tabs mainTabboxTabs = getMainTabboxTabs(currentPage);
 		Tabpanels mainTabboxTabPanels = getMainTabboxTabPanels(currentPage);
 		Tabbox tabbox = getTabbox();
 
-		// important de recharger pour limiter les problèmes de modifications concurrentes (pour éviter bug du style #7642)
+		// important de recharger pour limiter les problèmes de modifications
+		// concurrentes (pour éviter bug du style #7642)
 		if (selectionneOngletSiPresent(abstractEntity, labelOnglet, mainTabboxTabs, tabbox)) {
 			rechargeOnglet(abstractEntity, selectedTabIndex);
 			return;
@@ -327,7 +344,8 @@ public class MainController extends SelectorComposer<Component> {
 			Page currentPage = sideBarGrid.getPage();
 			Tabs mainTabboxTabs = getMainTabboxTabs(currentPage);
 			for (Tab tab : mainTabboxTabs.<Tab> getChildren()) {
-				if (abstractEntity.getId() != null && abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
+				if (abstractEntity.getId() != null
+						&& abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
 					tab.close();
 					return;
 				}
@@ -338,8 +356,10 @@ public class MainController extends SelectorComposer<Component> {
 	/**
 	 * Met à jour le libellé de l'onglet qui gère l'entity passée en argument
 	 * 
-	 * @param abstractEntity abstractEntity description
-	 * @param suffixe : un suffixe facultatif
+	 * @param abstractEntity
+	 *            abstractEntity description
+	 * @param suffixe
+	 *            : un suffixe facultatif
 	 */
 	public void updateLibelleOnglet(AbstractEntity abstractEntity, String suffixe) {
 		if (abstractEntity == null) {
@@ -350,25 +370,30 @@ public class MainController extends SelectorComposer<Component> {
 		Page currentPage = sideBarGrid.getPage();
 		Tabs mainTabboxTabs = getMainTabboxTabs(currentPage);
 		for (Tab tab : mainTabboxTabs.<Tab> getChildren()) {
-			if (abstractEntity.getId() != null && abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
+			if (abstractEntity.getId() != null
+					&& abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
 				tab.setLabel(abstractEntity.getLibelleCourt() + StringUtils.trimToEmpty(suffixe));
 				return;
 			}
 		}
 	}
 
-	private boolean selectionneOngletSiPresent(AbstractEntity abstractEntity, String labelOnglet, Tabs mainTabboxTabs, Tabbox tabbox) {
+	private boolean selectionneOngletSiPresent(AbstractEntity abstractEntity, String labelOnglet, Tabs mainTabboxTabs,
+			Tabbox tabbox) {
 		if (abstractEntity != null) {
-			// Sélectionne l'onglet si il est déjà ouvert (en fonction de son id)
+			// Sélectionne l'onglet si il est déjà ouvert (en fonction de son
+			// id)
 			String className = OrganigrammeUtil.getSimpleClassNameOfObject(abstractEntity);
 			for (Tab tab : mainTabboxTabs.<Tab> getChildren()) {
-				if (abstractEntity.getId() != null && abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
+				if (abstractEntity.getId() != null
+						&& abstractEntity.getId().equals(tab.getAttribute(className + "ongletId"))) {
 					tabbox.setSelectedTab(tab);
 					return true;
 				}
 			}
 		} else {
-			// Sélectionne l'onglet si il est déjà ouvert (en fonction de son label)
+			// Sélectionne l'onglet si il est déjà ouvert (en fonction de son
+			// label)
 			for (Tab tab : mainTabboxTabs.<Tab> getChildren()) {
 				if (labelOnglet != null && labelOnglet.equals(tab.getAttribute("ongletId"))) {
 					tabbox.setSelectedTab(tab);
@@ -388,11 +413,11 @@ public class MainController extends SelectorComposer<Component> {
 	}
 
 	static class SidebarItem {
-		String	label;
-		String	iconUri;
-		String	uri;
-		boolean	ongletFixe;
-		boolean	onlyAdmin;
+		String label;
+		String iconUri;
+		String uri;
+		boolean ongletFixe;
+		boolean onlyAdmin;
 
 		public SidebarItem(String label, String iconUri, String uri, boolean ongletFixe, boolean onlyAdmin) {
 			this.label = label;

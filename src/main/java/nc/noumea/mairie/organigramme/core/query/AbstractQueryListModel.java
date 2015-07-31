@@ -42,63 +42,76 @@ import org.zkoss.zul.SimpleListModel;
  */
 public abstract class AbstractQueryListModel<T> extends SimpleListModel<T> {
 
-	private static final int	NOMBRE_CAR_MIN_DEFAUT	= 2;
+	private static final int NOMBRE_CAR_MIN_DEFAUT = 2;
 
-	private static final long	serialVersionUID		= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private List<T>				currentList				= null;
+	private List<T> currentList = null;
 
-	private static Logger		log						= LoggerFactory.getLogger(AbstractQueryListModel.class);
+	private static Logger log = LoggerFactory.getLogger(AbstractQueryListModel.class);
 
 	public AbstractQueryListModel() {
 		super(new ArrayList<T>());
 	}
-	
+
 	public AbstractQueryListModel(List<T> liste) {
 		super(liste);
 	}
 
 	/**
-	 * Effectue une recherche d'entités T suivant un critère de recherche, éventuellement limité sur un nombre donné (indicatif).
+	 * Effectue une recherche d'entités T suivant un critère de recherche,
+	 * éventuellement limité sur un nombre donné (indicatif).
 	 * 
-	 * @param critereRecherche Critère de recherche, typiquement une chaine de caractères
-	 * @param nombreResultatMaxIndicatif nombre indicatif max d'éléments à retourner (la méthode peut en tenir compte ou non)
+	 * @param critereRecherche
+	 *            Critère de recherche, typiquement une chaine de caractères
+	 * @param nombreResultatMaxIndicatif
+	 *            nombre indicatif max d'éléments à retourner (la méthode peut
+	 *            en tenir compte ou non)
 	 * @return une liste d'éléments qui vérifient le critère de recherche
 	 */
 	@Override
 	public ListModel<T> getSubModel(Object critereRecherche, int nombreResultatMaxIndicatif) {
-		String chaineRecherche = OrganigrammeUtil.majusculeSansAccentTrim(critereRecherche == null ? "" : critereRecherche.toString());
-		currentList = isChaineRechercheValide(chaineRecherche) ? findByQuery(chaineRecherche, nombreResultatMaxIndicatif) : Collections.<T> emptyList();
+		String chaineRecherche = OrganigrammeUtil.majusculeSansAccentTrim(critereRecherche == null ? ""
+				: critereRecherche.toString());
+		currentList = isChaineRechercheValide(chaineRecherche) ? findByQuery(chaineRecherche,
+				nombreResultatMaxIndicatif) : Collections.<T> emptyList();
 		return new ListModelList<T>(currentList);
 	}
 
 	/**
 	 * Méthode à redéfinir dans les QueryListModel concrets
 	 * 
-	 * @param chaineRecherche chaîne de recherche (typiquement tapée par l'utilisateur dans une liste déroulante)
-	 * @param nombreResultatMaxIndicatif nombre indicatif limitatif (qu'on peut respecter ou non)
+	 * @param chaineRecherche
+	 *            chaîne de recherche (typiquement tapée par l'utilisateur dans
+	 *            une liste déroulante)
+	 * @param nombreResultatMaxIndicatif
+	 *            nombre indicatif limitatif (qu'on peut respecter ou non)
 	 * @return une liste d'entités qui respectent le critère de recherche
 	 */
 	public abstract List<T> findByQuery(String chaineRecherche, int nombreResultatMaxIndicatif);
 
 	/**
-	 * @param chaineRecherche chaineRecherche
-	 * @return true si la chaîne recherchée est valide et que la recherche doit être déclenchée (typiquement si la chaîne de recherche est suffisamment longue).
-	 *         Cette méthode peut être redéfinie.
+	 * @param chaineRecherche
+	 *            chaineRecherche
+	 * @return true si la chaîne recherchée est valide et que la recherche doit
+	 *         être déclenchée (typiquement si la chaîne de recherche est
+	 *         suffisamment longue). Cette méthode peut être redéfinie.
 	 */
 	protected boolean isChaineRechercheValide(String chaineRecherche) {
 		return chaineRecherche != null && chaineRecherche.length() >= getNombreCarMin();
 	}
 
 	/**
-	 * @return le nombre minimal de caractères pour déclencher la recherche (dans l'implémentation par défaut de isChaineRechercheValide)
+	 * @return le nombre minimal de caractères pour déclencher la recherche
+	 *         (dans l'implémentation par défaut de isChaineRechercheValide)
 	 */
 	protected int getNombreCarMin() {
 		return NOMBRE_CAR_MIN_DEFAUT;
 	}
 
 	/**
-	 * @param j index de l'élément à retourner
+	 * @param j
+	 *            index de l'élément à retourner
 	 * @return l'élément à la j ème position, null en cas de problème
 	 */
 	@Override
@@ -112,9 +125,11 @@ public abstract class AbstractQueryListModel<T> extends SimpleListModel<T> {
 	}
 
 	/**
-	 * Méthode raccourci pour récupérer un bean par son nom dans le contexte applicatif Spring.
+	 * Méthode raccourci pour récupérer un bean par son nom dans le contexte
+	 * applicatif Spring.
 	 * 
-	 * @param nomBean nom du bean à trouver
+	 * @param nomBean
+	 *            nom du bean à trouver
 	 * @return le bean du contexte spring dont le nom est passé en argument
 	 */
 	protected Object getBean(String nomBean) {

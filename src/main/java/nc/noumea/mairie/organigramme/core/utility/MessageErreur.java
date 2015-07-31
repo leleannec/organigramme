@@ -24,19 +24,19 @@ package nc.noumea.mairie.organigramme.core.utility;
  * #L%
  */
 
-
 import java.io.Serializable;
 
 /**
- * Modélise un message d'erreur applicatif (qui pourra s'afficher à l'utilisateur)
+ * Modélise un message d'erreur applicatif (qui pourra s'afficher à
+ * l'utilisateur)
  * 
  * @author AgileSoft.NC
  */
 public class MessageErreur implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private String				message;
+	private String message;
 
 	public MessageErreur(String message) {
 		this.message = message;

@@ -44,15 +44,15 @@ import com.sun.jersey.api.client.ClientResponse;
 @Service("sirhWSConsumer")
 public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 
-	private Logger				logger							= LoggerFactory.getLogger(SirhWSConsumer.class);
+	private Logger logger = LoggerFactory.getLogger(SirhWSConsumer.class);
 
 	@Autowired
-	private String				sirhWsBaseUrl;
+	private String sirhWsBaseUrl;
 
-	private static final String	URL_AGENT						= "agents/getAgent";
-	private static final String	URL_AUTORISATION_ORGANIGRAMME	= "utilisateur/getAutorisationOrganigramme";
-	private static final String	URL_FICHE_POSTE_PAR_ENTITE		= "fichePostes/listFichePosteByIdEntite";
-	private static final String	URL_FICHE_POSTE_INFO_PAR_ENTITE	= "fichePostes/getInfoFDPByEntite";
+	private static final String URL_AGENT = "agents/getAgent";
+	private static final String URL_AUTORISATION_ORGANIGRAMME = "utilisateur/getAutorisationOrganigramme";
+	private static final String URL_FICHE_POSTE_PAR_ENTITE = "fichePostes/listFichePosteByIdEntite";
+	private static final String URL_FICHE_POSTE_INFO_PAR_ENTITE = "fichePostes/getInfoFDPByEntite";
 
 	public ProfilAgentDto getAgent(Integer idAgent) {
 		String url = String.format(sirhWsBaseUrl + URL_AGENT);

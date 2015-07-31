@@ -24,11 +24,10 @@ package nc.noumea.mairie.organigramme.core.viewmodel;
  * #L%
  */
 
-
 public class UserForm {
-	
-	private String	user;
-	private String	password;
+
+	private String user;
+	private String password;
 
 	public String getUser() {
 		return user;

@@ -33,14 +33,14 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
-	private static final DateTimeFormatter	YEAR_FORMATTER				= dateTimeFormatterNCForPattern("yyyy");
-	private static final DateTimeFormatter	TIME_FORMATTER				= dateTimeFormatterNCForPattern("HH:mm");
-	private static final DateTimeFormatter	TIME_FORMATTER_H			= dateTimeFormatterNCForPattern("HH'h'mm");
-	private static final DateTimeFormatter	DATE_FORMATTER_FOR_FILE		= dateTimeFormatterNCForPattern("yyyy-MM-dd");
-	private static final DateTimeFormatter	DATE_FORMATTER				= dateTimeFormatterNCForPattern("dd/MM/yyyy");
-	private static final DateTimeFormatter	DATETIME_FORMATTER			= dateTimeFormatterNCForPattern("dd/MM/yyyy HH:mm");
-	private static final DateTimeFormatter	DATETIME_FORMATTER_FRIENDLY	= dateTimeFormatterNCForPattern("dd/MM/yyyy 'à' HH'h'mm");
-	private static final String				TIMEZONE_NOUMEA				= "Pacific/Noumea";
+	private static final DateTimeFormatter YEAR_FORMATTER = dateTimeFormatterNCForPattern("yyyy");
+	private static final DateTimeFormatter TIME_FORMATTER = dateTimeFormatterNCForPattern("HH:mm");
+	private static final DateTimeFormatter TIME_FORMATTER_H = dateTimeFormatterNCForPattern("HH'h'mm");
+	private static final DateTimeFormatter DATE_FORMATTER_FOR_FILE = dateTimeFormatterNCForPattern("yyyy-MM-dd");
+	private static final DateTimeFormatter DATE_FORMATTER = dateTimeFormatterNCForPattern("dd/MM/yyyy");
+	private static final DateTimeFormatter DATETIME_FORMATTER = dateTimeFormatterNCForPattern("dd/MM/yyyy HH:mm");
+	private static final DateTimeFormatter DATETIME_FORMATTER_FRIENDLY = dateTimeFormatterNCForPattern("dd/MM/yyyy 'à' HH'h'mm");
+	private static final String TIMEZONE_NOUMEA = "Pacific/Noumea";
 
 	private static DateTimeFormatter dateTimeFormatterNCForPattern(String pattern) {
 		return DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.forID(TIMEZONE_NOUMEA));
@@ -49,8 +49,10 @@ public class DateUtil {
 	/**
 	 * Retourne la date représentée au format dd/MM/yyyy, ex : 31/12/2013
 	 * 
-	 * @param date date
-	 * @return une représentation de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la date en paramètre, ou "" si date est
+	 *         null
 	 */
 	public static String formatDate(Date date) {
 		return date == null ? "" : DATE_FORMATTER.print(new DateTime(date));
@@ -59,8 +61,10 @@ public class DateUtil {
 	/**
 	 * Retourne la partie heure d'une date au format HH:mm, ex : "23:59"
 	 * 
-	 * @param date date
-	 * @return une représentation de la partie heure de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la partie heure de la date en paramètre, ou
+	 *         "" si date est null
 	 */
 	public static String formatHeureMinute(Date date) {
 		return date == null ? "" : TIME_FORMATTER.print(new DateTime(date));
@@ -69,8 +73,10 @@ public class DateUtil {
 	/**
 	 * Retourne la partie heure d'une date au format HHhmm, ex : "23h59"
 	 * 
-	 * @param date date
-	 * @return une représentation de la partie heure de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la partie heure de la date en paramètre, ou
+	 *         "" si date est null
 	 */
 	public static String formatHeureMinuteH(Date date) {
 		return date == null ? "" : TIME_FORMATTER_H.print(new DateTime(date));
@@ -79,8 +85,10 @@ public class DateUtil {
 	/**
 	 * Retourne la date représentée au format yyyy, ex : 2014
 	 * 
-	 * @param date date
-	 * @return une représentation de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la date en paramètre, ou "" si date est
+	 *         null
 	 */
 	public static String formatYear(Date date) {
 		if (date == null) {
@@ -90,10 +98,13 @@ public class DateUtil {
 	}
 
 	/**
-	 * Retourne la date/heure représentée au format dd/MM/yyyy HH:mm, ex : 31/12/2013 23:59
+	 * Retourne la date/heure représentée au format dd/MM/yyyy HH:mm, ex :
+	 * 31/12/2013 23:59
 	 * 
-	 * @param date date
-	 * @return une représentation de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la date en paramètre, ou "" si date est
+	 *         null
 	 */
 	public static String formatDateTime(Date date) {
 		if (date == null) {
@@ -103,10 +114,13 @@ public class DateUtil {
 	}
 
 	/**
-	 * Retourne la date/heure représentée au format dd/MM/yyyy à HH'h'mm, ex : 31/12/2013 à 23h59
+	 * Retourne la date/heure représentée au format dd/MM/yyyy à HH'h'mm, ex :
+	 * 31/12/2013 à 23h59
 	 * 
-	 * @param date date
-	 * @return une représentation de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la date en paramètre, ou "" si date est
+	 *         null
 	 */
 	public static String formatDateTimeFriendly(Date date) {
 		if (date == null) {
@@ -118,8 +132,10 @@ public class DateUtil {
 	/**
 	 * Retourne la date/heure représentée au format yyyy-MM-dd
 	 * 
-	 * @param date date
-	 * @return une représentation de la date en paramètre, ou "" si date est null
+	 * @param date
+	 *            date
+	 * @return une représentation de la date en paramètre, ou "" si date est
+	 *         null
 	 */
 	public static String formatDateForFile(Date date) {
 		if (date == null) {
@@ -130,7 +146,9 @@ public class DateUtil {
 
 	/**
 	 * Retoure une représentation de la date
-	 * @param date date concernée
+	 * 
+	 * @param date
+	 *            date concernée
 	 * @return exemple : "7 janvier 2014", "" si la date en entrée est null
 	 */
 	public static String formatDateAvecMoisEnTexte(Date date) {
@@ -142,7 +160,9 @@ public class DateUtil {
 	}
 
 	/**
-	 * Retourne une chaîne d'horodatage de la date courante, pratique pour suffixer le nom des fichiers générés notamment.
+	 * Retourne une chaîne d'horodatage de la date courante, pratique pour
+	 * suffixer le nom des fichiers générés notamment.
+	 * 
 	 * @return horodatage
 	 */
 	public static String getHorodatage() {
@@ -182,8 +202,10 @@ public class DateUtil {
 	/**
 	 * Indique si date 1 est supérieur à date 2 (et les 2 non null).
 	 * 
-	 * @param date1 date qu'on souhaite comparer avec date2
-	 * @param date2 date comparée
+	 * @param date1
+	 *            date qu'on souhaite comparer avec date2
+	 * @param date2
+	 *            date comparée
 	 * @return true si date1 et date2 non null, et date1 supérieur date2
 	 */
 	public static boolean isNotNullAndAfter(Date date1, Date date2) {
@@ -201,12 +223,17 @@ public class DateUtil {
 	}
 
 	/**
-	 * Indique si date 1 est supérieur à date 2 + nombreMois mois (et les 2 dates non null).
+	 * Indique si date 1 est supérieur à date 2 + nombreMois mois (et les 2
+	 * dates non null).
 	 * 
-	 * @param date1 date qu'on souhaite comparer avec date2
-	 * @param date2 date comparée
-	 * @param nombreMois nombreMois
-	 * @return true si date1 et date2 non null, et date1 supérieur à date2 + nombreMois mois
+	 * @param date1
+	 *            date qu'on souhaite comparer avec date2
+	 * @param date2
+	 *            date comparée
+	 * @param nombreMois
+	 *            nombreMois
+	 * @return true si date1 et date2 non null, et date1 supérieur à date2 +
+	 *         nombreMois mois
 	 */
 	public static boolean isNotNullAndAfterNMonth(Date date1, Date date2, int nombreMois) {
 		if (date1 == null || date2 == null) {
@@ -217,11 +244,12 @@ public class DateUtil {
 		return dateTime1.isAfter(dateTime2.plusMonths(nombreMois));
 	}
 
-	private static final String[]	LISTE_MOIS	= new String[] { "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre",
-			"octobre", "novembre", "décembre"	};
+	private static final String[] LISTE_MOIS = new String[] { "janvier", "février", "mars", "avril", "mai", "juin",
+			"juillet", "août", "septembre", "octobre", "novembre", "décembre" };
 
 	/**
-	 * @param monthOfYear entre 1 et 12
+	 * @param monthOfYear
+	 *            entre 1 et 12
 	 * @return le libellé du mois correspondant à la date
 	 */
 	public static String libelleMois(int monthOfYear) {

@@ -55,7 +55,9 @@ public class DateUtilTest {
 		Assert.assertEquals(DateUtil.formatDate(null), "");
 
 		Date date = DateUtil.parseDateTime("31/12/2013 23:59");
-		Assert.assertEquals(DateUtil.formatDate(date), "31/12/2013"); // heures/minutes non affichées
+		Assert.assertEquals(DateUtil.formatDate(date), "31/12/2013"); // heures/minutes
+																		// non
+																		// affichées
 	}
 
 	@Test
@@ -109,8 +111,10 @@ public class DateUtilTest {
 	public void isNotNullAndAfter() {
 		Assert.assertTrue(DateUtil.isNotNullAndAfter(DateUtil.parseDate("15/01/2014"), DateUtil.parseDate("14/01/2014")));
 
-		Assert.assertFalse(DateUtil.isNotNullAndAfter(DateUtil.parseDate("14/01/2014"), DateUtil.parseDate("15/01/2014")));
-		Assert.assertFalse(DateUtil.isNotNullAndAfter(DateUtil.parseDate("15/01/2014"), DateUtil.parseDate("15/01/2014")));
+		Assert.assertFalse(DateUtil.isNotNullAndAfter(DateUtil.parseDate("14/01/2014"),
+				DateUtil.parseDate("15/01/2014")));
+		Assert.assertFalse(DateUtil.isNotNullAndAfter(DateUtil.parseDate("15/01/2014"),
+				DateUtil.parseDate("15/01/2014")));
 		Assert.assertFalse(DateUtil.isNotNullAndAfter(null, null));
 		Assert.assertFalse(DateUtil.isNotNullAndAfter(null, new Date()));
 		Assert.assertFalse(DateUtil.isNotNullAndAfter(new Date(), null));
@@ -118,10 +122,13 @@ public class DateUtilTest {
 
 	@Test
 	public void isNotNullAndAfterAndEquals() {
-		Assert.assertTrue(DateUtil.isNotNullAndAfterOrEquals(DateUtil.parseDate("15/01/2014"), DateUtil.parseDate("14/01/2014")));
-		Assert.assertTrue(DateUtil.isNotNullAndAfterOrEquals(DateUtil.parseDate("15/01/2014"), DateUtil.parseDate("15/01/2014")));
+		Assert.assertTrue(DateUtil.isNotNullAndAfterOrEquals(DateUtil.parseDate("15/01/2014"),
+				DateUtil.parseDate("14/01/2014")));
+		Assert.assertTrue(DateUtil.isNotNullAndAfterOrEquals(DateUtil.parseDate("15/01/2014"),
+				DateUtil.parseDate("15/01/2014")));
 
-		Assert.assertFalse(DateUtil.isNotNullAndAfter(DateUtil.parseDate("14/01/2014"), DateUtil.parseDate("15/01/2014")));
+		Assert.assertFalse(DateUtil.isNotNullAndAfter(DateUtil.parseDate("14/01/2014"),
+				DateUtil.parseDate("15/01/2014")));
 		Assert.assertFalse(DateUtil.isNotNullAndAfter(null, null));
 		Assert.assertFalse(DateUtil.isNotNullAndAfter(null, new Date()));
 		Assert.assertFalse(DateUtil.isNotNullAndAfter(new Date(), null));
@@ -129,14 +136,20 @@ public class DateUtilTest {
 
 	@Test
 	public void isNotNullAndAfterNMonth() {
-		Assert.assertTrue(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/01/2014"), DateUtil.parseDate("14/01/2014"), 0));
-		Assert.assertFalse(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/01/2014"), DateUtil.parseDate("14/01/2014"), 1));
+		Assert.assertTrue(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/01/2014"),
+				DateUtil.parseDate("14/01/2014"), 0));
+		Assert.assertFalse(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/01/2014"),
+				DateUtil.parseDate("14/01/2014"), 1));
 
-		Assert.assertTrue(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/02/2014"), DateUtil.parseDate("14/01/2014"), 1));
-		Assert.assertFalse(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/02/2014"), DateUtil.parseDate("14/01/2014"), 2));
+		Assert.assertTrue(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/02/2014"),
+				DateUtil.parseDate("14/01/2014"), 1));
+		Assert.assertFalse(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/02/2014"),
+				DateUtil.parseDate("14/01/2014"), 2));
 
-		Assert.assertTrue(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/01/2016"), DateUtil.parseDate("14/01/2014"), 24));
-		Assert.assertFalse(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("14/01/2016"), DateUtil.parseDate("14/01/2014"), 24));
+		Assert.assertTrue(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("15/01/2016"),
+				DateUtil.parseDate("14/01/2014"), 24));
+		Assert.assertFalse(DateUtil.isNotNullAndAfterNMonth(DateUtil.parseDate("14/01/2016"),
+				DateUtil.parseDate("14/01/2014"), 24));
 	}
 
 	@Test
@@ -157,9 +170,12 @@ public class DateUtilTest {
 	@Test
 	public void formatDateTimeFriendly() {
 		Assert.assertEquals(DateUtil.formatDateTimeFriendly(null), "");
-		Assert.assertEquals(DateUtil.formatDateTimeFriendly(DateUtil.parseDateTime("28/02/1965 12:25")), "28/02/1965 à 12h25");
-		Assert.assertEquals(DateUtil.formatDateTimeFriendly(DateUtil.parseDateTime("01/01/2014 23:59")), "01/01/2014 à 23h59");
-		Assert.assertEquals(DateUtil.formatDateTimeFriendly(DateUtil.parseDateTime("31/12/2015 00:00")), "31/12/2015 à 00h00");
+		Assert.assertEquals(DateUtil.formatDateTimeFriendly(DateUtil.parseDateTime("28/02/1965 12:25")),
+				"28/02/1965 à 12h25");
+		Assert.assertEquals(DateUtil.formatDateTimeFriendly(DateUtil.parseDateTime("01/01/2014 23:59")),
+				"01/01/2014 à 23h59");
+		Assert.assertEquals(DateUtil.formatDateTimeFriendly(DateUtil.parseDateTime("31/12/2015 00:00")),
+				"31/12/2015 à 00h00");
 	}
 
 	@Test

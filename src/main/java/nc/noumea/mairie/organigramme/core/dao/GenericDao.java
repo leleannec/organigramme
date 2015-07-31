@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.core.dao;
  * #L%
  */
 
-
 import java.util.List;
 
 import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
