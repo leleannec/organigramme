@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.core.dao;
  * #L%
  */
 
-
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -46,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PersistentManager<T> {
 
 	@PersistenceContext
-	private EntityManager	em;
+	private EntityManager em;
 
 	public T save(T abstractEntity) {
 		if (abstractEntity == null) {
@@ -94,13 +93,15 @@ public class PersistentManager<T> {
 		return q.getSingleResult();
 	}
 
-	public List<T> findAllByPropertyOrderBy(Class<? extends T> classe, String property, Object value, String orderByProperty) {
+	public List<T> findAllByPropertyOrderBy(Class<? extends T> classe, String property, Object value,
+			String orderByProperty) {
 		TypedQuery<T> q = constructTypedQueryByPropertyOrderBy(classe, property, value, orderByProperty);
 		return q.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
-	private TypedQuery<T> constructTypedQueryByPropertyOrderBy(Class<? extends T> classe, String property, Object value, String orderByProperty) {
+	private TypedQuery<T> constructTypedQueryByPropertyOrderBy(Class<? extends T> classe, String property,
+			Object value, String orderByProperty) {
 		CriteriaBuilder qb = em.getCriteriaBuilder();
 		CriteriaQuery<T> c = (CriteriaQuery<T>) qb.createQuery(classe);
 		Root<T> p = (Root<T>) c.from(classe);
@@ -120,26 +121,34 @@ public class PersistentManager<T> {
 
 	@SuppressWarnings("unchecked")
 	public List<T> findAll(@SuppressWarnings("rawtypes") Class classe) {
-		return em.createQuery("SELECT res FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res").getResultList();
+		return em.createQuery("SELECT res FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res")
+				.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> findAll(@SuppressWarnings("rawtypes") Class classe, int nombreMaxResultat) {
-		return em.createQuery("SELECT res FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res").setMaxResults(nombreMaxResultat).getResultList();
+		return em.createQuery("SELECT res FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res")
+				.setMaxResults(nombreMaxResultat).getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> findAllOrderBy(@SuppressWarnings("rawtypes") Class classe, String orderByProperty) {
-		return em.createQuery("SELECT res FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res ORDER BY res." + orderByProperty).getResultList();
+		return em.createQuery(
+				"SELECT res FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res ORDER BY res."
+						+ orderByProperty).getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Object> findAllAndReturnProperty(@SuppressWarnings("rawtypes") Class classe, String property) {
-		return em.createQuery("SELECT res." + property + " FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res").getResultList();
+		return em.createQuery(
+				"SELECT res." + property + " FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res")
+				.getResultList();
 	}
 
 	public Object selectMaxFromProperty(@SuppressWarnings("rawtypes") Class classe, String property) {
-		return em.createQuery("SELECT MAX(res." + property + ") FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res").getSingleResult();
+		return em.createQuery(
+				"SELECT MAX(res." + property + ") FROM " + OrganigrammeUtil.getSimpleNameOfClass(classe) + " res")
+				.getSingleResult();
 	}
 
 	public EntityManager getEntityManager() {

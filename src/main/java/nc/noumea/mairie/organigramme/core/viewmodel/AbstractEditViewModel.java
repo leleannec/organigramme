@@ -40,18 +40,22 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
 
 /**
- * ViewModel abstrait parent des ViewModel de modification (qui permettent de modifier une entité dans un onglet).
+ * ViewModel abstrait parent des ViewModel de modification (qui permettent de
+ * modifier une entité dans un onglet).
  * 
  * @author AgileSoft.NC
- * @param <T> Type paramétré (représente une classe d'entité en pratique)
+ * @param <T>
+ *            Type paramétré (représente une classe d'entité en pratique)
  */
 public abstract class AbstractEditViewModel<T extends AbstractEntityDto> extends AbstractViewModel<T> {
 
-	private static Logger	log	= LoggerFactory.getLogger(AbstractEditViewModel.class);
+	private static Logger log = LoggerFactory.getLogger(AbstractEditViewModel.class);
 
 	/**
 	 * Initilisation du ViewModel : charge l'entité depuis la base de données
-	 * @param abstractEntity entité concernée
+	 * 
+	 * @param abstractEntity
+	 *            entité concernée
 	 */
 	@Init
 	public void initSetup(@ExecutionArgParam("entity") T abstractEntity) {
@@ -59,8 +63,10 @@ public abstract class AbstractEditViewModel<T extends AbstractEntityDto> extends
 	}
 
 	/**
-	 * Met à jour en base de données l'entité (typiquement sur clic d'un bouton enregistrer), et notifie par une commande globale la mise à jour de l'entité. Si
-	 * l'entité présente des contraintes de violation, une popup apparait et la sauvegarde en base n'a pas lieu.
+	 * Met à jour en base de données l'entité (typiquement sur clic d'un bouton
+	 * enregistrer), et notifie par une commande globale la mise à jour de
+	 * l'entité. Si l'entité présente des contraintes de violation, une popup
+	 * apparait et la sauvegarde en base n'a pas lieu.
 	 */
 	@Command
 	public void update() {
@@ -90,13 +96,15 @@ public abstract class AbstractEditViewModel<T extends AbstractEntityDto> extends
 	}
 
 	/**
-	 * Propose à l'utilisateur la suppression de l'entité. S'il confirme, l'entité est supprimé, l'onglet est fermé et une commande globale est lancée pour
-	 * prévenir de la suppression de l'entité.
+	 * Propose à l'utilisateur la suppression de l'entité. S'il confirme,
+	 * l'entité est supprimé, l'onglet est fermé et une commande globale est
+	 * lancée pour prévenir de la suppression de l'entité.
 	 */
 	@Command
 	public void delete() {
-		Messagebox.show("Voulez-vous vraiment supprimer?", "Suppression", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
-				Messagebox.QUESTION, new EventListener<Messagebox.ClickEvent>() {
+		Messagebox.show("Voulez-vous vraiment supprimer?", "Suppression", new Messagebox.Button[] {
+				Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION,
+				new EventListener<Messagebox.ClickEvent>() {
 
 					@Override
 					public void onEvent(ClickEvent evt) {
@@ -110,15 +118,18 @@ public abstract class AbstractEditViewModel<T extends AbstractEntityDto> extends
 	}
 
 	/**
-	 * Recharge l'entity depuis la base de données, si l'entity a été mise à jour par ailleurs.
+	 * Recharge l'entity depuis la base de données, si l'entity a été mise à
+	 * jour par ailleurs.
 	 * 
-	 * @param abstractEntity entité
+	 * @param abstractEntity
+	 *            entité
 	 */
 	protected void reloadOnEntityUpdate(AbstractEntity abstractEntity) {
 		if (abstractEntity == null) {
 			return;
 		}
-		if (this.entity.getId().equals(abstractEntity.getId()) && abstractEntity.getVersion() > this.entity.getVersion()) {
+		if (this.entity.getId().equals(abstractEntity.getId())
+				&& abstractEntity.getVersion() > this.entity.getVersion()) {
 			reloadEntity();
 		}
 	}

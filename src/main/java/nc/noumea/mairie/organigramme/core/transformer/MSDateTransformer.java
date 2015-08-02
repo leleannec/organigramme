@@ -40,8 +40,8 @@ import flexjson.transformer.AbstractTransformer;
 
 public class MSDateTransformer extends AbstractTransformer implements ObjectFactory {
 
-	private static final String		msDateFormat		= "/[Dd][Aa][Tt][Ee]\\((\\-?[0-9]+)([\\+\\-]{1}[0-9]{4})*\\)/";
-	private static final Pattern	msDateFormatPattern	= Pattern.compile(msDateFormat);
+	private static final String msDateFormat = "/[Dd][Aa][Tt][Ee]\\((\\-?[0-9]+)([\\+\\-]{1}[0-9]{4})*\\)/";
+	private static final Pattern msDateFormatPattern = Pattern.compile(msDateFormat);
 
 	@Override
 	public void transform(Object arg0) {
@@ -53,8 +53,9 @@ public class MSDateTransformer extends AbstractTransformer implements ObjectFact
 
 		DateTime dt = new DateTime(arg0);
 
-		DateTimeFormatter formater = new DateTimeFormatterBuilder().appendLiteral("/Date(").appendLiteral(String.format("%s", dt.getMillis()))
-				.appendPattern("Z").appendLiteral(")/").toFormatter();
+		DateTimeFormatter formater = new DateTimeFormatterBuilder().appendLiteral("/Date(")
+				.appendLiteral(String.format("%s", dt.getMillis())).appendPattern("Z").appendLiteral(")/")
+				.toFormatter();
 
 		getContext().writeQuoted(formater.print(dt));
 	}
@@ -80,7 +81,8 @@ public class MSDateTransformer extends AbstractTransformer implements ObjectFact
 
 			return dt.toDate();
 		} catch (Exception ex) {
-			throw new JSONException(String.format("Unable to parse '%s' as a valid date time. Expected format is '%s'", value.toString(), msDateFormat), ex);
+			throw new JSONException(String.format("Unable to parse '%s' as a valid date time. Expected format is '%s'",
+					value.toString(), msDateFormat), ex);
 		}
 	}
 

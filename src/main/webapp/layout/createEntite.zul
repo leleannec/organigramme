@@ -18,7 +18,7 @@
 				</row>
 				<row> 
 					<label class="mandatory" value="Type :" />
-					<combobox selectedItem="@bind(vm.entity.typeEntite)" model="@load(vm.listeTypeEntiteActifInactif)" hflex="1">
+					<combobox selectedItem="@bind(vm.entity.typeEntite)" model="@load(vm.listeTypeEntiteActifInactif)" hflex="1" readonly="true">
 						<template name="model">
 							<comboitem label="${each.labelWithActifInactif}" />
 						</template> 

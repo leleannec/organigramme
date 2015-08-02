@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class GenericServiceImpl<T> implements GenericService<T> {
 
 	@Autowired
-	GenericDao<T>	genericDao;
+	GenericDao<T> genericDao;
 
 	@Override
 	public T save(T abstractEntity) {

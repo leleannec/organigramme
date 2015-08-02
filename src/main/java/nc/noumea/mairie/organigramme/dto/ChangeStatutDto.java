@@ -38,34 +38,33 @@ public class ChangeStatutDto {
 	 * l id de l entite à modifier
 	 */
 	private Integer idEntite;
-	
+
 	/**
 	 * l id du nouveau statut
 	 */
 	private Integer idStatut;
-	
+
 	/**
 	 * TRUE pour changer le statut des entites fille egalement, sinon FALSE
 	 */
 	private boolean majEntitesEnfant;
-	
+
 	/**
 	 * reference de la deliberation
 	 */
 	private String refDeliberation;
-	
+
 	/**
 	 * date de la deliberation
 	 */
 	@JsonSerialize(using = JsonDateSerializer.class)
 	@JsonDeserialize(using = JsonDateDeserializer.class)
 	private Date dateDeliberation;
-	
+
 	/**
 	 * l id de l agent effectuant le changement
 	 */
 	private Integer idAgent;
-	
 
 	public Integer getIdEntite() {
 		return idEntite;

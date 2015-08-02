@@ -56,10 +56,11 @@ import org.zkoss.zul.Filedownload;
 public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 	@Autowired
-	SirhWSConsumer	sirhWSConsumer;
+	SirhWSConsumer sirhWSConsumer;
 
 	public void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
-		String nomFichier = "Export-" + exportDto.getEntiteDto().getSigle() + "-" + DateUtil.formatDateForFile(new Date()) + ".graphml";
+		String nomFichier = "Export-" + exportDto.getEntiteDto().getSigle() + "-"
+				+ DateUtil.formatDateForFile(new Date()) + ".graphml";
 		Filedownload.save(exportGraphML(exportDto, mapIdLiOuvert), null, nomFichier);
 	}
 
@@ -96,26 +97,39 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 	private void initHeader(Element root) {
 		root.addAttribute("xmlns", "http://graphml.graphdrawing.org/xmlns");
-		root.addAttribute("xsi:schemaLocation", "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd");
+		root.addAttribute("xsi:schemaLocation",
+				"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd");
 		root.add(new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance"));
 		root.add(new Namespace("y", "http://www.yworks.com/xml/graphml"));
-		root.addElement("key").addAttribute("attr.name", "sigle").addAttribute("attr.type", "string").addAttribute("for", "node").addAttribute("id", "d4");
-		root.addElement("key").addAttribute("attr.name", "label").addAttribute("attr.type", "string").addAttribute("for", "node").addAttribute("id", "d5");
-		root.addElement("key").addAttribute("yfiles.type", "nodegraphics").addAttribute("for", "node").addAttribute("id", "d6");
-		root.addElement("key").addAttribute("yfiles.type", "edgegraphics").addAttribute("for", "edge").addAttribute("id", "d7");
+		root.addElement("key").addAttribute("attr.name", "sigle").addAttribute("attr.type", "string")
+				.addAttribute("for", "node").addAttribute("id", "d4");
+		root.addElement("key").addAttribute("attr.name", "label").addAttribute("attr.type", "string")
+				.addAttribute("for", "node").addAttribute("id", "d5");
+		root.addElement("key").addAttribute("yfiles.type", "nodegraphics").addAttribute("for", "node")
+				.addAttribute("id", "d6");
+		root.addElement("key").addAttribute("yfiles.type", "edgegraphics").addAttribute("for", "edge")
+				.addAttribute("id", "d7");
 	}
 
 	/**
 	 * Recursive method to build graphml nodes and edges for the entire tree
-	 * @param graph : le graph général
-	 * @param entiteDto : l'entité dto à construire
-	 * @param avecFichePoste : doit-on exporter les fiches de postes ?
-	 * @param mapIdLiOuvert : permet de savoir quel entité est dépliée
+	 * 
+	 * @param graph
+	 *            : le graph général
+	 * @param entiteDto
+	 *            : l'entité dto à construire
+	 * @param avecFichePoste
+	 *            : doit-on exporter les fiches de postes ?
+	 * @param mapIdLiOuvert
+	 *            : permet de savoir quel entité est dépliée
 	 */
-	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, boolean avecFichePoste, Map<String, Boolean> mapIdLiOuvert) {
+	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, boolean avecFichePoste,
+			Map<String, Boolean> mapIdLiOuvert) {
 
-		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite() : "#FFFFCF";
-		String couleurTexte = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurTexte() : "#000000";
+		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite()
+				: "#FFFFCF";
+		String couleurTexte = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurTexte()
+				: "#000000";
 		String forme = "roundrectangle";
 
 		Element el = graph.addElement("node").addAttribute("id", String.valueOf(entiteDto.getId()));
@@ -152,7 +166,8 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 			libelleCase = getLibelleCase(entiteDto, avecFichePoste, false);
 
 		} else {
-			// Sinon, si elle a des enfants on ne les affiche pas mais on agrége les FDP de ses enfants
+			// Sinon, si elle a des enfants on ne les affiche pas mais on agrége
+			// les FDP de ses enfants
 			libelleCase = getLibelleCase(entiteDto, avecFichePoste, true);
 		}
 
@@ -161,9 +176,14 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 	/**
 	 * Renvoie le libellé à mettre dans la case Yed
-	 * @param entiteDto : l'entité
-	 * @param avecFichePoste : doit-on afficher les fiches de postes ?
-	 * @param withEntiteChildren : selon si l'entité est dépliée ou non on affiche les FDP des enfants ou non
+	 * 
+	 * @param entiteDto
+	 *            : l'entité
+	 * @param avecFichePoste
+	 *            : doit-on afficher les fiches de postes ?
+	 * @param withEntiteChildren
+	 *            : selon si l'entité est dépliée ou non on affiche les FDP des
+	 *            enfants ou non
 	 * @return le libellé à mettre dans la case Yed
 	 */
 	private String getLibelleCase(EntiteDto entiteDto, boolean avecFichePoste, boolean withEntiteChildren) {
@@ -171,7 +191,8 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		String libelleCase = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
 
 		if (avecFichePoste) {
-			InfoEntiteDto infoEntiteDto = sirhWSConsumer.getInfoFDPByEntite(entiteDto.getIdEntite(), withEntiteChildren);
+			InfoEntiteDto infoEntiteDto = sirhWSConsumer
+					.getInfoFDPByEntite(entiteDto.getIdEntite(), withEntiteChildren);
 			if (infoEntiteDto != null && !CollectionUtils.isEmpty(infoEntiteDto.getListeInfoFDP())) {
 
 				libelleCase += "\n";

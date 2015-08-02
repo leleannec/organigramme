@@ -36,29 +36,33 @@ import nc.noumea.mairie.organigramme.dto.EntiteDto;
  */
 public class EntiteDtoQueryListModel extends AbstractQueryListModel<EntiteDto> {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	private List<EntiteDto> listeEntite;
-	
+
 	public EntiteDtoQueryListModel(List<EntiteDto> listeEntite) {
 		super(listeEntite);
 		this.listeEntite = listeEntite;
 	}
-	
+
 	/**
-	 * @param chaineRecherche partie du sigle de l'entité
-	 * @param nombreResultatMaxIndicatif ignoré
-	 * @return une liste d'entité DTO qui ont un sigle qui contient la chaîne désaccentuée (sans tenir compte de sa casse)
+	 * @param chaineRecherche
+	 *            partie du sigle de l'entité
+	 * @param nombreResultatMaxIndicatif
+	 *            ignoré
+	 * @return une liste d'entité DTO qui ont un sigle qui contient la chaîne
+	 *         désaccentuée (sans tenir compte de sa casse)
 	 */
 	@Override
 	public List<EntiteDto> findByQuery(String chaineRecherche, int nombreResultatMaxIndicatif) {
 		List<EntiteDto> result = new ArrayList<EntiteDto>();
-		for(EntiteDto entiteDto : listeEntite) {
-			if(OrganigrammeUtil.majusculeSansAccentTrim(entiteDto.getSigle()).contains(OrganigrammeUtil.majusculeSansAccentTrim(chaineRecherche))) {
+		for (EntiteDto entiteDto : listeEntite) {
+			if (OrganigrammeUtil.majusculeSansAccentTrim(entiteDto.getSigle()).contains(
+					OrganigrammeUtil.majusculeSansAccentTrim(chaineRecherche))) {
 				result.add(entiteDto);
 			}
 		}
-		
+
 		return result;
 	}
 }

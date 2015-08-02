@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.core.entity;
  * #L%
  */
 
-
 import java.util.List;
 
 import nc.noumea.mairie.organigramme.core.utility.MessageErreur;
@@ -73,7 +72,8 @@ public abstract class AbstractEntity {
 			return super.equals(obj);
 		}
 
-		// cas où les 2 possèdent un id : ils sont considérés égaux si c'est le même id
+		// cas où les 2 possèdent un id : ils sont considérés égaux si c'est le
+		// même id
 		if (getId() != null && other.getId() != null) {
 			return getId().equals(other.getId());
 		}
@@ -91,9 +91,13 @@ public abstract class AbstractEntity {
 	}
 
 	/**
-	 * @return une liste de message d'erreur concernant l'entité (qui empêche typiquement sa sauvegarde). Ces erreurs peuvent être des violations de contraintes
-	 *         déclarées ou des erreurs spécifiques métier. Ne doit pas retourner null (mais une liste vide dans le cas où il n'y a pas d'erreur). La liste
-	 *         retournée doit être mutable pour permettre aux classes filles d'ajouter d'autres erreurs.
+	 * @return une liste de message d'erreur concernant l'entité (qui empêche
+	 *         typiquement sa sauvegarde). Ces erreurs peuvent être des
+	 *         violations de contraintes déclarées ou des erreurs spécifiques
+	 *         métier. Ne doit pas retourner null (mais une liste vide dans le
+	 *         cas où il n'y a pas d'erreur). La liste retournée doit être
+	 *         mutable pour permettre aux classes filles d'ajouter d'autres
+	 *         erreurs.
 	 */
 	public List<MessageErreur> construitListeMessageErreur() {
 		return MessageErreurUtil.construitListeMessageErreurViolationContrainte(this);

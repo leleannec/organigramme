@@ -24,10 +24,9 @@ package nc.noumea.mairie.organigramme.dto;
  * #L%
  */
 
-
 public class TitrePosteDto {
 
-	private String	libTitrePoste;
+	private String libTitrePoste;
 
 	public TitrePosteDto() {
 		super();

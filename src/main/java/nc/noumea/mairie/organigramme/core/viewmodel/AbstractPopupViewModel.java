@@ -34,16 +34,17 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Window;
 
 /**
- * ViewModel abstrait parent des ViewModel de popup 
+ * ViewModel abstrait parent des ViewModel de popup
  * 
  * @author AgileSoft.NC
- * @param <T> Type paramétré (représente une classe d'entité en pratique)
+ * @param <T>
+ *            Type paramétré (représente une classe d'entité en pratique)
  */
 @Init(superclass = true)
 public abstract class AbstractPopupViewModel<T extends AbstractEntityDto> extends AbstractViewModel<T> {
 
-	Window 									popup;
-	
+	Window popup;
+
 	public Window getPopup() {
 		return popup;
 	}
@@ -55,7 +56,7 @@ public abstract class AbstractPopupViewModel<T extends AbstractEntityDto> extend
 	@Command
 	public void cancel(@ContextParam(ContextType.TRIGGER_EVENT) Event event) {
 		event.stopPropagation();
-		if(popup != null) {
+		if (popup != null) {
 			popup.detach();
 		}
 	}

@@ -44,7 +44,7 @@ import org.springframework.stereotype.Service;
 public class TypeEntiteServiceImpl extends GenericServiceImpl<TypeEntiteDto> implements TypeEntiteService {
 
 	@Autowired
-	AdsWSConsumer	adsWSConsumer;
+	AdsWSConsumer adsWSConsumer;
 
 	@Override
 	public List<TypeEntiteDto> getListeTypeEntiteActif() {

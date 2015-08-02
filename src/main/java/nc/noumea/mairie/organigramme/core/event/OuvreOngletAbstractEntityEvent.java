@@ -29,16 +29,17 @@ import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
 import org.zkoss.zk.ui.event.Event;
 
 /**
- * Evènement pour demander l'ouverture d'un onglet concernant une entité particulière.
+ * Evènement pour demander l'ouverture d'un onglet concernant une entité
+ * particulière.
  * 
  * @author AgileSoft.NC
  */
 public class OuvreOngletAbstractEntityEvent extends Event {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private final AbstractEntity	abstractEntity;
-	private final Integer			selectedTabIndex;
+	private final AbstractEntity abstractEntity;
+	private final Integer selectedTabIndex;
 
 	public OuvreOngletAbstractEntityEvent(AbstractEntity abstractEntity, Integer selectedTabIndex) {
 		super("ouvreOngletAbstractEntity", null, abstractEntity);

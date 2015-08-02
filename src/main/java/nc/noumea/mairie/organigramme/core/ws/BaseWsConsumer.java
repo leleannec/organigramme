@@ -55,7 +55,8 @@ public abstract class BaseWsConsumer {
 		return createAndFireRequest(parameters, url, true, content);
 	}
 
-	public ClientResponse createAndFireRequest(Map<String, String> parameters, String url, boolean isPost, String postContent) {
+	public ClientResponse createAndFireRequest(Map<String, String> parameters, String url, boolean isPost,
+			String postContent) {
 
 		Client client = Client.create();
 		WebResource webResource = client.resource(url);
@@ -71,7 +72,8 @@ public abstract class BaseWsConsumer {
 				if (postContent == null)
 					response = webResource.type(MediaType.APPLICATION_JSON_VALUE).post(ClientResponse.class);
 				else
-					response = webResource.type(MediaType.APPLICATION_JSON_VALUE).post(ClientResponse.class, postContent);
+					response = webResource.type(MediaType.APPLICATION_JSON_VALUE).post(ClientResponse.class,
+							postContent);
 			else
 				response = webResource.type(MediaType.APPLICATION_JSON_VALUE).get(ClientResponse.class);
 		} catch (ClientHandlerException ex) {
@@ -86,7 +88,8 @@ public abstract class BaseWsConsumer {
 		if (response.getStatus() == HttpStatus.OK.value())
 			return;
 
-		throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s, content is %s", url, response.getStatus(),
+		throw new WSConsumerException(String.format(
+				"An error occured when querying '%s'. Return code is : %s, content is %s", url, response.getStatus(),
 				response.getEntity(String.class)));
 	}
 
@@ -97,8 +100,9 @@ public abstract class BaseWsConsumer {
 		}
 
 		if (response.getStatus() != HttpStatus.OK.value() && response.getStatus() != HttpStatus.CONFLICT.value()) {
-			throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s, content is %s", url, response.getStatus(),
-					response.getEntity(String.class)));
+			throw new WSConsumerException(String.format(
+					"An error occured when querying '%s'. Return code is : %s, content is %s", url,
+					response.getStatus(), response.getEntity(String.class)));
 		}
 
 		return response.getEntity(String.class);
@@ -113,7 +117,8 @@ public abstract class BaseWsConsumer {
 			result = targetClass.newInstance();
 
 		} catch (Exception ex) {
-			throw new WSConsumerException("An error occured when instantiating return type when deserializing JSON from WS request.", ex);
+			throw new WSConsumerException(
+					"An error occured when instantiating return type when deserializing JSON from WS request.", ex);
 		}
 
 		if (response.getStatus() == HttpStatus.NO_CONTENT.value()) {
@@ -121,8 +126,9 @@ public abstract class BaseWsConsumer {
 		}
 
 		if (response.getStatus() != HttpStatus.OK.value() && response.getStatus() != HttpStatus.CONFLICT.value()) {
-			throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s, content is %s", url, response.getStatus(),
-					response.getEntity(String.class)));
+			throw new WSConsumerException(String.format(
+					"An error occured when querying '%s'. Return code is : %s, content is %s", url,
+					response.getStatus(), response.getEntity(String.class)));
 		}
 
 		String output = response.getEntity(String.class);
@@ -143,13 +149,14 @@ public abstract class BaseWsConsumer {
 		}
 
 		if (response.getStatus() != HttpStatus.OK.value()) {
-			throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s", url, response.getStatus()));
+			throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s",
+					url, response.getStatus()));
 		}
 
 		String output = response.getEntity(String.class);
 
-		result = new JSONDeserializer<List<T>>().use(null, ArrayList.class).use(Date.class, new MSDateTransformer()).use("values", targetClass)
-				.deserialize(output);
+		result = new JSONDeserializer<List<T>>().use(null, ArrayList.class).use(Date.class, new MSDateTransformer())
+				.use("values", targetClass).deserialize(output);
 
 		return result;
 	}
@@ -161,7 +168,9 @@ public abstract class BaseWsConsumer {
 		try {
 			result = targetClass.newInstance();
 		} catch (Exception ex) {
-			throw new WSConsumerException("An error occured when instantiating return type when deserializing JSON from SIRH ABS WS request.", ex);
+			throw new WSConsumerException(
+					"An error occured when instantiating return type when deserializing JSON from SIRH ABS WS request.",
+					ex);
 		}
 
 		if (response.getStatus() == HttpStatus.NO_CONTENT.value()) {
@@ -184,7 +193,8 @@ public abstract class BaseWsConsumer {
 		}
 
 		if (response.getStatus() != HttpStatus.OK.value()) {
-			throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s", url, response.getStatus()));
+			throw new WSConsumerException(String.format("An error occured when querying '%s'. Return code is : %s",
+					url, response.getStatus()));
 		}
 
 		return response.getEntity(byte[].class);

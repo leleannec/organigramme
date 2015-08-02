@@ -24,13 +24,11 @@ package nc.noumea.mairie.organigramme.dto;
  * #L%
  */
 
-
-
 public class AccessRightOrganigrammeDto {
-	
-	private boolean	visualisation;
-	private boolean	edition;
-	private boolean	administrateur;
+
+	private boolean visualisation;
+	private boolean edition;
+	private boolean administrateur;
 
 	public AccessRightOrganigrammeDto() {
 	}

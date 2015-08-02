@@ -41,13 +41,13 @@ import com.sun.jersey.api.client.ClientResponse;
 @Service("radiWSConsumer")
 public class RadiWSConsumer extends BaseWsConsumer implements IRadiWSConsumer {
 
-	private Logger				logger			= LoggerFactory.getLogger(RadiWSConsumer.class);
+	private Logger logger = LoggerFactory.getLogger(RadiWSConsumer.class);
 
 	@Autowired
 	@Qualifier("radiWsBaseUrl")
-	private String				radiWsBaseUrl;
+	private String radiWsBaseUrl;
 
-	private static final String	URL_USERS	= "users";
+	private static final String URL_USERS = "users";
 
 	@Override
 	public LightUserDto getAgentCompteADByLogin(String login) {

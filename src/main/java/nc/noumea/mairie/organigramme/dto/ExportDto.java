@@ -28,8 +28,8 @@ import nc.noumea.mairie.organigramme.core.dto.AbstractEntityDto;
 
 public class ExportDto extends AbstractEntityDto {
 
-	EntiteDto	entiteDto;
-	boolean		avecFichePoste	= false;
+	EntiteDto entiteDto;
+	boolean avecFichePoste = false;
 
 	public boolean isAvecFichePoste() {
 		return avecFichePoste;

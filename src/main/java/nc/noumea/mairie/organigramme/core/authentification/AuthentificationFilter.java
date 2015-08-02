@@ -57,20 +57,22 @@ import org.zkoss.zk.ui.select.annotation.VariableResolver;
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class AuthentificationFilter implements Filter {
 
-	public static final String			ACCES_CONNEXION		= "/connexion";
-	public static final String			ATT_SESSION_USER	= "sessionUtilisateur";
+	public static final String ACCES_CONNEXION = "/connexion";
+	public static final String ATT_SESSION_USER = "sessionUtilisateur";
 
-	public static final List<String>	PAGES_STATIQUES		= Arrays.asList("/401.jsp", "/404.jsp", "/incident.jsp", "/maintenance.jsp", "/version.jsp");
+	public static final List<String> PAGES_STATIQUES = Arrays.asList("/401.jsp", "/404.jsp", "/incident.jsp",
+			"/maintenance.jsp", "/version.jsp");
 
-	private Logger						logger				= LoggerFactory.getLogger(AuthentificationFilter.class);
+	private Logger logger = LoggerFactory.getLogger(AuthentificationFilter.class);
 
-	private IRadiWSConsumer				radiWSConsumer;
+	private IRadiWSConsumer radiWSConsumer;
 
-	private ISirhWSConsumer				sirhWSConsumer;
+	private ISirhWSConsumer sirhWSConsumer;
 
 	public void init(FilterConfig config) throws ServletException {
 		ServletContext servletContext = config.getServletContext();
-		WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+		WebApplicationContext webApplicationContext = WebApplicationContextUtils
+				.getWebApplicationContext(servletContext);
 
 		AutowireCapableBeanFactory autowireCapableBeanFactory = webApplicationContext.getAutowireCapableBeanFactory();
 
@@ -79,7 +81,8 @@ public class AuthentificationFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
+			ServletException {
 
 		/* Cast des objets request et response */
 		HttpServletRequest request = (HttpServletRequest) req;
@@ -100,9 +103,11 @@ public class AuthentificationFilter implements Filter {
 		}
 
 		if (null != hSess.getAttribute("logout")) {
-			if (!request.getRequestURI().contains("zkau") && !request.getRequestURI().contains("login.zul") && !request.getRequestURI().contains("css")) {
+			if (!request.getRequestURI().contains("zkau") && !request.getRequestURI().contains("login.zul")
+					&& !request.getRequestURI().contains("css")) {
 
-				// dans le cas ou la personne a clique sur ce deconnecte et ne ferme pas le navigateur
+				// dans le cas ou la personne a clique sur ce deconnecte et ne
+				// ferme pas le navigateur
 				logger.debug("User disconnect");
 				hSess.setAttribute("logout", "logout");
 				request.getRequestDispatcher("login.zul").forward(request, response);
@@ -162,10 +167,12 @@ public class AuthentificationFilter implements Filter {
 			return;
 		}
 
-		AccessRightOrganigrammeDto accessRightOrganigrammeDto = recupereAccessRightOrganigramme(request, userDto.getEmployeeNumber());
+		AccessRightOrganigrammeDto accessRightOrganigrammeDto = recupereAccessRightOrganigramme(request,
+				userDto.getEmployeeNumber());
 		if (accessRightOrganigrammeDto == null || accessRightOrganigrammeDto.isAucunRole()) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Vous n'êtes pas autorisé à accéder à cette application.");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+					"Vous n'êtes pas autorisé à accéder à cette application.");
 			return;
 		}
 
@@ -178,13 +185,15 @@ public class AuthentificationFilter implements Filter {
 		chain.doFilter(request, response);
 	}
 
-	private void renseigneAccessRightOnUser(ProfilAgentDto profilAgent, AccessRightOrganigrammeDto accessRightOrganigrammeDto) {
+	private void renseigneAccessRightOnUser(ProfilAgentDto profilAgent,
+			AccessRightOrganigrammeDto accessRightOrganigrammeDto) {
 		profilAgent.setAdministrateur(accessRightOrganigrammeDto.isAdministrateur());
 		profilAgent.setEdition(accessRightOrganigrammeDto.isEdition());
 		profilAgent.setVisualisation(accessRightOrganigrammeDto.isVisualisation());
 	}
 
-	private AccessRightOrganigrammeDto recupereAccessRightOrganigramme(HttpServletRequest request, Integer employeeNumber) throws ServletException {
+	private AccessRightOrganigrammeDto recupereAccessRightOrganigramme(HttpServletRequest request,
+			Integer employeeNumber) throws ServletException {
 		AccessRightOrganigrammeDto accessRightOrganigrammeDto = null;
 		try {
 			accessRightOrganigrammeDto = sirhWSConsumer.getAutorisationOrganigramme(employeeNumber);
@@ -204,7 +213,8 @@ public class AuthentificationFilter implements Filter {
 		return accessRightOrganigrammeDto;
 	}
 
-	private ProfilAgentDto recupereProfilAgent(HttpServletRequest request, Integer employeeNumber) throws ServletException {
+	private ProfilAgentDto recupereProfilAgent(HttpServletRequest request, Integer employeeNumber)
+			throws ServletException {
 		ProfilAgentDto profilAgent = null;
 		try {
 			profilAgent = sirhWSConsumer.getAgent(employeeNumber);

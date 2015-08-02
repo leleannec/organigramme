@@ -31,9 +31,9 @@ import org.springframework.util.CollectionUtils;
 
 public class ReturnMessageDto {
 
-	private List<String>	errors;
-	private List<String>	infos;
-	private Integer			id;
+	private List<String> errors;
+	private List<String> infos;
+	private Integer id;
 
 	public ReturnMessageDto() {
 		errors = new ArrayList<String>();

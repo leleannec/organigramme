@@ -32,19 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.services.AuthentificationService;
-import nc.noumea.mairie.organigramme.core.utility.DateUtil;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ExportDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
-import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
-import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
-import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
@@ -54,12 +48,9 @@ import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
-import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -89,73 +80,87 @@ import org.zkoss.zul.Window;
 @VariableResolver(DelegatingVariableResolver.class)
 public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implements Serializable {
 
-	private static final long				serialVersionUID				= 1L;
+	private static final long serialVersionUID = 1L;
 
-	public static Logger					log								= LoggerFactory.getLogger(OrganigrammeViewModel.class);
+	public static Logger log = LoggerFactory.getLogger(OrganigrammeViewModel.class);
 
-	//@formatter:off
-	@WireVariable IAdsWSConsumer			adsWSConsumer;
-	@WireVariable ISirhWSConsumer			sirhWSConsumer;
-	@WireVariable ExportGraphMLService		exportGraphMLService;
-	@WireVariable OrganigrammeService		organigrammeService;
-	@WireVariable AuthentificationService	authentificationService;
-	@WireVariable CouleurTypeEntiteService	couleurTypeEntiteService;
-	@WireVariable TypeEntiteService			typeEntiteService;
-	@WireVariable ReturnMessageService		returnMessageService;
-	//@formatter:on
+	// @formatter:off
+	@WireVariable
+	IAdsWSConsumer adsWSConsumer;
+	@WireVariable
+	ISirhWSConsumer sirhWSConsumer;
+	@WireVariable
+	ExportGraphMLService exportGraphMLService;
+	@WireVariable
+	OrganigrammeService organigrammeService;
+	@WireVariable
+	AuthentificationService authentificationService;
+	@WireVariable
+	CouleurTypeEntiteService couleurTypeEntiteService;
+	@WireVariable
+	TypeEntiteService typeEntiteService;
+	@WireVariable
+	ReturnMessageService returnMessageService;
+	// @formatter:on
 
-	private static final String				CREATE_ENTITE_VIEW				= "/layout/createEntite.zul";
+	private static final String CREATE_ENTITE_VIEW = "/layout/createEntite.zul";
 
-	private static final String[]			LISTE_PROP_A_NOTIFIER_ENTITE	= new String[] { "statut", "entity", "listeTransitionAutorise", "listeEntite",
-			"listeEntiteRemplace", "editable", "listeTypeEntiteActifInactif", "hauteurPanelEdition", "mapIdLiEntiteDto", "stylePanelEdition",
-			"selectedEntiteDtoRecherche", "selectedEntiteDtoZoom", "entiteDtoQueryListModel", "fichePosteGroupingModel", "selectedFiltreStatut",
-			"listeHistorique", "tabCommentaireSclass", "entiteOngletSelectionne" };
+	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity",
+			"listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
+			"selectedEntiteDtoZoom", "entiteDtoQueryListModel", "selectedFiltreStatut" };
 
-	private OrganigrammeWorkflowViewModel	organigrammeWorkflowViewModel	= new OrganigrammeWorkflowViewModel(this);
-	public TreeViewModel					treeViewModel					= new TreeViewModel(this);
+	private OrganigrammeWorkflowViewModel organigrammeWorkflowViewModel = new OrganigrammeWorkflowViewModel(this);
+	public TreeViewModel treeViewModel = new TreeViewModel(this);
 
 	/** Le vlayout général dans lequel sera ajouté l'arbre **/
-	Vlayout									vlayout;
+	Vlayout vlayout;
 
 	/** L'{@link EntiteDto} représentant l'arbre au complet **/
-	EntiteDto								entiteDtoRoot;
+	EntiteDto entiteDtoRoot;
 
 	/** L'{@link EntiteDto} représentant l'entité recherchée **/
-	EntiteDto								selectedEntiteDtoRecherche;
+	EntiteDto selectedEntiteDtoRecherche;
 
 	/** L'{@link EntiteDto} représentant l'entité zommé **/
-	EntiteDto								selectedEntiteDtoZoom;
+	EntiteDto selectedEntiteDtoZoom;
 
-	/** Le {@link FiltreStatut} représentant le filtre actif, par défaut, on affiche les ACTIFS #17105 **/
-	FiltreStatut							selectedFiltreStatut			= FiltreStatut.ACTIF;
+	/**
+	 * Le {@link FiltreStatut} représentant le filtre actif, par défaut, on
+	 * affiche les ACTIFS #17105
+	 **/
+	FiltreStatut selectedFiltreStatut = FiltreStatut.ACTIF;
 
-	/** Map permettant rapidement d'accèder à un nomPrenom d'agent à partir de son id agent **/
-	Map<Integer, String>					mapIdAgentNomPrenom				= new HashMap<Integer, String>();
+	/**
+	 * Map permettant rapidement d'accèder à un nomPrenom d'agent à partir de
+	 * son id agent
+	 **/
+	Map<Integer, String> mapIdAgentNomPrenom = new HashMap<Integer, String>();
 
-	/** Map permettant rapidement d'accèder à une {@link EntiteDto} à partir de son id html client **/
-	Map<String, EntiteDto>					mapIdLiEntiteDto;
+	/**
+	 * Map permettant rapidement d'accèder à une {@link EntiteDto} à partir de
+	 * son id html client
+	 **/
+	Map<String, EntiteDto> mapIdLiEntiteDto;
 
-	/** Map permettant de savoir si le Li est ouvert ou non à partir de son id html client **/
-	Map<String, Boolean>					mapIdLiOuvert;
+	/**
+	 * Map permettant de savoir si le Li est ouvert ou non à partir de son id
+	 * html client
+	 **/
+	Map<String, Boolean> mapIdLiOuvert;
 
 	/** Le currentUser connecté **/
-	ProfilAgentDto							profilAgentDto;
+	ProfilAgentDto profilAgentDto;
 
 	/** Liste de toutes les entités zoomables et/ou recherchables **/
-	private List<EntiteDto>					listeEntite						= new ArrayList<EntiteDto>();
+	private List<EntiteDto> listeEntite = new ArrayList<EntiteDto>();
 
 	/** ListModel de toutes les entités zoomables et/ou recherchables **/
-	private EntiteDtoQueryListModel			entiteDtoQueryListModel;
-
-	/** Liste des entités remplaçables **/
-	private List<EntiteDto>					listeEntiteRemplace				= new ArrayList<EntiteDto>();
-
-	/** L'onglet en cours de sélection (par défaut, quand on ouvre une entité c'est caractéristique) **/
-	private EntiteOnglet					entiteOngletSelectionne			= EntiteOnglet.CARACTERISTIQUE;
+	private EntiteDtoQueryListModel entiteDtoQueryListModel;
 
 	public List<EntiteDto> getListeEntite() {
 
-		// On filtre la liste des entités zoomables et accessibles selon le statut selectionné
+		// On filtre la liste des entités zoomables et accessibles selon le
+		// statut selectionné
 		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
 			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
 			listeEntiteClone.addAll(this.listeEntite);
@@ -206,125 +211,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.entiteDtoQueryListModel = entiteDtoQueryListModel;
 	}
 
-	public EntiteOnglet getEntiteOngletSelectionne() {
-		return entiteOngletSelectionne;
-	}
-
-	public void setEntiteOngletSelectionne(EntiteOnglet entiteOngletSelectionne) {
-		this.entiteOngletSelectionne = entiteOngletSelectionne;
-	}
-
-	@Override
-	public void setEntity(EntiteDto entiteDto) {
-		final EntiteDto entiteDtoPrecedente = this.entity;
-		if (entiteDtoPrecedente != null && entiteDto != null) {
-			// Si une ancienne entité était selectionnée on regarde si elle n'a pas été modifiée
-			List<String> listeDifferenceFromBdd = listeDifferenceFromBdd(entiteDtoPrecedente);
-			if (!CollectionUtils.isEmpty(listeDifferenceFromBdd)) {
-				Messagebox.show(
-						"Des modifications ont-été faite sur l'entité précédente, voulez-vous enregistrer ces modifications ? \n\n"
-								+ StringUtils.join(listeDifferenceFromBdd, "\n"), "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES,
-								Messagebox.Button.NO }, Messagebox.EXCLAMATION, new EventListener<Messagebox.ClickEvent>() {
-							@Override
-							public void onEvent(ClickEvent evt) {
-								if (evt.getName().equals("onYes")) {
-									adsWSConsumer.saveOrUpdateEntite(entiteDtoPrecedente);
-								}
-							}
-						});
-			}
-		}
-		this.entity = entiteDto;
-	}
-
-	// TODO : factoriser des choses de cette méthode et faire le test unitaire qui va bien ! A déplacer dans Utilitaire ?
 	/**
-	 * Permet de liste les différences entre l'entité en paramètre et sa version en base de donnée (uniquement au niveau des champs que l'on peut mettre à jour
-	 * via l'interface)
-	 * @param entiteDto : l'entité qu'on souhaite comparer avec sa version en base
-	 * @return : une liste de différences, null si aucune différences
-	 */
-	private List<String> listeDifferenceFromBdd(EntiteDto entiteDto) {
-		List<String> result = new ArrayList<String>();
-		EntiteDto entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
-
-		if (!entiteDto.getSigle().equals(entiteDtoFromBdd.getSigle())) {
-			result.add("ancien sigle : " + entiteDtoFromBdd.getSigle() + "; nouveau sigle : " + entiteDto.getSigle());
-		}
-
-		if (!entiteDto.getLabel().equals(entiteDtoFromBdd.getLabel())) {
-			result.add("ancien libellé : " + entiteDtoFromBdd.getLabel() + "; nouveau libellé : " + entiteDto.getLabel());
-		}
-
-		if (!entiteDto.getLabelCourt().equals(entiteDtoFromBdd.getLabelCourt())) {
-			result.add("ancien libellé court : " + entiteDtoFromBdd.getLabelCourt() + "; nouveau libellé court : " + entiteDto.getLabelCourt());
-		}
-
-		if (!entiteDto.getTypeEntite().equals(entiteDtoFromBdd.getTypeEntite())) {
-			result.add("ancien type : " + entiteDtoFromBdd.getTypeEntite().getLabel() + "; nouveau type : " + entiteDto.getTypeEntite().getLabel());
-		}
-
-		if (entiteDto.getEntiteRemplacee() != null) {
-			if (!entiteDto.getEntiteRemplacee().equals(entiteDtoFromBdd.getEntiteRemplacee())) {
-				result.add("ancienne entité remplacé : "
-						+ (entiteDtoFromBdd.getEntiteRemplacee() == null ? "aucune" : entiteDtoFromBdd.getEntiteRemplacee().getSigle())
-						+ "; nouvelle entité remplacée : " + entiteDto.getEntiteRemplacee().getSigle());
-			}
-		} else if (entiteDtoFromBdd.getEntiteRemplacee() != null) {
-			result.add("ancienne entité remplacé : " + entiteDtoFromBdd.getEntiteRemplacee().getSigle() + "; nouvelle entité remplacée : aucune");
-		}
-
-		if (entiteDto.getDateDeliberationActif() != null) {
-			if (!entiteDto.getDateDeliberationActif().equals(entiteDtoFromBdd.getDateDeliberationActif())) {
-				result.add("ancienne date délib. activation / CTP : "
-						+ (entiteDtoFromBdd.getDateDeliberationActif() == null ? "aucune" : DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationActif()))
-						+ "; nouvelle date délib. activation / CTP : " + DateUtil.formatDate(entiteDto.getDateDeliberationActif()));
-			}
-		} else if (entiteDtoFromBdd.getDateDeliberationActif() != null) {
-			result.add("ancienne date délib. activation / CTP : " + DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationActif())
-					+ "; nouvelle date délib. activation / CTP : aucune");
-		}
-
-		if (StringUtils.isNotBlank(entiteDto.getRefDeliberationActif())) {
-			if (!entiteDto.getRefDeliberationActif().equals(entiteDtoFromBdd.getRefDeliberationActif())) {
-				result.add("ancienne réf délib. activation / CTP : "
-						+ (StringUtils.isBlank(entiteDtoFromBdd.getRefDeliberationActif()) ? "aucune" : entiteDtoFromBdd.getRefDeliberationActif())
-						+ "; nouvelle réf délib. activation / CTP : " + entiteDto.getRefDeliberationActif());
-			}
-		} else if (StringUtils.isNotBlank(entiteDtoFromBdd.getRefDeliberationActif())) {
-			result.add("ancienne réf délib. activation / CTP : " + entiteDtoFromBdd.getRefDeliberationActif()
-					+ "; nouvelle réf délib. activation / CTP : aucune");
-		}
-
-		if (entiteDto.getDateDeliberationInactif() != null) {
-			if (!entiteDto.getDateDeliberationInactif().equals(entiteDtoFromBdd.getDateDeliberationInactif())) {
-				result.add("ancienne date délib. inactivation / CTP : "
-						+ (entiteDtoFromBdd.getDateDeliberationInactif() == null ? "aucune"
-								: DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationInactif())) + "; nouvelle date délib. inactivation / CTP : "
-						+ DateUtil.formatDate(entiteDto.getDateDeliberationInactif()));
-			}
-		} else if (entiteDtoFromBdd.getDateDeliberationInactif() != null) {
-			result.add("ancienne date délib. inactivation : " + DateUtil.formatDate(entiteDtoFromBdd.getDateDeliberationInactif())
-					+ "; nouvelle date délib. inactivation : aucune");
-		}
-
-		if (StringUtils.isNotBlank(entiteDto.getRefDeliberationInactif())) {
-			if (!entiteDto.getRefDeliberationInactif().equals(entiteDtoFromBdd.getRefDeliberationInactif())) {
-				result.add("ancienne réf délib. inactivation / CTP : "
-						+ (StringUtils.isBlank(entiteDtoFromBdd.getRefDeliberationInactif()) ? "aucune" : entiteDtoFromBdd.getRefDeliberationInactif())
-						+ "; nouvelle réf délib. inactivation / CTP : " + entiteDto.getRefDeliberationInactif());
-			}
-		} else if (StringUtils.isNotBlank(entiteDtoFromBdd.getRefDeliberationInactif())) {
-			result.add("ancienne réf délib. inactivation / CTP : " + entiteDtoFromBdd.getRefDeliberationInactif()
-					+ "; nouvelle réf délib. inactivation / CTP : aucune");
-		}
-
-		return result;
-	}
-
-	/**
-	 * Point d'entrée du viewModel. Fait un appel à ADS afin de récupérer l'arbre et le crée
-	 * @param view : la vue permettant de récuperer le {@link Vlayout} dans lequel sera ajouté l'arbre
+	 * Point d'entrée du viewModel. Fait un appel à ADS afin de récupérer
+	 * l'arbre et le crée
+	 * 
+	 * @param view
+	 *            : la vue permettant de récuperer le {@link Vlayout} dans
+	 *            lequel sera ajouté l'arbre
 	 */
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
@@ -335,32 +228,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		vlayout = (Vlayout) Selectors.iterable(view, "#organigramme").iterator().next();
 		profilAgentDto = authentificationService.getCurrentUser();
 
-		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
+		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on
+		// est sur d'avoir une version bien à jour
 		refreshArbreComplet();
-	}
-
-	/**
-	 * Affiche la liste des entités remplaçables. Cette liste est chargée et rafraichie dans une variable globale au viewModel pour gagner en perfs et ne pas la
-	 * charger (via un appel ADS) à chaque click sur une entité. Elle affiche la liste de toutes les entités qui ne sont pas dans un statut "prévision". Elle ne
-	 * contient pas l'entité selectionnée (une entité ne peux pas être remplacée par elle-même).
-	 * @return la liste des entités remplaçables
-	 */
-	public List<EntiteDto> getListeEntiteRemplace() {
-
-		if (this.entity == null) {
-			return null;
-		}
-
-		// On créée une copie pour ne pas toucher à la liste originale
-		List<EntiteDto> listeEntiteRemplaceCopie = new ArrayList<EntiteDto>();
-		listeEntiteRemplaceCopie.addAll(listeEntiteRemplace);
-		listeEntiteRemplaceCopie.remove(this.entity);
-
-		return listeEntiteRemplaceCopie;
-	}
-
-	public void setListeEntiteRemplace(List<EntiteDto> listeEntiteRemplace) {
-		this.listeEntiteRemplace = listeEntiteRemplace;
 	}
 
 	/**
@@ -372,41 +242,55 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		Clients.evalJavaScript("refreshOrganigramme();");
 	}
 
+	@GlobalCommand
+	public void refreshOrganigrammeSuiteAjout(@BindingParam("entiteDto") EntiteDto entiteDto) {
+		refreshArbreComplet();
+		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getLi().getId() + "');");
+	}
+
+	@GlobalCommand
+	public void refreshOrganigrammeWithoutSelectedEntite() {
+		refreshArbreComplet();
+		Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
+	}
+
 	private void refreshArbreComplet() {
 		majEntiteRootByFiltreAndZoom();
 		treeViewModel.creeArbre(entiteDtoRoot);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-		refreshListeEntiteRemplace();
 	}
 
 	/**
 	 * Evenement qui se déclenche lors d'un click sur une entité côté client
-	 * @param event : l'évenement click qui contient dans getData() l'id du li selectionné
+	 * 
+	 * @param event
+	 *            : l'évenement click qui contient dans getData() l'id du li
+	 *            selectionné
 	 */
 	@Listen("onClickEntite = #organigramme")
 	public void onClickEntite(Event event) {
 		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
-		EntiteDto entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
-		entiteDtoFromBdd.setLi(entiteDto.getLi());
+		EntiteDto entiteDtoFromBdd = entiteDto;
+		if (entiteDto != null) {
+			entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
+			entiteDtoFromBdd.setLi(entiteDto.getLi());
+		}
 		setEntity(entiteDtoFromBdd);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 	}
 
 	/**
-	 * Evenement qui se déclenche lors d'un double click sur une entité côté client
-	 * @param event : l'évenement click qui contient dans getData() l'id du li selectionné
+	 * Evenement qui se déclenche lors d'un double click sur une entité côté
+	 * client
+	 * 
+	 * @param event
+	 *            : l'évenement click qui contient dans getData() l'id du li
+	 *            selectionné
 	 */
 	@Listen("onDblClickEntite = #organigramme")
 	public void onDblClickEntite(Event event) {
 		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
-
-		boolean ouvert = mapIdLiOuvert.get(entiteDto.getLi().getId()) != null ? !mapIdLiOuvert.get(entiteDto.getLi().getId()) : false;
-		mapIdLiOuvert.put(entiteDto.getLi().getId(), ouvert);
-		setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
-
-		// Lors d'un double clic on set l'entity à null
-		setEntity(null);
-		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
+		ouvreOnglet(entiteDto, 0);
 	}
 
 	@Listen("onClickToutDeplier = #organigramme")
@@ -423,8 +307,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/**
 	 * Méthode qui parcours tout l'arbre et met à jour la mapIdLiOuvert
-	 * @param listeEntiteDto : la liste à parcourir
-	 * @param ouvert : ouvert ou fermé
+	 * 
+	 * @param listeEntiteDto
+	 *            : la liste à parcourir
+	 * @param ouvert
+	 *            : ouvert ou fermé
 	 */
 	private void setLiOuvertOuFermeArbre(List<EntiteDto> listeEntiteDto, boolean ouvert) {
 		for (EntiteDto entiteDto : listeEntiteDto) {
@@ -433,20 +320,18 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		}
 	}
 
-	@Command
-	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel" })
-	public void selectOnglet(@BindingParam("onglet") int onglet) {
-		setEntiteOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
-	}
-
 	/**
-	 * Initialise un {@link EntiteDto} avec son parent et rend visible la popup de création de l'entité
-	 * @param entiteDto : le {@link EntiteDto} parent
+	 * Initialise un {@link EntiteDto} avec son parent et rend visible la popup
+	 * de création de l'entité
+	 * 
+	 * @param entiteDto
+	 *            : le {@link EntiteDto} parent
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
 	@Command
-	public void createEntite(@BindingParam("entity") EntiteDto entiteDto) throws InstantiationException, IllegalAccessException {
+	public void createEntite(@BindingParam("entity") EntiteDto entiteDto) throws InstantiationException,
+			IllegalAccessException {
 
 		if (!profilAgentDto.isEdition()) {
 			return;
@@ -454,7 +339,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 		// Le parent doit être en statut P ou A
 		if (entiteDto.getStatut() != Statut.PREVISION && entiteDto.getStatut() != Statut.ACTIF) {
-			AbstractViewModel.showErrorPopup("Vous ne pouvez créer une entité que si son parent est dans l'état Actif ou Prévision");
+			AbstractViewModel
+					.showErrorPopup("Vous ne pouvez créer une entité que si son parent est dans l'état Actif ou Prévision");
 			return;
 		}
 
@@ -464,65 +350,50 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * Recharge l'arbre complet, rafraichi le client et selectionne l'entité crée
-	 * @param entiteDtoParent : l'entité parente
-	 * @param newEntiteDto : la nouvelle entitée
+	 * Recharge l'arbre complet, rafraichi le client et selectionne l'entité
+	 * crée
+	 * 
+	 * @param entiteDtoParent
+	 *            : l'entité parente
+	 * @param newEntiteDto
+	 *            : la nouvelle entitée
 	 */
 	@GlobalCommand
-	public void refreshArbreSuiteAjout(@BindingParam("entiteDtoParent") EntiteDto entiteDtoParent, @BindingParam("newEntiteDto") EntiteDto newEntiteDto) {
+	public void refreshArbreSuiteAjout(@BindingParam("entiteDtoParent") EntiteDto entiteDtoParent,
+			@BindingParam("newEntiteDto") EntiteDto newEntiteDto) {
 
-		// Comme on est en train de créer une entité en statut prévisionnel, on force l'affichage du statut pour pouvoir voir cette nouvelle entité
+		// Comme on est en train de créer une entité en statut prévisionnel, on
+		// force l'affichage du statut pour pouvoir voir cette nouvelle entité
 		boolean filtreStatutPrevisionVisible = selectedFiltreStatut != null
-				&& (selectedFiltreStatut.equals(FiltreStatut.ACTIF_PREVISION) || selectedFiltreStatut.equals(FiltreStatut.TOUS));
+				&& (selectedFiltreStatut.equals(FiltreStatut.ACTIF_PREVISION) || selectedFiltreStatut
+						.equals(FiltreStatut.TOUS));
 		if (!filtreStatutPrevisionVisible) {
 			setSelectedFiltreStatut(FiltreStatut.ACTIF_PREVISION);
 		}
 		refreshArbreComplet();
 
-		// Vu qu'on vient de reconstruire l'arbre complet on recharge le nouveau DTO
+		// Vu qu'on vient de reconstruire l'arbre complet on recharge le nouveau
+		// DTO
 		newEntiteDto = OrganigrammeUtil.findEntiteDtoDansArbreById(entiteDtoRoot, newEntiteDto.getIdEntite(), null);
 
 		setEntity(newEntiteDto);
 		mapIdLiOuvert.put(newEntiteDto.getLi().getId(), false);
 		// Appel de la fonction javascript correspondante
-		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getLi().getId() + "', '" + entiteDtoParent.getLi().getId() + "');");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getLi().getId() + "', '"
+				+ entiteDtoParent.getLi().getId() + "');");
 
 		if (!filtreStatutPrevisionVisible) {
 			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
 		}
-	}
 
-	/**
-	 * Met à jour le {@link EntiteDto} avec les informations renseignées côté client
-	 * @param entiteDto : l'{@link EntiteDto} à mettre à jour
-	 * @return true si tout s'est bien passé, false sinon
-	 */
-	@Command
-	@NotifyChange("entity")
-	public boolean updateEntite(@BindingParam("entity") EntiteDto entiteDto) {
-
-		if (!profilAgentDto.isEdition() || showErrorPopup(entiteDto)) {
-			return false;
-		}
-
-		entiteDto.setIdAgentModification(profilAgentDto.getIdAgent());
-
-		// On fait appel au WS ADS de mise à jour d'une entité
-		ReturnMessageDto returnMessageDto = adsWSConsumer.saveOrUpdateEntite(entiteDto);
-		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
-			return false;
-		}
-
-		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-		refreshArbreComplet();
-		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getLi().getId() + "');");
-
-		return true;
+		ouvreOnglet(newEntiteDto, 0);
 	}
 
 	/**
 	 * Déplie {@link EntiteDto} côté client.
-	 * @param entiteDto : l'{@link EntiteDto} à déplier
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} à déplier
 	 */
 	@Command
 	public void deplierEntite(@BindingParam("entity") EntiteDto entiteDto) {
@@ -530,43 +401,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * Supprime l'{@link EntiteDto} de l'arbre DTO représentée par l'{@link EntiteDto} entiteDtoRoot et rafraichie côté client
-	 * @param entiteDto : l'{@link EntiteDto} à supprimer
-	 */
-	@Command
-	public void deleteEntite(@BindingParam("entity") EntiteDto entiteDto) {
-
-		if (!profilAgentDto.isEdition() && entiteDto.isPrevision()) {
-			return;
-		}
-
-		entiteDto.setIdAgentSuppression(profilAgentDto.getIdAgent());
-
-		final EntiteDto entiteDtoASupprimer = entiteDto;
-		Messagebox.show("Voulez-vous vraiment supprimer l'entité '" + entiteDto.getLabel() + "' ?", "Suppression", new Messagebox.Button[] {
-				Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION, new EventListener<Messagebox.ClickEvent>() {
-
-			@Override
-			public void onEvent(ClickEvent evt) {
-				if (evt.getName().equals("onYes")) {
-					if (organigrammeService.deleteEntite(entiteDtoASupprimer)) {
-						setEntity(null);
-						mapIdLiOuvert.remove(entiteDtoASupprimer.getLi().getId());
-						// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-						refreshArbreComplet();
-
-						// Appel de la fonction javascript correscpondante
-						Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
-					}
-				}
-			}
-		});
-
-	}
-
-	/**
-	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto} entiteDto
-	 * @param exportDto : l'exportDto contenant l'entité à partir de laquelle on souhaite exporter et si on souhaite ou non exporter les FDP
+	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
+	 * entiteDto
+	 * 
+	 * @param exportDto
+	 *            : l'exportDto contenant l'entité à partir de laquelle on
+	 *            souhaite exporter et si on souhaite ou non exporter les FDP
 	 */
 	@GlobalCommand
 	public void exportGraphMLFromEntite(@BindingParam("exportDto") ExportDto exportDto) {
@@ -584,16 +424,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * Met à jour la liste d'entité remplaçable
-	 */
-	public void refreshListeEntiteRemplace() {
-		setListeEntiteRemplace(organigrammeService.findAllNotPrevision());
-	}
-
-	/**
 	 * Effectue un changement d'état sur l'entité
 	 * 
-	 * @param transition Transition concernée
+	 * @param transition
+	 *            Transition concernée
 	 */
 	@Command
 	@NotifyChange({ "*" })
@@ -634,8 +468,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			return;
 		}
 
-		refreshListeEntiteRemplace();
-
 		notifyChange(listePropANotifier);
 
 		// Appel de la fonction javascript correspondante
@@ -643,41 +475,30 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * L'entité est-elle éditable ?
-	 * @return true si l'entité est éditable, false sinon
-	 */
-	public boolean isEditable() {
-		// On ne peux modifier que si on a le rôle édition et si ce n'est pas l'entité VDN
-		// #17117 : En dehors du statut "prévision", une entité n'est pas modifiable
-		return profilAgentDto.isEdition() && (this.entity != null && this.entity.isPrevision() && !this.entity.getSigle().equals("VDN"));
-	}
-
-	/**
 	 * L'entité est-elle créable ?
+	 * 
 	 * @return true si l'entité est créable, false sinon
 	 */
 	public boolean isCreable() {
 		// On ne peux créer que si on a le rôle édition
-		return profilAgentDto.isEdition();
+		return profilAgentDto.isEdition() && this.entity != null;
 	}
 
 	/**
-	 * Renvoie la liste des types d'entités actifs et inactifs triés par nom (d'abord les actifs, puis les inactifs postfixés par "(inactif)"
-	 * @return la liste des types d'entités actifs et inactifs triés par nom
-	 */
-	public List<TypeEntiteDto> getListeTypeEntiteActifInactif() {
-		return typeEntiteService.getListeTypeEntiteActifInactif();
-	}
-
-	/**
-	 * Met à jour l'entité avec les dates et les références de délibérations saisies et passe la transition
-	 * @param entiteDto : l'{@link EntiteDto} sur laquelle on souhaite passer la transition
-	 * @param transition : la transition a passer
-	 * @param popup : la popup de changement de statut
+	 * Met à jour l'entité avec les dates et les références de délibérations
+	 * saisies et passe la transition
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} sur laquelle on souhaite passer la
+	 *            transition
+	 * @param transition
+	 *            : la transition a passer
+	 * @param popup
+	 *            : la popup de changement de statut
 	 */
 	@GlobalCommand
-	public void saveStatutWithRefAndDateGenerique(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("transition") final Transition transition,
-			@BindingParam("popup") final Window popup) {
+	public void saveStatutWithRefAndDateGenerique(@BindingParam("entity") EntiteDto entiteDto,
+			@BindingParam("transition") final Transition transition, @BindingParam("popup") final Window popup) {
 
 		if (entiteDto == null || !OrganigrammeUtil.sameIdAndNotNull(entiteDto.getId(), this.entity.getId())) {
 			return;
@@ -685,17 +506,17 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 		if (transition.getStatut().equals(Statut.ACTIF)) {
 			String messageConfirmation = "Êtes-vous sur de vouloir passer cette entité en statut 'ACTIF' ? Plus aucune information de cette entité ne pourra être modifiée.";
-			Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
-					Messagebox.EXCLAMATION, new EventListener<Messagebox.ClickEvent>() {
-						@Override
-						public void onEvent(ClickEvent evt) {
-							if (evt.getName().equals("onYes")) {
-								if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
-									popup.detach();
-								}
-							}
+			Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES,
+					Messagebox.Button.NO }, Messagebox.EXCLAMATION, new EventListener<Messagebox.ClickEvent>() {
+				@Override
+				public void onEvent(ClickEvent evt) {
+					if (evt.getName().equals("onYes")) {
+						if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
+							popup.detach();
 						}
-					});
+					}
+				}
+			});
 		} else {
 			if (organigrammeWorkflowViewModel.executerTransitionGeneric(transition)) {
 				popup.detach();
@@ -705,11 +526,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public Map<String, EntiteDto> getMapIdLiEntiteDto() {
 		return mapIdLiEntiteDto;
-	}
-
-	public String getStylePanelEdition() {
-		String cssCommun = "display:block;";
-		return this.entity == null ? (cssCommun += "visibility: hidden;") : (cssCommun += "visibility: visible;");
 	}
 
 	@Command
@@ -753,7 +569,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/**
 	 * Permet de zoomer sur une entité
-	 * @param entiteDto : l'entité sur laquelle zoomer
+	 * 
+	 * @param entiteDto
+	 *            : l'entité sur laquelle zoomer
 	 */
 	@Command
 	public void zoomSurEntite(@BindingParam("entity") EntiteDto entiteDto) {
@@ -765,19 +583,21 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	public void selectionneFiltreStatut() {
 		if (this.selectedFiltreStatut != null) {
 
-			// Si une entité était en édition, on vide pour ne pas se retrouver dans des cas bizarre d'entité ouverte en édition alors qu'elle n'est
+			// Si une entité était en édition, on vide pour ne pas se retrouver
+			// dans des cas bizarre d'entité ouverte en édition alors qu'elle
+			// n'est
 			// pas présente avec le fitre actif
 			setEntity(null);
 			majEntiteRootByFiltreAndZoom();
 			treeViewModel.creeArbre(entiteDtoRoot);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-			refreshListeEntiteRemplace();
 			Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
 		}
 	}
 
 	private void majEntiteRootByFiltreAndZoom() {
-		// On recharge toujours à partir d'ADS avant de filtrer pour être sur de tout récupérer à jour
+		// On recharge toujours à partir d'ADS avant de filtrer pour être sur de
+		// tout récupérer à jour
 		if (this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
 			// Si on est en zoom, on filtre uniquement sur les entités zoomées
 			if (this.selectedEntiteDtoZoom != null) {
@@ -799,9 +619,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * Renvoi une arborescence composé uniquement des statuts correspondant au filtre passé en paramétre
-	 * @param entiteDto : l'entité root de l'arbre à filtrer
-	 * @param filtreStatut : le filtre a appliquer
+	 * Renvoi une arborescence composé uniquement des statuts correspondant au
+	 * filtre passé en paramétre
+	 * 
+	 * @param entiteDto
+	 *            : l'entité root de l'arbre à filtrer
+	 * @param filtreStatut
+	 *            : le filtre a appliquer
 	 * @return un arbre ne contenant que les statuts correspondant au filtre
 	 */
 	private EntiteDto filtrerEntiteDtoRootParStatut(EntiteDto entiteDto, FiltreStatut filtreStatut) {
@@ -815,9 +639,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * Méthode récursive qui parcoure les enfants et les enlève de l'arbre si ils ne sont pas dans un des statuts du filtre
-	 * @param entiteDto : l'entité parcourue
-	 * @param filtreStatut : le filtre
+	 * Méthode récursive qui parcoure les enfants et les enlève de l'arbre si
+	 * ils ne sont pas dans un des statuts du filtre
+	 * 
+	 * @param entiteDto
+	 *            : l'entité parcourue
+	 * @param filtreStatut
+	 *            : le filtre
 	 */
 	private void removeEntiteDtoIfNotInFiltre(EntiteDto entiteDto, FiltreStatut filtreStatut) {
 		List<EntiteDto> listeEnfant = new ArrayList<EntiteDto>();
@@ -841,41 +669,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public String getComboVide() {
 		return null;
-	}
-
-	/**
-	 * Renvoie la liste des fiches de postes groupées par Sigle
-	 * @return la liste des fiches de postes groupées par Sigle
-	 */
-	public FichePosteGroupingModel getFichePosteGroupingModel() {
-		if (this.entity == null || !this.entiteOngletSelectionne.equals(EntiteOnglet.FDP)) {
-			return null;
-		}
-
-		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
-
-		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
-	}
-
-	/**
-	 * Renvoie la liste de l'historique de l'entité
-	 * @return la liste de l'historique de l'entité
-	 */
-	public List<EntiteHistoDto> getListeHistorique() {
-		if (this.entity == null || !this.entiteOngletSelectionne.equals(EntiteOnglet.HISTORIQUE)) {
-			return null;
-		}
-
-		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), mapIdAgentNomPrenom);
-	}
-
-	public String getTabCommentaireSclass() {
-
-		if (this.entity == null) {
-			return "";
-		}
-
-		return StringUtils.isNotBlank(this.entity.getCommentaire()) ? "tab-bold-red" : "";
 	}
 
 	@Command

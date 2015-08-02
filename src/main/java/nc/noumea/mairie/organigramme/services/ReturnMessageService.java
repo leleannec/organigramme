@@ -30,8 +30,11 @@ import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 public interface ReturnMessageService extends GenericService<ReturnMessageDto> {
 
 	/**
-	 * Permet de gérer globalement les messages de retour et d'afficher si besoin les popups d'erreurs/d'infos
-	 * @param returnMessageDto : le message de retour à traiter
+	 * Permet de gérer globalement les messages de retour et d'afficher si
+	 * besoin les popups d'erreurs/d'infos
+	 * 
+	 * @param returnMessageDto
+	 *            : le message de retour à traiter
 	 * @return true si tout s'est bien passé, false si il y a une erreur
 	 */
 	boolean gererReturnMessage(ReturnMessageDto returnMessageDto);

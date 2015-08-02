@@ -44,12 +44,12 @@ import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
 public class CouleurTypeEntite extends AbstractEntity {
 
 	@Version
-	private Integer				version;
+	private Integer version;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "s_couleur_type_entite")
 	@SequenceGenerator(name = "s_couleur_type_entite", sequenceName = "s_couleur_type_entite", allocationSize = 1)
-	Long						id;
+	Long id;
 
 	@Override
 	public Long getId() {
@@ -63,14 +63,14 @@ public class CouleurTypeEntite extends AbstractEntity {
 
 	@Column(length = 1)
 	@NotNull
-	String	couleurEntite;
-	
+	String couleurEntite;
+
 	@Column(length = 1)
 	@NotNull
-	String	couleurTexte;
+	String couleurTexte;
 
 	@Column
-	Long	idTypeEntite;
+	Long idTypeEntite;
 
 	@Override
 	public String getLibelleCourt() {
@@ -84,7 +84,7 @@ public class CouleurTypeEntite extends AbstractEntity {
 	public void setCouleurEntite(String couleurEntite) {
 		this.couleurEntite = couleurEntite;
 	}
-	
+
 	public String getCouleurTexte() {
 		return couleurTexte;
 	}

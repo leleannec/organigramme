@@ -50,7 +50,7 @@ import org.zkoss.zul.Window;
 @VariableResolver(DelegatingVariableResolver.class)
 public class CreateExportGraphMLViewModel extends AbstractPopupViewModel<ExportDto> implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {

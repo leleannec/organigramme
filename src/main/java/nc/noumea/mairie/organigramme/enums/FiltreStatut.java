@@ -32,14 +32,13 @@ import java.util.List;
  */
 public enum FiltreStatut {
 
-	ACTIF("Actif", Arrays.asList(Statut.ACTIF)),
-	ACTIF_PREVISION("Actif + Prévision", Arrays.asList(Statut.ACTIF, Statut.PREVISION)),
-	ACTIF_TRANSITOIRE("Actif + Transitoire", Arrays.asList(Statut.ACTIF, Statut.TRANSITOIRE)),
-	ACTIF_TRANSITOIRE_INACTIF("Actif + Transitoire + Inactif", Arrays.asList(Statut.ACTIF, Statut.TRANSITOIRE, Statut.INACTIF)),
-	TOUS("Tous", null);
+	ACTIF("Actif", Arrays.asList(Statut.ACTIF)), ACTIF_PREVISION("Actif + Prévision", Arrays.asList(Statut.ACTIF,
+			Statut.PREVISION)), ACTIF_TRANSITOIRE("Actif + Transitoire", Arrays
+			.asList(Statut.ACTIF, Statut.TRANSITOIRE)), ACTIF_TRANSITOIRE_INACTIF("Actif + Transitoire + Inactif",
+			Arrays.asList(Statut.ACTIF, Statut.TRANSITOIRE, Statut.INACTIF)), TOUS("Tous", null);
 
-	final String		libelle;
-	final List<Statut>	listeStatut;
+	final String libelle;
+	final List<Statut> listeStatut;
 
 	FiltreStatut(String libelle, List<Statut> listeStatut) {
 		this.libelle = libelle;

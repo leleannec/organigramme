@@ -57,17 +57,19 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 /**
- * ViewModel abstrait parent des ViewModel de l'application qui manipulent une entité (création, modification, et même liste où on considère que l'entité est
- * celle sélectionnée dans la liste)
+ * ViewModel abstrait parent des ViewModel de l'application qui manipulent une
+ * entité (création, modification, et même liste où on considère que l'entité
+ * est celle sélectionnée dans la liste)
  * 
  * @author AgileSoft.NC
- * @param <T> Type paramétré (représente une classe d'entité en pratique)
+ * @param <T>
+ *            Type paramétré (représente une classe d'entité en pratique)
  */
 public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 
-	private static Logger	log	= LoggerFactory.getLogger(AbstractViewModel.class);
+	private static Logger log = LoggerFactory.getLogger(AbstractViewModel.class);
 
-	protected T				entity;
+	protected T entity;
 
 	/**
 	 * @return l'entité concernée
@@ -79,16 +81,20 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	/**
 	 * Fixe l'entité concerné par le ViewModel
 	 * 
-	 * @param entity entité concernée
+	 * @param entity
+	 *            entité concernée
 	 */
 	public void setEntity(T entity) {
 		this.entity = entity;
 	}
 
 	/**
-	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans l'ordre de leur déclaration).
+	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans
+	 * l'ordre de leur déclaration).
 	 * 
-	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.organigramme.enums.Civilite")
+	 * @param enumClassName
+	 *            nom complet de la classe (avec le package, ex :
+	 *            "nc.noumea.mairie.organigramme.enums.Civilite")
 	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration.
 	 */
 	public ListModelList<?> getListeEnum(String enumClassName) {
@@ -96,11 +102,18 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	}
 
 	/**
-	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans l'ordre de leur déclaration), avec la possibilité d'insérer en tête la valeur null.
+	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans
+	 * l'ordre de leur déclaration), avec la possibilité d'insérer en tête la
+	 * valeur null.
 	 * 
-	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.organigramme.enums.Civilite")
-	 * @param insertNull indique s'il faut insérer en tête de la liste résultat la valeur null
-	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration (avec null en tête optionnellement)
+	 * @param enumClassName
+	 *            nom complet de la classe (avec le package, ex :
+	 *            "nc.noumea.mairie.organigramme.enums.Civilite")
+	 * @param insertNull
+	 *            indique s'il faut insérer en tête de la liste résultat la
+	 *            valeur null
+	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration
+	 *         (avec null en tête optionnellement)
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ListModelList<?> getListeEnum(String enumClassName, boolean insertNull) {
@@ -119,27 +132,35 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	}
 
 	/**
-	 * Publie un évènement de demande d'ouverture d'une entity dans un nouvel onglet (ou dans un onglet existant si l'entity est déjà ouverte)
+	 * Publie un évènement de demande d'ouverture d'une entity dans un nouvel
+	 * onglet (ou dans un onglet existant si l'entity est déjà ouverte)
 	 * 
-	 * @param abstractEntity entité concernée
-	 * @param selectedTabIndex index de l'onglet à ouvrir
+	 * @param abstractEntity
+	 *            entité concernée
+	 * @param selectedTabIndex
+	 *            index de l'onglet à ouvrir
 	 */
 	@Command
 	public void ouvreOnglet(@BindingParam("entity") T abstractEntity, Integer selectedTabIndex) {
-		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new OuvreOngletAbstractEntityEvent(abstractEntity, selectedTabIndex));
+		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
+				new OuvreOngletAbstractEntityEvent(abstractEntity, selectedTabIndex));
 	}
 
 	/**
-	 * Publie un évènement de demande de fermeture d'un onglet qui concerne une entity
+	 * Publie un évènement de demande de fermeture d'un onglet qui concerne une
+	 * entity
 	 * 
-	 * @param abstractEntity entité concernée
+	 * @param abstractEntity
+	 *            entité concernée
 	 */
 	public void fermeOnglet(@BindingParam("entity") T abstractEntity) {
-		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new FermeOngletAbstractEntityEvent(abstractEntity));
+		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
+				new FermeOngletAbstractEntityEvent(abstractEntity));
 	}
 
 	/**
-	 * Publie un évènement de demande de recharge de l'entity, dans l'onglet couramment sélectionné
+	 * Publie un évènement de demande de recharge de l'entity, dans l'onglet
+	 * couramment sélectionné
 	 */
 	@Command
 	public void rechargeOnglet() {
@@ -147,21 +168,29 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	}
 
 	/**
-	 * Publie un évènement de demande de recharge de l'entity, dans l'onglet couramment sélectionné (ou dans l'onglet indiqué)
-	 * @param indexSousOnglet si null ignoré, permet d'indiquer un éventuel sous-onglet sur lequel se positionner après rechargement de l'entity
+	 * Publie un évènement de demande de recharge de l'entity, dans l'onglet
+	 * couramment sélectionné (ou dans l'onglet indiqué)
+	 * 
+	 * @param indexSousOnglet
+	 *            si null ignoré, permet d'indiquer un éventuel sous-onglet sur
+	 *            lequel se positionner après rechargement de l'entity
 	 */
 	protected void rechargeOnglet(Integer indexSousOnglet) {
-		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new RechargeOngletAbstractEntityEvent(entity, indexSousOnglet));
+		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
+				new RechargeOngletAbstractEntityEvent(entity, indexSousOnglet));
 	}
 
 	/**
-	 * Publie un évènement de demande de mise à jour du libellé de l'onglet qui gère l'entity passée en argument.
+	 * Publie un évènement de demande de mise à jour du libellé de l'onglet qui
+	 * gère l'entity passée en argument.
 	 * 
-	 * @param abstractEntity entité concernée
+	 * @param abstractEntity
+	 *            entité concernée
 	 */
 	@Command
 	public void updateOnglet(@BindingParam("entity") T abstractEntity) {
-		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(new UpdateOngletAbstractEntityEvent(abstractEntity));
+		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
+				new UpdateOngletAbstractEntityEvent(abstractEntity, null));
 	}
 
 	/**
@@ -171,7 +200,8 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	 */
 	@SuppressWarnings("unchecked")
 	public GenericService<T> getService() {
-		return (GenericService<T>) ApplicationContextUtils.getApplicationContext().getBean(StringUtils.uncapitalize(getEntityName()) + "Service");
+		return (GenericService<T>) ApplicationContextUtils.getApplicationContext().getBean(
+				StringUtils.uncapitalize(getEntityName()) + "Service");
 	}
 
 	/**
@@ -197,16 +227,19 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	 * Instancie un nouvel objet T
 	 * 
 	 * @return instance créée
-	 * @throws InstantiationException en cas d'erreur à la création de l'entity
-	 * @throws IllegalAccessException en cas d'erreur à la création de l'entity
+	 * @throws InstantiationException
+	 *             en cas d'erreur à la création de l'entity
+	 * @throws IllegalAccessException
+	 *             en cas d'erreur à la création de l'entity
 	 */
 	protected T createEntity() throws InstantiationException, IllegalAccessException {
 		return getEntityClass().newInstance();
 	}
 
 	/**
-	 * Poste une commande globale pour signaler la mise à jour de l'entity gérée par le ViewModel courant, en précisant en argument l'entité concernée. Exemple
-	 * de commande globale : "updateEntiteDto"
+	 * Poste une commande globale pour signaler la mise à jour de l'entity gérée
+	 * par le ViewModel courant, en précisant en argument l'entité concernée.
+	 * Exemple de commande globale : "updateEntiteDto"
 	 */
 	public void notifyUpdateEntity() {
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -215,9 +248,11 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	}
 
 	/**
-	 * Poste une commande globale pour signaler la mise à jour d'une entity quelconque. Exemple de commande globale : "updateDemandeur"
+	 * Poste une commande globale pour signaler la mise à jour d'une entity
+	 * quelconque. Exemple de commande globale : "updateDemandeur"
 	 * 
-	 * @param entityUpdated entity concernée
+	 * @param entityUpdated
+	 *            entity concernée
 	 */
 	protected void notifyUpdateEntity(AbstractEntity entityUpdated) {
 		if (entityUpdated == null) {
@@ -225,7 +260,8 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 		}
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("entity", entityUpdated);
-		BindUtils.postGlobalCommand(null, null, "update" + OrganigrammeUtil.getSimpleClassNameOfObject(entityUpdated), args);
+		BindUtils.postGlobalCommand(null, null, "update" + OrganigrammeUtil.getSimpleClassNameOfObject(entityUpdated),
+				args);
 	}
 
 	public static void notifyChange(String prop, Object bean) {
@@ -259,24 +295,29 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	}
 
 	/**
-	 * Affiche une popup d'erreur, concernant une liste d'erreurs (si la liste est null ou fait 0 élément, la méthode ne fait rien)
+	 * Affiche une popup d'erreur, concernant une liste d'erreurs (si la liste
+	 * est null ou fait 0 élément, la méthode ne fait rien)
 	 * 
-	 * @param listeMessageErreur liste de messages d'erreur à afficher
+	 * @param listeMessageErreur
+	 *            liste de messages d'erreur à afficher
 	 * @return true si au moins un message a été affiché
 	 */
 	public static boolean showErrorPopup(List<MessageErreur> listeMessageErreur) {
 		if (CollectionUtils.isEmpty(listeMessageErreur)) {
 			return false;
 		}
-		Messagebox.show(MessageErreurUtil.construitReprListeMessageErreur(listeMessageErreur), "Erreur", Messagebox.OK, Messagebox.ERROR);
+		Messagebox.show(MessageErreurUtil.construitReprListeMessageErreur(listeMessageErreur), "Erreur", Messagebox.OK,
+				Messagebox.ERROR);
 		return true;
 	}
 
 	/**
-	 * Affiche une popup modale de messages d'erreur concernant l'entité (les erreurs spécifiques métier et les violations de contraintes observées sur
+	 * Affiche une popup modale de messages d'erreur concernant l'entité (les
+	 * erreurs spécifiques métier et les violations de contraintes observées sur
 	 * l'entité)
 	 * 
-	 * @param entity entité concernée
+	 * @param entity
+	 *            entité concernée
 	 * @return true si des erreurs ont été affiches, false si aucune erreur
 	 */
 	public static boolean showErrorPopup(AbstractEntity entity) {
@@ -286,7 +327,9 @@ public abstract class AbstractViewModel<T extends AbstractEntityDto> {
 	/**
 	 * Affiche une popup d'erreur, concernant une erreur unique
 	 * 
-	 * @param message Message d'erreur (si le message est "blanc", la méthode ne fait rien)
+	 * @param message
+	 *            Message d'erreur (si le message est "blanc", la méthode ne
+	 *            fait rien)
 	 * @return true si un message (non vide) a été affiché, false sinon
 	 */
 	public static boolean showErrorPopup(String message) {

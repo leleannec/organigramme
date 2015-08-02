@@ -24,7 +24,6 @@ package nc.noumea.mairie.organigramme.core.utility;
  * #L%
  */
 
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,7 +33,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class ApplicationContextUtils implements ApplicationContextAware {
 
-	private static ApplicationContext	ctx;
+	private static ApplicationContext ctx;
 
 	@Override
 	public void setApplicationContext(ApplicationContext appContext) throws BeansException {
@@ -42,7 +41,8 @@ public class ApplicationContextUtils implements ApplicationContextAware {
 	}
 
 	/**
-	 * passage par une méthode statique pour éviter anomalie dans les rapports findbug/pmd
+	 * passage par une méthode statique pour éviter anomalie dans les rapports
+	 * findbug/pmd
 	 */
 	private static void setApplicationContextStatic(ApplicationContext appContext) {
 		ctx = appContext;

@@ -31,10 +31,10 @@ import org.springframework.stereotype.Component;
 @Scope("session")
 public class LightUserDto {
 
-	private String	sAMAccountName;
-	private Integer	employeeNumber;
-	private String	mail;
-	private String	distinguishedName;
+	private String sAMAccountName;
+	private Integer employeeNumber;
+	private String mail;
+	private String distinguishedName;
 
 	public String getsAMAccountName() {
 		return sAMAccountName;

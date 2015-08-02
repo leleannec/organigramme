@@ -50,13 +50,13 @@ import org.springframework.stereotype.Service;
 public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> implements OrganigrammeService {
 
 	@Autowired
-	ReturnMessageService	returnMessageService;
+	ReturnMessageService returnMessageService;
 
 	@Autowired
-	AdsWSConsumer			adsWSConsumer;
+	AdsWSConsumer adsWSConsumer;
 
 	@Autowired
-	AuthentificationService	authentificationService;
+	AuthentificationService authentificationService;
 
 	@Override
 	public boolean updateStatut(EntiteDto entiteDto, Statut statutCible) {
@@ -76,9 +76,14 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 
 	/**
 	 * Initialise le dto de changement de statut avec les bonnes valeurs
-	 * @param entiteDto : l'{@link EntiteDto} sur laquelle on souhaite changer le statut
-	 * @param statut : la statut cible
-	 * @return le {@link ChangeStatutDto} contenant toutes les informations à envoyer au WS ADS
+	 * 
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} sur laquelle on souhaite changer le
+	 *            statut
+	 * @param statut
+	 *            : la statut cible
+	 * @return le {@link ChangeStatutDto} contenant toutes les informations à
+	 *         envoyer au WS ADS
 	 */
 	private ChangeStatutDto initChangeStatutDto(EntiteDto entiteDto, Statut statut) {
 		ChangeStatutDto changeStatutDto = new ChangeStatutDto();

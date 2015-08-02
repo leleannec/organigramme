@@ -29,12 +29,9 @@ package nc.noumea.mairie.organigramme.enums;
  */
 public enum EntiteOnglet {
 
-	CARACTERISTIQUE(0),
-	FDP(1),
-	COMMENTAIRE(2),
-	HISTORIQUE(3);
+	CARACTERISTIQUE(0), FDP(1), HISTORIQUE(2);
 
-	final int	position;
+	final int position;
 
 	public static EntiteOnglet getEntiteOngletByPosition(int position) {
 
@@ -44,8 +41,6 @@ public enum EntiteOnglet {
 			case 1:
 				return FDP;
 			case 2:
-				return COMMENTAIRE;
-			case 3:
 				return HISTORIQUE;
 			default:
 				return null;

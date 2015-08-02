@@ -32,7 +32,7 @@ import org.zkoss.zk.ui.Component;
 
 public class ZkUtil {
 
-	private static Logger	log	= LoggerFactory.getLogger(ZkUtil.class);
+	private static Logger log = LoggerFactory.getLogger(ZkUtil.class);
 
 	public static void disableComponentAndChildren(Component component) {
 		tryDisableComponent(component);

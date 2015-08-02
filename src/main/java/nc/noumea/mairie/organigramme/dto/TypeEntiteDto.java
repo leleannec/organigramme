@@ -36,12 +36,12 @@ import flexjson.JSON;
 
 public class TypeEntiteDto extends AbstractEntityDto {
 
-	Long						id;
-	String						label;
-	String						couleurEntite		= "#FFFFCF";
-	String						couleurTexte		= "#000000";
-	boolean						actif				= true;
-	boolean 					entiteAs400;
+	Long id;
+	String label;
+	String couleurEntite = "#FFFFCF";
+	String couleurTexte = "#000000";
+	boolean actif = true;
+	boolean entiteAs400;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -56,13 +56,13 @@ public class TypeEntiteDto extends AbstractEntityDto {
 	}
 
 	@Override
-	@JSON(include=false)
+	@JSON(include = false)
 	public String getLibelleCourt() {
 		return label;
 	}
 
 	@Override
-	@JSON(include=false)
+	@JSON(include = false)
 	public Integer getVersion() {
 		return this.getVersion();
 	}
@@ -88,10 +88,10 @@ public class TypeEntiteDto extends AbstractEntityDto {
 		this.entiteAs400 = entiteAs400;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public String getCouleurEntite() {
-		//#16887 : on force la couleur en #FFFFCF si elle n'est pas renseignée
-		if(couleurEntite == null) {
+		// #16887 : on force la couleur en #FFFFCF si elle n'est pas renseignée
+		if (couleurEntite == null) {
 			return "#FFFFCF";
 		}
 		return couleurEntite;
@@ -100,8 +100,8 @@ public class TypeEntiteDto extends AbstractEntityDto {
 	public void setCouleurEntite(String couleurEntite) {
 		this.couleurEntite = couleurEntite;
 	}
-	
-	@JSON(include=false)
+
+	@JSON(include = false)
 	public String getCouleurTexte() {
 		return couleurTexte;
 	}
@@ -110,21 +110,23 @@ public class TypeEntiteDto extends AbstractEntityDto {
 		this.couleurTexte = couleurTexte;
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
 	public String getStyleEntite() {
-		return "height: 15px; width: 100%; border: 1px solid; background-color: " + (this.getCouleurEntite() != null ? this.getCouleurEntite() : "#FFFFCF") + ";";
-	}
-	
-	@JSON(include=false)
-	public String getStyleTexte() {
-		return "height: 15px; width: 100%; border: 1px solid; background-color: " + (this.getCouleurTexte() != null ? this.getCouleurTexte() : "#000000") + ";";
+		return "height: 15px; width: 100%; border: 1px solid; background-color: "
+				+ (this.getCouleurEntite() != null ? this.getCouleurEntite() : "#FFFFCF") + ";";
 	}
 
-	@JSON(include=false)
+	@JSON(include = false)
+	public String getStyleTexte() {
+		return "height: 15px; width: 100%; border: 1px solid; background-color: "
+				+ (this.getCouleurTexte() != null ? this.getCouleurTexte() : "#000000") + ";";
+	}
+
+	@JSON(include = false)
 	public String getLabelWithActifInactif() {
 		return label + (this.actif ? "" : " (inactif)");
 	}
-	
+
 	@Override
 	public List<MessageErreur> construitListeMessageErreur() {
 
@@ -137,13 +139,15 @@ public class TypeEntiteDto extends AbstractEntityDto {
 		if (StringUtils.isBlank(this.getCouleurEntite())) {
 			result.add(new MessageErreur("La couleur de l'entité est obligatoire"));
 		} else if (!OrganigrammeUtil.isCodeCouleurHtmlValide(this.getCouleurEntite())) {
-			result.add(new MessageErreur("Vous devez renseigner une couleur de l'entité au format HTML (exemple : #FEAABD)"));
+			result.add(new MessageErreur(
+					"Vous devez renseigner une couleur de l'entité au format HTML (exemple : #FEAABD)"));
 		}
-		
+
 		if (StringUtils.isBlank(this.getCouleurTexte())) {
 			result.add(new MessageErreur("La couleur du texte de l'entité est obligatoire"));
 		} else if (!OrganigrammeUtil.isCodeCouleurHtmlValide(this.getCouleurTexte())) {
-			result.add(new MessageErreur("Vous devez renseigner une couleur du texte de l'entité au format HTML (exemple : #FEAABD)"));
+			result.add(new MessageErreur(
+					"Vous devez renseigner une couleur du texte de l'entité au format HTML (exemple : #FEAABD)"));
 		}
 
 		return result;

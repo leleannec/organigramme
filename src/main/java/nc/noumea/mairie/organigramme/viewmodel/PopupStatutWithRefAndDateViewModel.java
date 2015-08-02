@@ -60,11 +60,11 @@ import org.zkoss.zul.Window;
 @Init(superclass = true)
 public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<EntiteDto> implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	protected Transition		transition;
-	private String				refDeliberation;
-	private Date				dateDeliberation;
+	protected Transition transition;
+	private String refDeliberation;
+	private Date dateDeliberation;
 
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
@@ -97,8 +97,8 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 
 	@GlobalCommand
 	@NotifyChange("*")
-	public void ouvrirPopupStatutWithRefAndDate(@BindingParam("entity") EntiteDto entity, @BindingParam("transition") Transition transition)
-			throws InstantiationException, IllegalAccessException {
+	public void ouvrirPopupStatutWithRefAndDate(@BindingParam("entity") EntiteDto entity,
+			@BindingParam("transition") Transition transition) throws InstantiationException, IllegalAccessException {
 		setEntity(entity);
 		setTransition(transition);
 		getPopup().doModal();
@@ -128,7 +128,8 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 
 	private boolean validerChampObligatoire() {
 		if (transition.getStatut() != Statut.TRANSITOIRE) {
-			// Lors d'un passage en statut transitoire la date et la référence ne sont pas obligatoires
+			// Lors d'un passage en statut transitoire la date et la référence
+			// ne sont pas obligatoires
 			List<String> listeMessageErreur = new ArrayList<String>();
 			if (StringUtils.isBlank(refDeliberation)) {
 				listeMessageErreur.add("La référence de la délibération est obligatoire");
@@ -145,7 +146,8 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 			}
 
 			if (!CollectionUtils.isEmpty(listeMessageErreur)) {
-				Messagebox.show(StringUtils.join(listeMessageErreur, "\n"), "Erreur", Messagebox.OK, Messagebox.EXCLAMATION);
+				Messagebox.show(StringUtils.join(listeMessageErreur, "\n"), "Erreur", Messagebox.OK,
+						Messagebox.EXCLAMATION);
 				return false;
 			}
 		}

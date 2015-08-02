@@ -38,18 +38,19 @@ import org.zkoss.zul.Label;
 
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class LogoutController extends SelectorComposer<Component> {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	@Wire
-	Label						labelDeconnexion;
+	Label labelDeconnexion;
 	@Wire
-	Label						labelPrenomNomUsageEtRole;
+	Label labelPrenomNomUsageEtRole;
 
 	@WireVariable
-	AuthentificationService		authentificationService;
+	AuthentificationService authentificationService;
 
 	/**
-	 * Passe l'attribut currentUser stocké en session à null et redirige vers la fenêtre de login
+	 * Passe l'attribut currentUser stocké en session à null et redirige vers la
+	 * fenêtre de login
 	 */
 	@Listen("onClick=#labelDeconnexion")
 	public void doLogout() {
@@ -57,7 +58,8 @@ public class LogoutController extends SelectorComposer<Component> {
 	}
 
 	/**
-	 * Récupére le currentUser en session et, s'il existe, affiche le bouton de déconnexion et le nom de la personne connéctée
+	 * Récupére le currentUser en session et, s'il existe, affiche le bouton de
+	 * déconnexion et le nom de la personne connéctée
 	 */
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {

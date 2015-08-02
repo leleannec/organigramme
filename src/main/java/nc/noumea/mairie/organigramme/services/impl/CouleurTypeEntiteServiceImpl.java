@@ -36,10 +36,11 @@ import org.springframework.stereotype.Service;
 
 @Service("couleurTypeEntiteService")
 @Scope(value = "singleton", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CouleurTypeEntiteServiceImpl extends GenericServiceImpl<CouleurTypeEntite> implements CouleurTypeEntiteService {
+public class CouleurTypeEntiteServiceImpl extends GenericServiceImpl<CouleurTypeEntite> implements
+		CouleurTypeEntiteService {
 
 	@Autowired
-	CouleurTypeEntiteDao	couleurTypeEntiteDao;
+	CouleurTypeEntiteDao couleurTypeEntiteDao;
 
 	public CouleurTypeEntite findByIdTypeEntite(Long idTypeEntite) {
 		return couleurTypeEntiteDao.findByIdTypeEntite(idTypeEntite);

@@ -44,8 +44,8 @@ import org.zkoss.zk.ui.Executions;
 
 public class LDAP {
 
-	static String						HOST_LDAP	= null;
-	static Hashtable<String, String>	HASHPARAMETRE;
+	static String HOST_LDAP = null;
+	static Hashtable<String, String> HASHPARAMETRE;
 
 	public synchronized static Hashtable<String, String> getHashParametres() {
 		if (HASHPARAMETRE == null) {
@@ -70,24 +70,34 @@ public class LDAP {
 	/**
 	 * Methode controlerHabilitation qui retourne true ou false
 	 * 
-	 * @param cles List des attributs que l'on veut récumérer ex: name, dn, ....
-	 * @param critere critere de recherche dans l'AD (ex: samaccountname)
-	 * @param userName userName
-	 * @return Arraylist en clé le nom de l'attribut, en valeur l'objet correspondant
+	 * @param cles
+	 *            List des attributs que l'on veut récumérer ex: name, dn, ....
+	 * @param critere
+	 *            critere de recherche dans l'AD (ex: samaccountname)
+	 * @param userName
+	 *            userName
+	 * @return Arraylist en clé le nom de l'attribut, en valeur l'objet
+	 *         correspondant
 	 */
-	public static ArrayList<Hashtable<String, Object>> chercherUserLDAPAttributs(List<String> cles, String critere, String userName) {
+	public static ArrayList<Hashtable<String, Object>> chercherUserLDAPAttributs(List<String> cles, String critere,
+			String userName) {
 		return chercherUserLDAPAttributs(getHashParametres(), cles, critere, userName);
 	}
 
 	/**
-	 * @param parametres parametres
-	 * @param cles List des attributs que l'on veut récumérer ex: name, dn, ....
-	 * @param critere critere de recherche dans l'AD (ex: samaccountname)
-	 * @param userName userName
-	 * @return Arraylist en clé le nom de l'attribut, en valeur l'objet correspondant
+	 * @param parametres
+	 *            parametres
+	 * @param cles
+	 *            List des attributs que l'on veut récumérer ex: name, dn, ....
+	 * @param critere
+	 *            critere de recherche dans l'AD (ex: samaccountname)
+	 * @param userName
+	 *            userName
+	 * @return Arraylist en clé le nom de l'attribut, en valeur l'objet
+	 *         correspondant
 	 */
-	public static ArrayList<Hashtable<String, Object>> chercherUserLDAPAttributs(Hashtable<String, String> parametres, List<String> cles, String critere,
-			String userName) {
+	public static ArrayList<Hashtable<String, Object>> chercherUserLDAPAttributs(Hashtable<String, String> parametres,
+			List<String> cles, String critere, String userName) {
 
 		ArrayList<Hashtable<String, Object>> res = new ArrayList<Hashtable<String, Object>>();
 
@@ -106,8 +116,8 @@ public class LDAP {
 			SearchControls constraints = new SearchControls();
 			constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-			NamingEnumeration<SearchResult> enume = contextAdmin
-					.search((String) parametres.get("BASE_LDAP"), "(" + critere + "=" + userName + ")", constraints);
+			NamingEnumeration<SearchResult> enume = contextAdmin.search((String) parametres.get("BASE_LDAP"), "("
+					+ critere + "=" + userName + ")", constraints);
 
 			while (enume.hasMore()) {
 				SearchResult sr = (SearchResult) enume.next();
@@ -138,8 +148,10 @@ public class LDAP {
 	/**
 	 * Methode controlerHabilitation qui retourne true ou false
 	 * 
-	 * @param userName userName
-	 * @param userPassword userPassword
+	 * @param userName
+	 *            userName
+	 * @param userPassword
+	 *            userPassword
 	 * @return boolean
 	 */
 	public static boolean controlerHabilitation(String userName, String userPassword) {
@@ -149,12 +161,16 @@ public class LDAP {
 	/**
 	 * Methode controlerHabilitation qui retourne true ou false
 	 * 
-	 * @param parametres parametres de contexte
-	 * @param userName userName
-	 * @param userPassword userPassword
+	 * @param parametres
+	 *            parametres de contexte
+	 * @param userName
+	 *            userName
+	 * @param userPassword
+	 *            userPassword
 	 * @return boolean
 	 */
-	public static boolean controlerHabilitation(Hashtable<String, String> parametres, String userName, String userPassword) {
+	public static boolean controlerHabilitation(Hashtable<String, String> parametres, String userName,
+			String userPassword) {
 
 		// Contrôles de base
 		if (userName == null || userName.length() == 0 || userPassword == null || userPassword.length() == 0)
@@ -179,8 +195,8 @@ public class LDAP {
 			// "(cn="+user+")", constraints);
 			String critere = (String) parametres.get("CRITERE_RECHERCHE_LDAP");
 
-			NamingEnumeration<SearchResult> enume = contextAdmin
-					.search((String) parametres.get("BASE_LDAP"), "(" + critere + "=" + userName + ")", constraints);
+			NamingEnumeration<SearchResult> enume = contextAdmin.search((String) parametres.get("BASE_LDAP"), "("
+					+ critere + "=" + userName + ")", constraints);
 
 			String dn = "";
 
@@ -223,7 +239,8 @@ public class LDAP {
 	}
 
 	/**
-	 * Construit de facon random la liste des HostLDAP disponibles trouvés dans le fichier hab.Properties
+	 * Construit de facon random la liste des HostLDAP disponibles trouvés dans
+	 * le fichier hab.Properties
 	 */
 	private static ArrayList<String> construitListeHostLDAP(Hashtable<String, String> parametres) {
 		ArrayList<String> res = new ArrayList<String>();

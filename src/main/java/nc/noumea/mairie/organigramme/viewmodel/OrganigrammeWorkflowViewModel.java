@@ -50,11 +50,11 @@ import org.zkoss.zul.Messagebox.ClickEvent;
  */
 public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteDto> implements Serializable {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private OrganigrammeViewModel	organigrammeViewModel;
+	private OrganigrammeViewModel organigrammeViewModel;
 
-	public static Logger			log					= LoggerFactory.getLogger(OrganigrammeWorkflowViewModel.class);
+	public static Logger log = LoggerFactory.getLogger(OrganigrammeWorkflowViewModel.class);
 
 	public OrganigrammeWorkflowViewModel(OrganigrammeViewModel organigrammeViewModel) {
 		this.organigrammeViewModel = organigrammeViewModel;
@@ -69,18 +69,29 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 			return;
 		}
 		if (transition.getStatutSource() != entity().getStatut()) {
-			AbstractViewModel.showErrorPopup("Bug (de rafraîchissement des boutons de changement de statut) : le statut de l'entité est "
-					+ entity().getStatut() + ", mais la transition demandée est " + transition);
+			AbstractViewModel
+					.showErrorPopup("Bug (de rafraîchissement des boutons de changement de statut) : le statut de l'entité est "
+							+ entity().getStatut() + ", mais la transition demandée est " + transition);
 			return;
 		}
 		// @formatter:off
 		switch (transition) {
-			
-			case TRANSITOIRE:								executerTransitionTransitoire();							break;
-			case ACTIF_APRES_PREVISION:						executerTransitionActifApresPrevision();					break;
-			case INACTIF_APRES_TRANSITOIRE: 				executerTransitionInactifApresTransitoire();				break;
-			case INACTIF_APRES_ACTIF: 						executerTransitionInactifApresActif();						break;
-			default:										executerTransitionGenericAvecConfirmation(transition, null);break;
+
+			case TRANSITOIRE:
+				executerTransitionTransitoire();
+				break;
+			case ACTIF_APRES_PREVISION:
+				executerTransitionActifApresPrevision();
+				break;
+			case INACTIF_APRES_TRANSITOIRE:
+				executerTransitionInactifApresTransitoire();
+				break;
+			case INACTIF_APRES_ACTIF:
+				executerTransitionInactifApresActif();
+				break;
+			default:
+				executerTransitionGenericAvecConfirmation(transition, null);
+				break;
 		}
 		// @formatter:on
 	}
@@ -117,22 +128,28 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 
 	private void verifieTransitionPossible(Transition transition) {
 		if (entity().getStatut() != transition.getStatutSource()) {
-			throw new IllegalArgumentException("le passage de transition " + transition + " n'est pas autorisé depuis le statut " + entity().getStatut());
+			throw new IllegalArgumentException("le passage de transition " + transition
+					+ " n'est pas autorisé depuis le statut " + entity().getStatut());
 		}
 	}
 
 	/**
 	 * Transition générique simple
-	 * @param transition transition à passer
+	 * 
+	 * @param transition
+	 *            transition à passer
 	 * @return true si la transition est bien passé
 	 */
 	public boolean executerTransitionGeneric(Transition transition) {
 		verifieTransitionPossible(transition);
 		if (this.organigrammeViewModel.organigrammeService.updateStatut(this.entity(), transition.getStatut())) {
-			// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on est sur d'avoir une version bien à jour
-			this.organigrammeViewModel.entiteDtoRoot = this.organigrammeViewModel.adsWSConsumer.getCurrentTreeWithVDNRoot();
+			// On recharge l'arbre complet d'ADS et on rafraichi le client.
+			// Ainsi on est sur d'avoir une version bien à jour
+			this.organigrammeViewModel.entiteDtoRoot = this.organigrammeViewModel.adsWSConsumer
+					.getCurrentTreeWithVDNRoot();
 
-			// On force l'affichage du statut pour pouvoir voir cette entité dans son nouvel état
+			// On force l'affichage du statut pour pouvoir voir cette entité
+			// dans son nouvel état
 			forcerAffichageStatut(transition);
 
 			this.organigrammeViewModel.creeArbreEtRafraichiClient();
@@ -143,27 +160,34 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 	}
 
 	/**
-	 * Force le filtre pour que l'entité soit visible dans son nouveau statut et affiche un message d'information
-	 * @param transition : la transition a executer
+	 * Force le filtre pour que l'entité soit visible dans son nouveau statut et
+	 * affiche un message d'information
+	 * 
+	 * @param transition
+	 *            : la transition a executer
 	 */
 	private void forcerAffichageStatut(Transition transition) {
 		if (transition.getStatut().equals(Statut.TRANSITOIRE)) {
 			boolean filtreStatutTransitoireVisible = this.organigrammeViewModel.getSelectedFiltreStatut() != null
 					&& (this.organigrammeViewModel.getSelectedFiltreStatut().equals(FiltreStatut.ACTIF_TRANSITOIRE)
-							|| this.organigrammeViewModel.getSelectedFiltreStatut().equals(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF) || this.organigrammeViewModel
+							|| this.organigrammeViewModel.getSelectedFiltreStatut().equals(
+									FiltreStatut.ACTIF_TRANSITOIRE_INACTIF) || this.organigrammeViewModel
 							.getSelectedFiltreStatut().equals(FiltreStatut.TOUS));
 			if (!filtreStatutTransitoireVisible) {
 				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE);
-				Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser l'entité en statut transitoire");
+				Messagebox
+						.show("Le filtre d'affichage a été changé pour vous permettre de visualiser l'entité en statut transitoire");
 			}
 		}
 		if (transition.getStatut().equals(Statut.INACTIF)) {
 			boolean filtreStatutInactifVisible = this.organigrammeViewModel.getSelectedFiltreStatut() != null
-					&& (this.organigrammeViewModel.getSelectedFiltreStatut().equals(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF) || this.organigrammeViewModel
+					&& (this.organigrammeViewModel.getSelectedFiltreStatut().equals(
+							FiltreStatut.ACTIF_TRANSITOIRE_INACTIF) || this.organigrammeViewModel
 							.getSelectedFiltreStatut().equals(FiltreStatut.TOUS));
 			if (!filtreStatutInactifVisible) {
 				this.organigrammeViewModel.setSelectedFiltreStatut(FiltreStatut.ACTIF_TRANSITOIRE_INACTIF);
-				Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser l'entité en statut inactif");
+				Messagebox
+						.show("Le filtre d'affichage a été changé pour vous permettre de visualiser l'entité en statut inactif");
 			}
 		}
 	}
@@ -171,23 +195,26 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 	/**
 	 * Transition générique simple, après confirmation
 	 * 
-	 * @param transition transition à passer
-	 * @param message optionnel (si null, un message générique est proposé)
+	 * @param transition
+	 *            transition à passer
+	 * @param message
+	 *            optionnel (si null, un message générique est proposé)
 	 */
 	private void executerTransitionGenericAvecConfirmation(Transition transition, String messageConfirmation) {
 		if (messageConfirmation == null) {
-			messageConfirmation = "Confirmez-vous le passage de l'entité en statut " + transition.getStatut().getLibelle() + " ?";
+			messageConfirmation = "Confirmez-vous le passage de l'entité en statut "
+					+ transition.getStatut().getLibelle() + " ?";
 		}
 		final Transition transitionAExecuter = transition;
 
-		Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION,
-				new EventListener<Messagebox.ClickEvent>() {
-					@Override
-					public void onEvent(ClickEvent evt) {
-						if (evt.getName().equals("onYes")) {
-							executerTransitionGeneric(transitionAExecuter);
-						}
-					}
-				});
+		Messagebox.show(messageConfirmation, "Confirmation", new Messagebox.Button[] { Messagebox.Button.YES,
+				Messagebox.Button.NO }, Messagebox.QUESTION, new EventListener<Messagebox.ClickEvent>() {
+			@Override
+			public void onEvent(ClickEvent evt) {
+				if (evt.getName().equals("onYes")) {
+					executerTransitionGeneric(transitionAExecuter);
+				}
+			}
+		});
 	}
 }

@@ -29,15 +29,16 @@ import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
 import org.zkoss.zk.ui.event.Event;
 
 /**
- * Evènement pour demander la fermeture d'un onglet concernant une entité particulière.
+ * Evènement pour demander la fermeture d'un onglet concernant une entité
+ * particulière.
  * 
  * @author AgileSoft.NC
  */
 public class FermeOngletAbstractEntityEvent extends Event {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private final AbstractEntity	abstractEntity;
+	private final AbstractEntity abstractEntity;
 
 	public FermeOngletAbstractEntityEvent(AbstractEntity abstractEntity) {
 		super("fermeOngletAbstractEntity", null, abstractEntity);
