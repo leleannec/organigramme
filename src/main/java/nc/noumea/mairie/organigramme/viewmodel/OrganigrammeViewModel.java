@@ -105,7 +105,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	private static final String CREATE_ENTITE_VIEW = "/layout/createEntite.zul";
 
-	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity",
+	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity", "creable",
 			"listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
 			"selectedEntiteDtoZoom", "entiteDtoQueryListModel", "selectedFiltreStatut" };
 

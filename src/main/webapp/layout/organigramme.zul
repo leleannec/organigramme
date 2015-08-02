@@ -48,27 +48,29 @@
 							</combobox>
 						</toolbar>
 					</hlayout>
-					<hlayout sclass="no-padding-right"> 
-						<toolbar hflex="8">
+					<hlayout hflex="1" sclass="no-padding-right"> 
+						<toolbar hflex="2">
 							<toolbarbutton image="/imgs/icon/edit.png" label="Modifier l'entité" onClick="@command('ouvreOnglet', entity=vm.entity)" autodisable="self"  visible="@load(vm.entity ne null)"/>
 							<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous-entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" autodisable="self" />  
 							<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer" onClick="@command('zoomSurEntite', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 							<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 							<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
-						<toolbar hflex="5" sclass="align-center"> 
+						<toolbar hflex="2" sclass="align-center"> 
 							<label value="@load(vm.entity.label)" sclass="statut-en-cours"  visible="@load(vm.entity ne null)"/>
 						</toolbar>
-						<toolbar hflex="4" sclass="align-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
-							<template name="children"> 
-								<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}" autodisable="self">
-									<custom-attributes statut="${each.statut.name}" />
-								</toolbarbutton>
-							</template>
-						</toolbar> 
-						<toolbar hflex="1" sclass="align-right">
-							<label value="@load(vm.statut.libelle)" sclass="statut-en-cours"  visible="@load(vm.entity ne null)"/>
-						</toolbar>
+						<hlayout hflex="2" sclass="no-padding-right align-right"> 
+							<toolbar hflex="4" sclass="no-padding-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
+								<template name="children"> 
+									<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}" autodisable="self">
+										<custom-attributes statut="${each.statut.name}" />
+									</toolbarbutton>
+								</template> 
+							</toolbar>  
+							<toolbar hflex="1" sclass="no-padding-right">
+								<label value="@load(vm.statut.libelle)" sclass="statut-en-cours"  visible="@load(vm.entity ne null)"/>
+							</toolbar>
+						</hlayout>
 					</hlayout>
 				</vlayout>
 			</h:div>
