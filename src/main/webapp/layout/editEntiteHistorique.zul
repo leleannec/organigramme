@@ -13,7 +13,7 @@
 			<listheader label="Réf. activation" sort="auto(refDeliberationActif)" />
 			<listheader label="Date inactivation" sort="auto(dateDeliberationInactif)" width="130px"/>
 			<listheader label="Réf. inactivation" sort="auto(refDeliberationInactif)" />
-			<listheader label="Entité remplacé" sort="auto(sigleEntiteRemplace)" />
+			<listheader label="Entité remplacée" sort="auto(sigleEntiteRemplace)" />
 			<listheader label="Commentaire" sort="auto(commentaire)" />
 		</listhead>
 		<template name="model">
