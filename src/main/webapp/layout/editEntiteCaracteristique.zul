@@ -38,19 +38,19 @@
 				</combobox>
 			</row> 
 			<row>
-				<label value="Date délib. activation / CTP :" visible="@load(not vm.entity.prevision)"/>
+				<label value="Date délib./CTP activation :" visible="@load(not vm.entity.prevision)"/>
 				<datebox value="@bind(vm.entity.dateDeliberationActif)" visible="@load(not vm.entity.prevision)" disabled="@load(not vm.editable)" onChanging="@command('onChangeValueEntity')"/>
 			</row>
 			<row>
-				<label value="Réf. délib. activation / CTP :" visible="@load(not vm.entity.prevision)"/>
+				<label value="Réf. délib./CTP activation :" visible="@load(not vm.entity.prevision)"/>
 				<textbox value="@bind(vm.entity.refDeliberationActif)" visible="@load(not vm.entity.prevision)" hflex="1" disabled="@load(not vm.editable)" onChanging="@command('onChangeValueEntity')"/>
 			</row> 
 			<row>
-				<label value="Date délib. désactivation / CTP :" visible="@load(vm.entity.transitoireOuInactif)"/>
+				<label value="Date délib./CTP désactivation :" visible="@load(vm.entity.transitoireOuInactif)"/>
 				<datebox value="@bind(vm.entity.dateDeliberationInactif)" visible="@load(vm.entity.transitoireOuInactif)" disabled="@load(not vm.editable)" onChanging="@command('onChangeValueEntity')"/>
 			</row>
 			<row>
-				<label value="Réf. délib. désactivation / CTP :" visible="@load(vm.entity.transitoireOuInactif)"/>
+				<label value="Réf. délib./CTP désactivation :" visible="@load(vm.entity.transitoireOuInactif)"/>
 				<textbox value="@bind(vm.entity.refDeliberationInactif)" hflex="1" visible="@load(vm.entity.transitoireOuInactif)" disabled="@load(not vm.editable)" onChanging="@command('onChangeValueEntity')"/>
 			</row>
 			<row>
