@@ -3,7 +3,6 @@
 		<listhead menupopup="auto" sizable="true">
 			<listheader label="Date" sort="auto(dateHisto)" width="130px"/>
 			<listheader label="Action" sort="auto(libelleTypeHisto)" />
-			<listheader label="Action" sort="auto(statut.libelle)" />
 			<listheader label="Utilisateur" sort="auto(nomPrenomAgent)" />
 			<listheader label="Sigle" sort="auto(sigle)" />
 			<listheader label="Libellé" sort="auto(label)" />
@@ -18,11 +17,8 @@
 		</listhead>
 		<template name="model">
 			<listitem>
-				<listcell>
+				<listcell> 
 					<label value="@load(each.dateHisto) @converter('formatedDate',format='dd/MM/yyyy HH:mm')" />
-				</listcell>
-				<listcell>
-					<label value="@load(statut.libelle)" />
 				</listcell>
 				<listcell>
 					<label value="@load(each.libelleTypeHisto)" />
