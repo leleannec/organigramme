@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nc.noumea.mairie.organigramme.core.utility.DateUtil;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
@@ -213,6 +214,7 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		li.appendChild(new Label(sigleSplit));
 		li.setParent(ul);
 		li.setSclass("statut-" + StringUtils.lowerCase(entiteDto.getStatut().name()));
+		li.setDynamicProperty("title", creeTooltipEntite(entiteDto));
 		boolean couleurEntiteTypeEntiteRenseigne = entiteDto.getTypeEntite() != null
 				&& !StringUtils.isBlank(entiteDto.getTypeEntite().getCouleurEntite());
 		if (couleurEntiteTypeEntiteRenseigne) {
@@ -234,5 +236,30 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		organigrammeViewModel.mapIdLiEntiteDto.put(li.getId(), entiteDto);
 
 		return li;
+	}
+
+	private String creeTooltipEntite(EntiteDto entiteDto) {
+		List<String> tooltip = new ArrayList<String>();
+		tooltip.add(entiteDto.getLibelleTypeEntite() + " - " + entiteDto.getLabel());
+
+		if (entiteDto.getDateDeliberationActif() != null) {
+			tooltip.add("Date délib./CTP activation : " + DateUtil.formatDate(entiteDto.getDateDeliberationActif())
+					+ " - " + entiteDto.getRefDeliberationActif());
+		}
+
+		if (entiteDto.getDateDeliberationInactif() != null) {
+			tooltip.add("Date délib./CTP inactivation : " + DateUtil.formatDate(entiteDto.getDateDeliberationInactif())
+					+ " - " + entiteDto.getRefDeliberationInactif());
+		}
+
+		if (entiteDto.getEntiteRemplacee() != null) {
+			tooltip.add("Remplace : " + entiteDto.getEntiteRemplacee().getSigle());
+		}
+
+		if (!StringUtils.isBlank(entiteDto.getCommentaire())) {
+			tooltip.add("<br/>" + entiteDto.getCommentaire());
+		}
+
+		return StringUtils.join(tooltip, "<br/>");
 	}
 }

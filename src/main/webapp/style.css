@@ -223,3 +223,53 @@ div#zk_proc-t.z-loading {
 	background-color: gray !important; 
 	background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,.3) 5px, rgba(255,255,255,.3) 10px);
 }
+
+.ui-tooltip, .arrow:after {
+    background: black !important;
+    border: 2px solid white !important;
+  }
+  
+ .ui-tooltip {
+   padding: 10px 20px !important;
+   color: white !important;
+   border-radius: 20px !important;
+   font: bold 12px "Helvetica Neue", Sans-Serif !important;
+   box-shadow: 0 0 7px black !important;
+ }
+ 
+ .arrow {
+   width: 70px;
+   height: 16px;
+   overflow: hidden;
+   position: absolute;
+   left: 50%;
+   margin-left: -35px;
+   bottom: -16px;
+ }
+ 
+ .arrow.top {
+   top: -16px;
+   bottom: auto;
+ }
+ 
+ .arrow.left {
+   left: 20%;
+ }
+ 
+ .arrow:after {
+   content: "";
+   position: absolute;
+   left: 20px;
+   top: -20px;
+   width: 25px;
+   height: 25px;
+   box-shadow: 6px 5px 9px -9px black;
+   -webkit-transform: rotate(45deg);
+   -ms-transform: rotate(45deg);
+   transform: rotate(45deg);
+ }
+ 
+ .arrow.top:after {
+   bottom: -20px;
+   top: auto;
+ }
