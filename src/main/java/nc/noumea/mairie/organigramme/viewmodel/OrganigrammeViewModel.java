@@ -272,7 +272,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
 		EntiteDto entiteDtoFromBdd = entiteDto;
 		if (entiteDto != null) {
-			entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
+			entiteDtoFromBdd = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
 			entiteDtoFromBdd.setLi(entiteDto.getLi());
 		}
 		setEntity(entiteDtoFromBdd);
@@ -554,7 +554,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		setEntity(null);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 		refreshArbreComplet();
-		Clients.evalJavaScript("refreshOrganigrammeSuiteDezoom();");
+		Clients.evalJavaScript("refreshOrganigrammeReplie();");
 	}
 
 	@Command

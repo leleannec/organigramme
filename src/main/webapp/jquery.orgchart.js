@@ -34,15 +34,11 @@ function refreshOrganigrammeSuiteZoom() {
 	deplierTout();
 }; 
 
-function refreshOrganigrammeSuiteDezoom() { 
-	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
-}; 
-
 function refreshOrganigrammeReplie() { 
-	$("#organigramme-root").orgChart({container: $("#chart"), replie: true}); 
+	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
 };
 
-function deplierTout() { 
+function deplierTout() {
 	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutDeplier', null)); 
 	refreshOrganigrammeReplie();
 	$(".entite").trigger("deplierReplierEntite");

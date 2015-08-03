@@ -411,6 +411,10 @@ public class EntiteDto extends AbstractEntityDto {
 	 */
 	public boolean tousEnfantEnStatut(List<Statut> listeStatut, List<EntiteDto> listeEnfant) {
 		for (EntiteDto entiteDto : listeEnfant) {
+
+			// On set le statut de l'entité
+			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
+
 			if (!listeStatut.contains(entiteDto.getStatut())) {
 				return false;
 			}

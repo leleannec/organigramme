@@ -41,34 +41,34 @@ public class EntiteDtoTest {
 		listeStatut.add(Statut.INACTIF);
 
 		EntiteDto entiteDto = new EntiteDto();
-		entiteDto.setStatut(Statut.ACTIF);
+		entiteDto.setIdStatut(1);
 
 		List<EntiteDto> listeEnfantNiveau1 = new ArrayList<EntiteDto>();
 		EntiteDto entiteDtoEnfant1 = new EntiteDto();
-		entiteDtoEnfant1.setStatut(Statut.ACTIF);
+		entiteDtoEnfant1.setIdStatut(1);
 		listeEnfantNiveau1.add(entiteDtoEnfant1);
 
 		entiteDto.setEnfants(listeEnfantNiveau1);
 
 		Assert.assertFalse(entiteDto.tousEnfantEnStatut(listeStatut, entiteDto.getEnfants()));
 
-		entiteDtoEnfant1.setStatut(Statut.INACTIF);
+		entiteDtoEnfant1.setIdStatut(3);
 
 		Assert.assertTrue(entiteDto.tousEnfantEnStatut(listeStatut, entiteDto.getEnfants()));
 
 		EntiteDto entiteDtoEnfant2 = new EntiteDto();
-		entiteDtoEnfant2.setStatut(Statut.INACTIF);
+		entiteDtoEnfant2.setIdStatut(3);
 
 		List<EntiteDto> listeEnfantNiveau2 = new ArrayList<EntiteDto>();
 		EntiteDto entiteDtoEnfant3 = new EntiteDto();
-		entiteDtoEnfant3.setStatut(Statut.ACTIF);
+		entiteDtoEnfant3.setIdStatut(1);
 		listeEnfantNiveau2.add(entiteDtoEnfant3);
 
 		entiteDtoEnfant1.setEnfants(listeEnfantNiveau2);
 
 		Assert.assertFalse(entiteDto.tousEnfantEnStatut(listeStatut, entiteDto.getEnfants()));
 
-		entiteDtoEnfant3.setStatut(Statut.INACTIF);
+		entiteDtoEnfant3.setIdStatut(3);
 
 		Assert.assertTrue(entiteDto.tousEnfantEnStatut(listeStatut, entiteDto.getEnfants()));
 	}

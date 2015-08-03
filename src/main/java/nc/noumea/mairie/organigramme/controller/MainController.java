@@ -79,6 +79,8 @@ import org.zkoss.zul.Tabs;
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class MainController extends SelectorComposer<Component> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Wire
 	Grid sideBarGrid;
 
@@ -111,6 +113,13 @@ public class MainController extends SelectorComposer<Component> {
 		Rows rows = sideBarGrid.getRows();
 		List<SidebarItem> listeItems = this.initSideBar();
 
+		// Si on est administrateur on ouvre l'onglet de paramètrage des type
+		// d'entités
+		if (currentUser.isAdministrateur()) {
+			// Onglet à afficher par défaut
+			ouvreOnglet(null, "Type d'entité", "/layout/listeTypeEntite.zul", true, false, null);
+		}
+
 		for (SidebarItem item : listeItems) {
 
 			// certains items sont réservés uniquement à l'administrateur :
@@ -125,13 +134,17 @@ public class MainController extends SelectorComposer<Component> {
 				ouvreOnglet(null, item.getLabel(), item.getUri(), true, false, null);
 			}
 		}
-		// se positionne sur le premier onglet
-		getTabbox().setSelectedIndex(0);
 
-		// Si on est pas administrateur, on n'affiche pas la le menu de gauche
-		if (!currentUser.isAdministrateur()) {
-			sideBarGrid.getParent().setVisible(false);
+		if (currentUser.isAdministrateur()) {
+			// se positionne sur le premier onglet
+			getTabbox().setSelectedIndex(1);
+		} else {
+			// se positionne sur le premier onglet
+			getTabbox().setSelectedIndex(0);
 		}
+
+		// On n'affiche pas la le menu de gauche
+		sideBarGrid.getParent().setVisible(false);
 
 		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).subscribe(new EventListener<Event>() {
 			@Override
@@ -190,8 +203,6 @@ public class MainController extends SelectorComposer<Component> {
 		// @formatter:off
 		listeItems.add(new SidebarItem("Organigramme", "/imgs/icon/organigramme.png", "/layout/organigramme.zul", true,
 				false));
-		listeItems.add(new SidebarItem("Type d'entité", "/imgs/icon/settings.png", "/layout/listeTypeEntite.zul",
-				false, true));
 		// @formatter:on
 
 		return listeItems;
