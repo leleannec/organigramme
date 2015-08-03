@@ -7,7 +7,24 @@
 	       zk.afterMount(function () {
 	       	$("#organigramme-root").orgChart({container: $(zk.Widget.$('$chart')), replie: true});
 	       	$('#chart').kinetic();
-	       });
+	       	$( document ).tooltip({
+		       	content: function() {
+		            return $(this).attr('title'); 
+		        },
+	            position: {
+	              my: "center bottom-20",
+	              at: "center top",
+	              using: function( position, feedback ) {
+	                $( this ).css( position );
+	                $( "<div>" )
+	                  .addClass( "arrow" )
+	                  .addClass( feedback.vertical )
+	                  .addClass( feedback.horizontal )
+	                  .appendTo( this );
+	              }
+	            }
+	          });
+	       }); 
 	   ]]>
 	</script> 
 	 

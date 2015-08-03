@@ -19,11 +19,11 @@
 		url="jdbc:postgresql://localhost:5432/orga" poolPreparedStatements="true" />
 
 	<Environment name="ADS_WS_URL" type="java.lang.String"
-		description="ADS WS endpoint url" value="http://svi-tomcat0:8077/"
+		description="ADS WS endpoint url" value="http://localhost:8181/"
 		override="false" />
 
 	<Environment name="SIRH_WS_URL" type="java.lang.String"
-		description="SIRH WS endpoint url" value="http://svi-tomcat0:8087/sirhws-org/"
+		description="SIRH WS endpoint url" value="http://localhost:8484/"
 		override="false" />
 
 	<Environment name="RADI_WS_URL" type="java.lang.String"
