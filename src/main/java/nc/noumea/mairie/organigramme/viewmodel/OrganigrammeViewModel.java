@@ -36,6 +36,7 @@ import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
+import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
@@ -106,7 +107,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private static final String CREATE_ENTITE_VIEW = "/layout/createEntite.zul";
 
 	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity", "creable",
-			"listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
+			"duplicable", "listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
 			"selectedEntiteDtoZoom", "entiteDtoQueryListModel", "selectedFiltreStatut" };
 
 	private OrganigrammeWorkflowViewModel organigrammeWorkflowViewModel = new OrganigrammeWorkflowViewModel(this);
@@ -485,6 +486,17 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
+	 * L'entité est-elle duplicable ?
+	 * 
+	 * @return true si l'entité est duplicable, false sinon
+	 */
+	public boolean isDuplicable() {
+		// On ne peux créer que si on a le rôle édition
+		return profilAgentDto.isEdition() && this.entity != null
+				&& (this.entity.isPrevision() || this.entity.isActif());
+	}
+
+	/**
 	 * Met à jour l'entité avec les dates et les références de délibérations
 	 * saisies et passe la transition
 	 * 
@@ -677,7 +689,17 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		exportDto.setEntiteDto(entiteDto);
 		Map<String, Object> args = new HashMap<>();
 		args.put("exportDto", exportDto);
-		Executions.createComponents("/layout/createExporGraphML.zul", null, null);
+		Executions.createComponents("/layout/createExportGraphML.zul", null, null);
 		BindUtils.postGlobalCommand(null, null, "ouvrePopupCreationExport", args);
+	}
+
+	@Command
+	public void ouvrirPopupCreateDuplication(@BindingParam("entity") EntiteDto entiteDto) {
+		DuplicationDto duplicationDto = new DuplicationDto();
+		duplicationDto.setEntiteDto(entiteDto);
+		Map<String, Object> args = new HashMap<>();
+		args.put("duplicationDto", duplicationDto);
+		Executions.createComponents("/layout/createDuplication.zul", null, null);
+		BindUtils.postGlobalCommand(null, null, "ouvrePopupCreationDuplication", args);
 	}
 }

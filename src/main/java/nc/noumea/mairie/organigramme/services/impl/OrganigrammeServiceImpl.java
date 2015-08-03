@@ -32,6 +32,7 @@ import nc.noumea.mairie.organigramme.core.services.AuthentificationService;
 import nc.noumea.mairie.organigramme.core.services.impl.GenericServiceImpl;
 import nc.noumea.mairie.organigramme.core.ws.AdsWSConsumer;
 import nc.noumea.mairie.organigramme.dto.ChangeStatutDto;
+import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
@@ -117,6 +118,7 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 		return true;
 	}
 
+	@Override
 	public List<EntiteDto> findAllNotPrevision() {
 		EntiteDto entiteDtoRoot = adsWSConsumer.getCurrentTreeWithVDNRoot();
 		List<EntiteDto> result = getAllEntiteNotPrevision(entiteDtoRoot.getEnfants(), new ArrayList<EntiteDto>());
@@ -126,12 +128,37 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 		return result;
 	}
 
-	private List<EntiteDto> getAllEntiteNotPrevision(List<EntiteDto> listeEnfant, List<EntiteDto> result) {
+	@Override
+	public List<EntiteDto> findAllActifOuPrevision() {
+		EntiteDto entiteDtoRoot = adsWSConsumer.getCurrentTreeWithVDNRoot();
+		List<EntiteDto> result = getAllEntiteActifOuPrevision(entiteDtoRoot.getEnfants(), new ArrayList<EntiteDto>());
+
+		Collections.sort(result, new ComparatorUtil.EntiteComparator());
+
+		return result;
+	}
+
+	private List<EntiteDto> getAllEntiteActifOuPrevision(List<EntiteDto> listeEnfant, List<EntiteDto> result) {
 		for (EntiteDto entiteDto : listeEnfant) {
-			// On se le statut de l'entité
+			// On set le statut de l'entité
 			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
-			if (entiteDto.getStatut() != Statut.PREVISION) {
+			if (entiteDto.getStatut().equals(Statut.ACTIF) || entiteDto.getStatut().equals(Statut.PREVISION)) {
+				result.add(entiteDto);
+			}
+
+			getAllEntiteActifOuPrevision(entiteDto.getEnfants(), result);
+		}
+
+		return result;
+	}
+
+	private List<EntiteDto> getAllEntiteNotPrevision(List<EntiteDto> listeEnfant, List<EntiteDto> result) {
+		for (EntiteDto entiteDto : listeEnfant) {
+			// On set le statut de l'entité
+			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
+
+			if (!entiteDto.getStatut().equals(Statut.PREVISION)) {
 				result.add(entiteDto);
 			}
 
@@ -139,5 +166,19 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 		}
 
 		return result;
+	}
+
+	@Override
+	public boolean dupliqueEntite(DuplicationDto duplicationDto) {
+
+		ProfilAgentDto profilAgentDto = authentificationService.getCurrentUser();
+		duplicationDto.setIdAgent(profilAgentDto.getIdAgent());
+
+		ReturnMessageDto returnMessageDto = adsWSConsumer.dupliqueEntite(duplicationDto);
+		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
+			return false;
+		}
+
+		return true;
 	}
 }
