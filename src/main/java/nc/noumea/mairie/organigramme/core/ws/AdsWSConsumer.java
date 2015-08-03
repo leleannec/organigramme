@@ -111,7 +111,7 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
 		EntiteDto entiteDto = readResponse(EntiteDto.class, res, url);
 
-		// On se le statut de l'entité
+		// On set le statut de l'entité
 		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
 		return entiteDto;
@@ -121,7 +121,12 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 	public EntiteDto getEntiteWithChildren(Integer idEntite) {
 		String url = adsWsBaseUrl + URL_GET_ENTITE + "/" + idEntite.toString() + "/withChildren";
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
-		return readResponse(EntiteDto.class, res, url);
+		EntiteDto entiteDto = readResponse(EntiteDto.class, res, url);
+
+		// On set le statut de l'entité
+		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
+
+		return entiteDto;
 	}
 
 	@Override
