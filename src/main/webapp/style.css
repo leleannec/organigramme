@@ -97,6 +97,8 @@
 
 .toolbar-libelle-entite {
 	font-size: 1.5em !important;
+	margin-top: 5px;
+    position: absolute;
 }
 
 .no-padding-right .z-hlayout-inner {
@@ -200,6 +202,10 @@ div#zk_proc-t.z-loading {
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
+}
+
+.z-group-content { 
+	text-align: left !important;
 }
 
 .button-entite-edit {

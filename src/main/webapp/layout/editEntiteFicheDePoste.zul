@@ -1,7 +1,6 @@
 <zk>
 	<grid mold="paging" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
-		<columns menupopup="auto" sizable="true">
-			<column label="Entité" sort="auto(sigle)" />
+		<columns>
 			<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
 			<column label="Titre" sort="auto(titre)" />
 			<column label="Statut" sort="auto(statutFDP)" />
@@ -15,7 +14,6 @@
         </template>
         <template name="model">
             <row>
-                <label value="@load(each.sigle)" />
                 <label value="@load(each.numero)" />
                 <label value="@load(each.titre)" />
                 <label value="@load(each.statutFDP)" />
