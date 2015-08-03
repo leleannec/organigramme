@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.dto.ChangeStatutDto;
+import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
@@ -128,4 +129,14 @@ public interface IAdsWSConsumer {
 	 * @return l'historique de l'entité
 	 */
 	List<EntiteHistoDto> getListeEntiteHisto(Integer idEntite, Map<Integer, String> mapIdAgentNomPrenom);
+
+	/**
+	 * Duplique une entité ainsi que ses enfants (si besoin) vers une entité
+	 * cible
+	 * 
+	 * @param duplicationDto
+	 *            : le DTO permettant de dupliquer
+	 * @return le {@link ReturnMessageDto} contenant les erreurs ou les infos
+	 */
+	ReturnMessageDto dupliqueEntite(DuplicationDto duplicationDto);
 }

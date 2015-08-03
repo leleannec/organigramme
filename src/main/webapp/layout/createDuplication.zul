@@ -1,0 +1,31 @@
+<window id="createDuplication" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('nc.noumea.mairie.organigramme.viewmodel.CreateDuplicationViewModel')" border="normal"
+	contentStyle="overflow:auto" title="Duplication d'entité" width="500px" mode="modal" renderdefer="100" forward="onCancel=btnCancel.onClick">
+	<caption image="/imgs/icon/dupliquer.png" /> 
+	<vlayout height="100%">
+		<grid hflex="1">
+			<columns>
+				<column width="250px" />
+				<column hflex="1" />
+			</columns>
+			<rows>
+				<row>
+					<label value="Nouvelle entité parente ?" />
+						<combobox selectedItem="@bind(vm.entity.entiteDtoCible)" model="@load(vm.listeEntiteCible)"  hflex="1" readonly="true">
+						<template name="model">
+							<comboitem label="${each.sigleWithLibelleStatut}" />
+						</template>
+					</combobox>
+				</row>
+				<row>
+					<label value="Dupliquer les enfants de cette entité ?" />
+					<checkbox checked="@bind(vm.entity.withChildren)" />
+				</row>
+			</rows>
+		</grid>
+
+		<toolbar mold="panel" align="center">
+			<toolbarbutton onClick="@command('duplique')" image="/imgs/icon/dupliquer.png" label="Dupliquer" autodisable="self" />
+			<toolbarbutton id="btnCancel" onClick="@command('cancel')" image="/imgs/icon/cancel.png" label="Annuler" autodisable="self" />
+		</toolbar>
+	</vlayout>
+</window>

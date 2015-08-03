@@ -33,6 +33,7 @@ import java.util.Map;
 import nc.noumea.mairie.organigramme.core.transformer.MSDateTransformer;
 import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.dto.ChangeStatutDto;
+import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
@@ -64,6 +65,7 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 	private final String URL_GET_ENTITE = "api/entite";
 	private final String URL_SAVE_OR_UPDATE_ENTITE = "api/entite/save";
 	private final String URL_SAVE_OR_UPDATE_TYPE_ENTITE = "api/typeEntite/save";
+	private final String URL_DUPLIQUE_ENTITE = "api/entite/dupliquerEntite";
 	private final String URL_DELETE_ENTITE = "api/entite/delete";
 	private final String URL_DELETE_TYPE_ENTITE = "api/typeEntite/deleteOrDisable";
 	private final String URL_CHANGE_STATUT = "api/statut/change";
@@ -230,5 +232,23 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		}
 
 		return result;
+	}
+
+	@Override
+	public ReturnMessageDto dupliqueEntite(DuplicationDto duplicationDto) {
+
+		EntiteDto entiteDto = duplicationDto.getEntiteDto();
+
+		// On sette l'agent, la nouvelle entité parent et l'entité remplactée
+		entiteDto.setEntiteParent(duplicationDto.getEntiteDtoCible());
+		entiteDto.setEntiteRemplacee(entiteDto);
+		entiteDto.setIdAgentCreation(duplicationDto.getIdAgent());
+
+		String url = adsWsBaseUrl + URL_DUPLIQUE_ENTITE;
+		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class)
+				.deepSerialize(entiteDto);
+
+		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
+		return readResponse(ReturnMessageDto.class, res, url);
 	}
 }

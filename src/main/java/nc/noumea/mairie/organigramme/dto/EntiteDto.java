@@ -441,6 +441,11 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@JSON(include = false)
+	public boolean isActif() {
+		return this.getStatut() != null && this.getStatut() == Statut.ACTIF;
+	}
+
+	@JSON(include = false)
 	public boolean isPrevision() {
 		return this.getStatut() != null && this.getStatut() == Statut.PREVISION;
 	}
