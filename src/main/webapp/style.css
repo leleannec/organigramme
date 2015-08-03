@@ -95,6 +95,10 @@
 	padding: 10px 10px;
 }  
 
+.toolbar-libelle-entite {
+	font-size: 1.5em !important;
+}
+
 .no-padding-right .z-hlayout-inner {
 	padding-right: 0px !important; 
 }
