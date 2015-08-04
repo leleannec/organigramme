@@ -259,6 +259,7 @@ function goToByScroll(id){
                 	 
                 	if(e.target.classList[0] == "hasChildren") {
                 		expandEntite($entiteDiv); 
+                		zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id"))); 
                 	}
                 	else {
                 		if($entiteDiv.hasClass("edit")) {
