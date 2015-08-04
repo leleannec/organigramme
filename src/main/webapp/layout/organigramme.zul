@@ -47,14 +47,14 @@
 							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.entiteDtoQueryListModel)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')" autodrop="true" buttonVisible="false" visible="@load(vm.selectedEntiteDtoZoom eq null)">
 								<template name="model">
-									<comboitem label="${each.sigle}" />
+									<comboitem label="${each.sigleWithLibelleStatut}" />
 								</template>
 							</combobox>
 							<label value="Accèder à :" />
 							<combobox value="@load(vm.comboVide)" selectedItem="@bind(vm.selectedEntiteDtoRecherche)" model="@load(vm.entiteDtoQueryListModel)" 	
 								onSelect="@command('selectionneEntiteRecherche')" autodrop="true" buttonVisible="false" width="250px" >
 								<template name="model">
-									<comboitem label="${each.sigle}" />
+									<comboitem label="${each.sigleWithLibelleStatut}" />
 								</template>
 							</combobox>
 							<label value="Afficher :" />
