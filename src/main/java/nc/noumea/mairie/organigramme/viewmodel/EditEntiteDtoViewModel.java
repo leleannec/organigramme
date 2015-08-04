@@ -204,7 +204,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(),
 				listIdStatutFDP, true);
 
-		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
+		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator(),
+				this.entity.getSigle());
 	}
 
 	/**
