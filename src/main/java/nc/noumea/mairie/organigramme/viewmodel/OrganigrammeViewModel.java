@@ -561,6 +561,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	@Command
+	public void refresh() {
+		refreshArbreComplet();
+		Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
+	}
+
+	@Command
 	public void dezoomer() {
 		this.selectedEntiteDtoZoom = null;
 		setEntity(null);

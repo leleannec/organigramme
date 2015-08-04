@@ -46,7 +46,7 @@ function deplierTout() {
 
 function replierTout() {
 	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutReplier', null));
-	refreshOrganigrammeReplie();
+	refreshOrganigrammeReplie(); 
 }; 
 
 function expandEntiteFromIdDiv(id) {

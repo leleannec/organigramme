@@ -34,8 +34,10 @@ public enum FiltreStatut {
 
 	ACTIF("Actif", Arrays.asList(Statut.ACTIF)), ACTIF_PREVISION("Actif + Prévision", Arrays.asList(Statut.ACTIF,
 			Statut.PREVISION)), ACTIF_TRANSITOIRE("Actif + Transitoire", Arrays
-			.asList(Statut.ACTIF, Statut.TRANSITOIRE)), ACTIF_TRANSITOIRE_INACTIF("Actif + Transitoire + Inactif",
-			Arrays.asList(Statut.ACTIF, Statut.TRANSITOIRE, Statut.INACTIF)), TOUS("Tous", null);
+			.asList(Statut.ACTIF, Statut.TRANSITOIRE)), ACTIF_PREVISION_TRANSITOIRE("Actif + Prévision + Transitoire",
+			Arrays.asList(Statut.ACTIF, Statut.PREVISION, Statut.TRANSITOIRE)), ACTIF_TRANSITOIRE_INACTIF(
+			"Actif + Transitoire + Inactif", Arrays.asList(Statut.ACTIF, Statut.TRANSITOIRE, Statut.INACTIF)), TOUS(
+			"Tous", null);
 
 	final String libelle;
 	final List<Statut> listeStatut;
