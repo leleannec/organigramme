@@ -1,6 +1,7 @@
 package nc.noumea.mairie.organigramme.dto;
 
 import nc.noumea.mairie.organigramme.core.dto.AbstractEntityDto;
+import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 
 /*
  * #%L
@@ -30,6 +31,7 @@ public class ExportDto extends AbstractEntityDto {
 
 	EntiteDto entiteDto;
 	boolean avecFichePoste = false;
+	FiltreStatut filtreStatut;
 
 	public boolean isAvecFichePoste() {
 		return avecFichePoste;
@@ -45,6 +47,14 @@ public class ExportDto extends AbstractEntityDto {
 
 	public void setEntiteDto(EntiteDto entiteDto) {
 		this.entiteDto = entiteDto;
+	}
+
+	public FiltreStatut getFiltreStatut() {
+		return filtreStatut;
+	}
+
+	public void setFiltreStatut(FiltreStatut filtreStatut) {
+		this.filtreStatut = filtreStatut;
 	}
 
 	@Override
