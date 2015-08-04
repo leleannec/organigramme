@@ -239,9 +239,12 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 
 		EntiteDto entiteDto = duplicationDto.getEntiteDto();
 
+		EntiteDto entiteDtoRemplace = new EntiteDto();
+		entiteDtoRemplace.setIdStatut(entiteDto.getIdStatut());
+
 		// On sette l'agent, la nouvelle entité parent et l'entité remplactée
 		entiteDto.setEntiteParent(duplicationDto.getEntiteDtoCible());
-		entiteDto.setEntiteRemplacee(entiteDto);
+		entiteDto.setEntiteRemplacee(entiteDtoRemplace);
 		entiteDto.setIdAgentCreation(duplicationDto.getIdAgent());
 
 		String url = adsWsBaseUrl + URL_DUPLIQUE_ENTITE;
