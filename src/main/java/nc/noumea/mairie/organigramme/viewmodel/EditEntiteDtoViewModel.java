@@ -57,6 +57,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
@@ -229,6 +230,20 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel" })
 	public void selectOnglet(@BindingParam("onglet") int onglet) {
 		setOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
+	}
+
+	/**
+	 * Rafraichi l'entité depuis la base de donnée
+	 * 
+	 * @param entiteDto
+	 *            : l'entité à rafraîchir
+	 */
+	@Command
+	@NotifyChange({ "*" })
+	public void refreshEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
+		setDirty(false);
+		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
 	}
 
 	/**
