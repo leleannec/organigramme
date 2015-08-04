@@ -435,6 +435,7 @@ public class EntiteDto extends AbstractEntityDto {
 		}
 		if (this.statut != nouveauStatut) {
 			this.statut = nouveauStatut;
+			this.idStatut = nouveauStatut.getIdStatut();
 			return true;
 		}
 		return false;
@@ -443,6 +444,11 @@ public class EntiteDto extends AbstractEntityDto {
 	@JSON(include = false)
 	public boolean isActif() {
 		return this.getStatut() != null && this.getStatut() == Statut.ACTIF;
+	}
+
+	@JSON(include = false)
+	public boolean isTransitoire() {
+		return this.getStatut() != null && this.getStatut() == Statut.TRANSITOIRE;
 	}
 
 	@JSON(include = false)

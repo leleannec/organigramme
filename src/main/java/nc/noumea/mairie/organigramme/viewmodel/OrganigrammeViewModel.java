@@ -354,14 +354,14 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * Recharge l'arbre complet, rafraichi le client et selectionne l'entité
 	 * crée
 	 * 
-	 * @param entiteDtoParent
-	 *            : l'entité parente
 	 * @param newEntiteDto
 	 *            : la nouvelle entitée
+	 * @parma ouvreOnglet : doit-on ou non ouvrir l'onglet de l'entité créé à la
+	 *        fin de la méthode ?
 	 */
 	@GlobalCommand
-	public void refreshArbreSuiteAjout(@BindingParam("entiteDtoParent") EntiteDto entiteDtoParent,
-			@BindingParam("newEntiteDto") EntiteDto newEntiteDto) {
+	public void refreshArbreSuiteAjout(@BindingParam("newEntiteDto") EntiteDto newEntiteDto,
+			@BindingParam("ouvreOnglet") boolean ouvreOnglet) {
 
 		// Comme on est en train de créer une entité en statut prévisionnel, on
 		// force l'affichage du statut pour pouvoir voir cette nouvelle entité
@@ -373,9 +373,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		}
 		refreshArbreComplet();
 
-		// Vu qu'on vient de reconstruire l'arbre complet on recharge le nouveau
+		// Vu qu'on vient de reconstruire l'arbre complet on recharge les
+		// nouveaux
 		// DTO
 		newEntiteDto = OrganigrammeUtil.findEntiteDtoDansArbreById(entiteDtoRoot, newEntiteDto.getIdEntite(), null);
+		EntiteDto entiteDtoParent = OrganigrammeUtil.findEntiteDtoDansArbreById(entiteDtoRoot, newEntiteDto
+				.getEntiteParent().getIdEntite(), null);
 
 		setEntity(newEntiteDto);
 		mapIdLiOuvert.put(newEntiteDto.getLi().getId(), false);
@@ -387,7 +390,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
 		}
 
-		ouvreOnglet(newEntiteDto, 0);
+		if (ouvreOnglet) {
+			ouvreOnglet(newEntiteDto, 0);
+		} else {
+			Clients.evalJavaScript("goToByScroll('" + newEntiteDto.getLi().getId() + "');");
+		}
 	}
 
 	/**
@@ -493,7 +500,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	public boolean isDuplicable() {
 		// On ne peux créer que si on a le rôle édition
 		return profilAgentDto.isEdition() && this.entity != null
-				&& (this.entity.isPrevision() || this.entity.isActif());
+				&& (this.entity.isActif() || this.entity.isTransitoire());
 	}
 
 	/**

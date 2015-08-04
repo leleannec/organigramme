@@ -25,13 +25,17 @@ package nc.noumea.mairie.organigramme.viewmodel;
  */
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractPopupViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
+import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -61,6 +65,9 @@ public class CreateDuplicationViewModel extends AbstractPopupViewModel<Duplicati
 	@WireVariable
 	IAdsWSConsumer adsWSConsumer;
 
+	@WireVariable
+	ReturnMessageService returnMessageService;
+
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		setPopup((Window) Selectors.iterable(view, "#createDuplication").iterator().next());
@@ -76,13 +83,15 @@ public class CreateDuplicationViewModel extends AbstractPopupViewModel<Duplicati
 	 */
 	public List<EntiteDto> getListeEntiteCible() {
 		List<EntiteDto> result = organigrammeService.findAllActifOuPrevision();
-		result.remove(this.entity);
+		if (this.entity != null) {
+			result.remove(this.entity.getEntiteDto());
+		}
 
 		return result;
 	}
 
 	@GlobalCommand
-	@NotifyChange("entity")
+	@NotifyChange({ "entity", "listeEntiteCible" })
 	public void ouvrePopupCreationDuplication(@BindingParam("duplicationDto") DuplicationDto duplicationDto) {
 		setEntity(duplicationDto);
 		getPopup().doModal();
@@ -93,9 +102,22 @@ public class CreateDuplicationViewModel extends AbstractPopupViewModel<Duplicati
 	 */
 	@Command
 	public void duplique() {
-		if (organigrammeService.dupliqueEntite(this.entity)) {
-			getPopup().detach();
-			BindUtils.postGlobalCommand(null, null, "creeArbreEtRafraichiClient", null);
+		ReturnMessageDto returnMessageDto = organigrammeService.dupliqueEntite(this.entity);
+
+		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
+			return;
 		}
+
+		getPopup().detach();
+
+		// On recharge le dto directement depuis ADS pour être sur d'avoir la
+		// version bien à jour
+		EntiteDto newEntiteDto = adsWSConsumer.getEntite(returnMessageDto.getId());
+
+		final Map<String, Object> mapEntite = new HashMap<String, Object>();
+		mapEntite.put("entiteDtoParent", newEntiteDto.getEntiteParent());
+		mapEntite.put("newEntiteDto", newEntiteDto);
+		mapEntite.put("ouvreOnglet", false);
+		BindUtils.postGlobalCommand(null, null, "refreshArbreSuiteAjout", mapEntite);
 	}
 }

@@ -169,16 +169,11 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 	}
 
 	@Override
-	public boolean dupliqueEntite(DuplicationDto duplicationDto) {
+	public ReturnMessageDto dupliqueEntite(DuplicationDto duplicationDto) {
 
 		ProfilAgentDto profilAgentDto = authentificationService.getCurrentUser();
 		duplicationDto.setIdAgent(profilAgentDto.getIdAgent());
 
-		ReturnMessageDto returnMessageDto = adsWSConsumer.dupliqueEntite(duplicationDto);
-		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
-			return false;
-		}
-
-		return true;
+		return adsWSConsumer.dupliqueEntite(duplicationDto);
 	}
 }

@@ -67,7 +67,7 @@
 						</toolbar>
 					</hlayout>
 					<hlayout hflex="1" sclass="no-padding-right"> 
-						<toolbar hflex="2">
+						<toolbar hflex="3">
 							<toolbarbutton image="/imgs/icon/add.png" label="Créer une sous-entité" onClick="@command('createEntite', entity=vm.entity)" visible="@load(vm.creable)" autodisable="self" />
 							<toolbarbutton image="/imgs/icon/edit.png" label="Modifier l'entité" onClick="@command('ouvreOnglet', entity=vm.entity)" autodisable="self"  visible="@load(vm.entity ne null)"/>
 							<toolbarbutton image="/imgs/icon/dupliquer.png" label="Dupliquer l'entité" onClick="@command('ouvrirPopupCreateDuplication', entity=vm.entity)" visible="@load(vm.duplicable)" autodisable="self" />
@@ -75,8 +75,8 @@
 							<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 							<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
-						<toolbar hflex="2" sclass="align-center"> 
-							<label value="@load(vm.entity.label)" sclass="toolbar-libelle-entite"  visible="@load(vm.entity ne null)"/>
+						<toolbar hflex="3" sclass="align-center"> 
+							<label value="@load(vm.entity.labelCourt)" sclass="toolbar-libelle-entite"  visible="@load(vm.entity ne null)"/>
 						</toolbar>
 						<hlayout hflex="2" sclass="no-padding-right align-right"> 
 							<toolbar hflex="4" sclass="no-padding-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
