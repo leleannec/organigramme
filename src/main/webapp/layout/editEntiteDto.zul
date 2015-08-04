@@ -15,7 +15,7 @@
 				<tabpanel style="overflow:auto">
 					<include src="/layout/editEntiteCaracteristique.zul" />
 				</tabpanel>
-				<tabpanel style="overflow:auto">
+				<tabpanel>
 					<include src="/layout/editEntiteFicheDePoste.zul" />
 				</tabpanel>
 				<tabpanel style="overflow:auto">

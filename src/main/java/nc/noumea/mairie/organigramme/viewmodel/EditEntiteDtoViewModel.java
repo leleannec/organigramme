@@ -41,6 +41,7 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
+import nc.noumea.mairie.organigramme.enums.StatutFichePoste;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
@@ -92,8 +93,19 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private boolean dirty = false;
 
+	private boolean afficheFdpInactive = false;
+
 	public boolean isDirty() {
 		return dirty;
+	}
+
+	public boolean isAfficheFdpInactive() {
+		return afficheFdpInactive;
+	}
+
+	@NotifyChange("fichePosteGroupingModel")
+	public void setAfficheFdpInactive(boolean afficheFdpInactive) {
+		this.afficheFdpInactive = afficheFdpInactive;
 	}
 
 	public void setDirty(boolean dirty) {
@@ -182,8 +194,14 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer
-				.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+		String listIdStatutFDP = StatutFichePoste.getListIdStatutActif();
+
+		if (this.afficheFdpInactive) {
+			listIdStatutFDP += "," + StatutFichePoste.INACTIVE.getId();
+		}
+
+		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(),
+				listIdStatutFDP, true);
 
 		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
 	}
