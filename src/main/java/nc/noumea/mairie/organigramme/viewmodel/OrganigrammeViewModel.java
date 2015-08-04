@@ -27,6 +27,7 @@ package nc.noumea.mairie.organigramme.viewmodel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +50,11 @@ import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
+import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -108,7 +111,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity", "creable",
 			"duplicable", "listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
-			"selectedEntiteDtoZoom", "entiteDtoQueryListModel", "selectedFiltreStatut" };
+			"selectedEntiteDtoZoom", "entiteDtoQueryListModelRecherchable", "entiteDtoQueryListModelZoomable",
+			"selectedFiltreStatut" };
 
 	private OrganigrammeWorkflowViewModel organigrammeWorkflowViewModel = new OrganigrammeWorkflowViewModel(this);
 	public TreeViewModel treeViewModel = new TreeViewModel(this);
@@ -152,15 +156,18 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** Le currentUser connecté **/
 	ProfilAgentDto profilAgentDto;
 
-	/** Liste de toutes les entités zoomables et/ou recherchables **/
+	/** Liste de toutes les entités recherchables **/
 	private List<EntiteDto> listeEntite = new ArrayList<EntiteDto>();
 
-	/** ListModel de toutes les entités zoomables et/ou recherchables **/
-	private EntiteDtoQueryListModel entiteDtoQueryListModel;
+	/** ListModel de toutes les entités recherchables **/
+	private EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable;
+
+	/** ListModel de toutes les entités zoomables **/
+	private EntiteDtoQueryListModel entiteDtoQueryListModelZoomable;
 
 	public List<EntiteDto> getListeEntite() {
 
-		// On filtre la liste des entités zoomables et accessibles selon le
+		// On filtre la liste des entités recherchables selon le
 		// statut selectionné
 		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
 			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
@@ -204,12 +211,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.selectedFiltreStatut = selectedFiltreStatut;
 	}
 
-	public EntiteDtoQueryListModel getEntiteDtoQueryListModel() {
-		return entiteDtoQueryListModel;
+	public EntiteDtoQueryListModel getEntiteDtoQueryListModelRecherchable() {
+		return entiteDtoQueryListModelRecherchable;
 	}
 
-	public void setEntiteDtoQueryListModel(EntiteDtoQueryListModel entiteDtoQueryListModel) {
-		this.entiteDtoQueryListModel = entiteDtoQueryListModel;
+	public void setEntiteDtoQueryListModelRecherchable(EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable) {
+		this.entiteDtoQueryListModelRecherchable = entiteDtoQueryListModelRecherchable;
 	}
 
 	/**
@@ -232,6 +239,31 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on
 		// est sur d'avoir une version bien à jour
 		refreshArbreComplet();
+	}
+
+	public EntiteDtoQueryListModel getEntiteDtoQueryListModelZoomable() {
+		return new EntiteDtoQueryListModel(getAllEntiteAPlat());
+	}
+
+	private List<EntiteDto> getAllEntiteAPlat() {
+		EntiteDto entiteDto = adsWSConsumer.getCurrentTreeWithVDNRoot();
+
+		List<EntiteDto> result = new ArrayList<EntiteDto>();
+		result.add(entiteDto);
+		getAllEntiteAPlatRecursive(result, entiteDto.getEnfants());
+
+		Collections.sort(result, new ComparatorUtil.EntiteComparator());
+
+		return result;
+	}
+
+	private void getAllEntiteAPlatRecursive(List<EntiteDto> result, List<EntiteDto> listeEnfant) {
+		if (!CollectionUtils.isEmpty(listeEnfant)) {
+			for (EntiteDto entiteDto : listeEnfant) {
+				result.add(entiteDto);
+				getAllEntiteAPlatRecursive(result, entiteDto.getEnfants());
+			}
+		}
 	}
 
 	/**
@@ -575,7 +607,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	@Command
 	public void dezoomer() {
-		this.selectedEntiteDtoZoom = null;
+		setSelectedEntiteDtoZoom(null);
 		setEntity(null);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 		refreshArbreComplet();
