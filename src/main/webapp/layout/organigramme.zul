@@ -38,7 +38,8 @@
 					<hlayout hflex="1" sclass="no-padding-right">
 						<toolbar mold="default"> 
 							<toolbarbutton image="/imgs/icon/deplier.png" onClick="@command('deplierTout')" label="Tout déplier" autodisable="self" /> 
-							<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTout')" label="Tout replier" autodisable="self" /> 
+							<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTout')" label="Tout replier" autodisable="self" />
+							<toolbarbutton image="/imgs/icon/refresh.png" onClick="@command('refresh')" label="Rafraîchir" autodisable="self" />  
 						</toolbar>
 						<toolbar hflex="1" sclass="align-right">
 							<label value="Zoomer sur :" visible="@load(vm.selectedEntiteDtoZoom eq null)"/>
