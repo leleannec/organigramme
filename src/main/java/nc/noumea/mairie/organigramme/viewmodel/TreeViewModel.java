@@ -138,8 +138,8 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		genereArborescenceHtml(entiteDto.getEnfants(), li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);
 
 		// Maintenant qu'on a setté la liste de entités disponibles à la
-		// recherche et/ou au zoom, on renseigne la ListModel
-		organigrammeViewModel.setEntiteDtoQueryListModel(new EntiteDtoQueryListModel(organigrammeViewModel
+		// recherche, on renseigne la ListModel
+		organigrammeViewModel.setEntiteDtoQueryListModelRecherchable(new EntiteDtoQueryListModel(organigrammeViewModel
 				.getListeEntite()));
 
 		return ulRoot;
