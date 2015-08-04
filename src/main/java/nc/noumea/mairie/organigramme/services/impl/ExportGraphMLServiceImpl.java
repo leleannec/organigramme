@@ -198,9 +198,11 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 				libelleCase += "\n";
 
 				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
-					libelleCase += infoFichePosteDto.getNbFDP() + " " + infoFichePosteDto.getTitreFDP();
-					if (!new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
-						libelleCase += " (" + infoFichePosteDto.getTauxETP() + " ETP)\n";
+					if (new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
+						libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + ")";
+					} else {
+						libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + " / "
+								+ infoFichePosteDto.getTauxETP() + " ETP)";
 					}
 				}
 			}
