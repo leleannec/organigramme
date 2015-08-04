@@ -609,6 +609,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	public void refresh() {
 		refreshArbreComplet();
 		Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
+		Clients.showNotification("Organigramme rafraîchi.", "info", null, "top_center", 0);
 	}
 
 	@Command
