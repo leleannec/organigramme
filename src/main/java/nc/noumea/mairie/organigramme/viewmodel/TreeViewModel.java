@@ -35,7 +35,6 @@ import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.entity.CouleurTypeEntite;
-import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.query.EntiteDtoQueryListModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -130,7 +129,7 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		Ul ulRoot = new Ul();
 		ulRoot.setId("organigramme-root");
 		ulRoot.setSclass("hide");
-		setStatutEtCouleur(mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte, entiteDto);
+		setCouleur(mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte, entiteDto);
 		Li li = creeLiEntite(ulRoot, entiteDto);
 		organigrammeViewModel.getListeEntite().add(entiteDto);
 
@@ -169,7 +168,7 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		ul.setParent(component);
 
 		for (final EntiteDto entiteDto : listeEntiteDTO) {
-			setStatutEtCouleur(mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte, entiteDto);
+			setCouleur(mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte, entiteDto);
 
 			Li li = creeLiEntite(ul, entiteDto);
 
@@ -183,10 +182,8 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		return ul;
 	}
 
-	public void setStatutEtCouleur(Map<Long, String> mapIdTypeEntiteCouleurEntite,
+	private void setCouleur(Map<Long, String> mapIdTypeEntiteCouleurEntite,
 			Map<Long, String> mapIdTypeEntiteCouleurTexte, final EntiteDto entiteDto) {
-		// On se le statut de l'entité
-		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
 		// On set la couleur du type d'entité
 		if (entiteDto.getTypeEntite() != null) {
@@ -228,8 +225,6 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		if (this.organigrammeViewModel.mapIdLiOuvert.get(li.getId()) == null) {
 			this.organigrammeViewModel.mapIdLiOuvert.put(li.getId(), false);
 		}
-
-		entiteDto.setLi(li);
 
 		// On maintient une map permettant d'aller plus vite lors d'un click
 		// event pour retrouver l'EntiteDto correspondant à l'id du Li

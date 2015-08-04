@@ -162,9 +162,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** ListModel de toutes les entités recherchables **/
 	private EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable;
 
-	/** ListModel de toutes les entités zoomables **/
-	private EntiteDtoQueryListModel entiteDtoQueryListModelZoomable;
-
 	public List<EntiteDto> getListeEntite() {
 
 		// On filtre la liste des entités recherchables selon le
@@ -278,7 +275,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@GlobalCommand
 	public void refreshOrganigrammeSuiteAjout(@BindingParam("entiteDto") EntiteDto entiteDto) {
 		refreshArbreComplet();
-		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getLi().getId() + "');");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getIdLi() + "');");
 	}
 
 	@GlobalCommand
@@ -306,10 +303,19 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		EntiteDto entiteDtoFromBdd = entiteDto;
 		if (entiteDto != null) {
 			entiteDtoFromBdd = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
-			entiteDtoFromBdd.setLi(entiteDto.getLi());
 		}
 		setEntity(entiteDtoFromBdd);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
+	}
+
+	@Listen("onClickFlecheDeplierReplier = #organigramme")
+	public void onClickFlecheDeplierReplier(Event event) {
+		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
+
+		boolean ouvert = mapIdLiOuvert.get(entiteDto.getIdLi()) != null ? !mapIdLiOuvert.get(entiteDto.getIdLi())
+				: false;
+		mapIdLiOuvert.put(entiteDto.getIdLi(), ouvert);
+		setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
 	}
 
 	/**
@@ -328,13 +334,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	@Listen("onClickToutDeplier = #organigramme")
 	public void onClickToutDeplier(Event event) {
-		mapIdLiOuvert.put(entiteDtoRoot.getLi().getId(), true);
+		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), true);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), true);
 	}
 
 	@Listen("onClickToutReplier = #organigramme")
 	public void onClickToutReplier(Event event) {
-		mapIdLiOuvert.put(entiteDtoRoot.getLi().getId(), false);
+		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), false);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), false);
 	}
 
@@ -348,7 +354,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	private void setLiOuvertOuFermeArbre(List<EntiteDto> listeEntiteDto, boolean ouvert) {
 		for (EntiteDto entiteDto : listeEntiteDto) {
-			mapIdLiOuvert.put(entiteDto.getLi().getId(), ouvert);
+			mapIdLiOuvert.put(entiteDto.getIdLi(), ouvert);
 			setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
 		}
 	}
@@ -413,10 +419,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 				.getEntiteParent().getIdEntite(), null);
 
 		setEntity(newEntiteDto);
-		mapIdLiOuvert.put(newEntiteDto.getLi().getId(), false);
+		mapIdLiOuvert.put(newEntiteDto.getIdLi(), false);
 		// Appel de la fonction javascript correspondante
-		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getLi().getId() + "', '"
-				+ entiteDtoParent.getLi().getId() + "');");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getIdLi() + "', '"
+				+ entiteDtoParent.getIdLi() + "');");
 
 		if (!filtreStatutPrevisionVisible) {
 			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
@@ -425,7 +431,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		if (ouvreOnglet) {
 			ouvreOnglet(newEntiteDto, 0);
 		} else {
-			Clients.evalJavaScript("goToByScroll('" + newEntiteDto.getLi().getId() + "');");
+			Clients.evalJavaScript("goToByScroll('" + newEntiteDto.getIdLi() + "');");
 		}
 	}
 
@@ -437,7 +443,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	@Command
 	public void deplierEntite(@BindingParam("entity") EntiteDto entiteDto) {
-		Clients.evalJavaScript("expandEntiteFromIdDiv('" + entiteDto.getLi().getId() + "');");
+		Clients.evalJavaScript("expandEntiteFromIdDiv('" + entiteDto.getIdLi() + "');");
 	}
 
 	/**
@@ -584,7 +590,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		if (this.selectedEntiteDtoRecherche != null) {
 			setEntity(this.selectedEntiteDtoRecherche);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-			Clients.evalJavaScript("goToByScroll('" + this.selectedEntiteDtoRecherche.getLi().getId() + "');");
+			Clients.evalJavaScript("goToByScroll('" + this.selectedEntiteDtoRecherche.getIdLi() + "');");
 			this.selectedEntiteDtoRecherche = null;
 		}
 	}
@@ -707,11 +713,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private void removeEntiteDtoIfNotInFiltre(EntiteDto entiteDto, FiltreStatut filtreStatut) {
 		List<EntiteDto> listeEnfant = new ArrayList<EntiteDto>();
 		listeEnfant.addAll(entiteDto.getEnfants());
-		// On se le statut de l'entité
-		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 		for (EntiteDto entiteDtoEnfant : listeEnfant) {
-			// On se le statut de l'entité
-			entiteDtoEnfant.setStatut(Statut.getStatutById(entiteDtoEnfant.getIdStatut()));
 			if (!filtreStatut.getListeStatut().contains(entiteDtoEnfant.getStatut())) {
 				entiteDto.getEnfants().remove(entiteDtoEnfant);
 			} else {
@@ -732,6 +734,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	public void ouvrirPopupCreateExport(@BindingParam("entity") EntiteDto entiteDto) {
 		ExportDto exportDto = new ExportDto();
 		exportDto.setEntiteDto(entiteDto);
+		exportDto.setFiltreStatut(this.selectedFiltreStatut);
 		Map<String, Object> args = new HashMap<>();
 		args.put("exportDto", exportDto);
 		Executions.createComponents("/layout/createExportGraphML.zul", null, null);
