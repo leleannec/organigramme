@@ -113,8 +113,6 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 			return false;
 		}
 
-		entiteDto.getLi().getParent().removeChild(entiteDto.getLi());
-
 		return true;
 	}
 
@@ -140,8 +138,6 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 
 	private List<EntiteDto> getAllEntiteActifOuPrevision(List<EntiteDto> listeEnfant, List<EntiteDto> result) {
 		for (EntiteDto entiteDto : listeEnfant) {
-			// On set le statut de l'entité
-			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
 			if (entiteDto.getStatut().equals(Statut.ACTIF) || entiteDto.getStatut().equals(Statut.PREVISION)) {
 				result.add(entiteDto);
@@ -155,8 +151,6 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 
 	private List<EntiteDto> getAllEntiteNotPrevision(List<EntiteDto> listeEnfant, List<EntiteDto> result) {
 		for (EntiteDto entiteDto : listeEnfant) {
-			// On set le statut de l'entité
-			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
 			if (!entiteDto.getStatut().equals(Statut.PREVISION)) {
 				result.add(entiteDto);
@@ -169,16 +163,11 @@ public class OrganigrammeServiceImpl extends GenericServiceImpl<EntiteDto> imple
 	}
 
 	@Override
-	public boolean dupliqueEntite(DuplicationDto duplicationDto) {
+	public ReturnMessageDto dupliqueEntite(DuplicationDto duplicationDto) {
 
 		ProfilAgentDto profilAgentDto = authentificationService.getCurrentUser();
 		duplicationDto.setIdAgent(profilAgentDto.getIdAgent());
 
-		ReturnMessageDto returnMessageDto = adsWSConsumer.dupliqueEntite(duplicationDto);
-		if (!returnMessageService.gererReturnMessage(returnMessageDto)) {
-			return false;
-		}
-
-		return true;
+		return adsWSConsumer.dupliqueEntite(duplicationDto);
 	}
 }

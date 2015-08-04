@@ -37,7 +37,6 @@ import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
-import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.services.CouleurTypeEntiteService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
@@ -136,6 +135,7 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 		final Map<String, Object> mapEntite = new HashMap<String, Object>();
 		mapEntite.put("entiteDtoParent", entiteDtoParent);
 		mapEntite.put("newEntiteDto", newEntiteDto);
+		mapEntite.put("ouvreOnglet", true);
 		BindUtils.postGlobalCommand(null, null, "refreshArbreSuiteAjout", mapEntite);
 
 		getPopup().detach();
@@ -153,7 +153,7 @@ public class CreateEntiteViewModel extends AbstractPopupViewModel<EntiteDto> imp
 	 */
 	private EntiteDto createAndInitNewEntiteDto(EntiteDto entiteDtoParent, Integer idAgent) {
 		EntiteDto newEntiteDto = new EntiteDto();
-		newEntiteDto.setStatut(Statut.PREVISION);
+		newEntiteDto.setIdStatut(0);
 		newEntiteDto.setSigle(this.entity.getSigle());
 		newEntiteDto.setLabel(this.entity.getLabel());
 		newEntiteDto.setLabelCourt(this.entity.getLabelCourt());

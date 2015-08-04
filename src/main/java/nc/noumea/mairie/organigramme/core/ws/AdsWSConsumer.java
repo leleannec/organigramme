@@ -39,7 +39,6 @@ import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
-import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -113,9 +112,6 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
 		EntiteDto entiteDto = readResponse(EntiteDto.class, res, url);
 
-		// On set le statut de l'entité
-		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
-
 		return entiteDto;
 	}
 
@@ -124,9 +120,6 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		String url = adsWsBaseUrl + URL_GET_ENTITE + "/" + idEntite.toString() + "/withChildren";
 		ClientResponse res = createAndFireGetRequest(new HashMap<String, String>(), url);
 		EntiteDto entiteDto = readResponse(EntiteDto.class, res, url);
-
-		// On set le statut de l'entité
-		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 
 		return entiteDto;
 	}
@@ -226,9 +219,6 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 			}
 
 			entiteHistoDto.setNomPrenomAgent(nomPrenomAgent);
-
-			// On se le statut de l'entité
-			entiteHistoDto.setStatut(Statut.getStatutById(entiteHistoDto.getIdStatut()));
 		}
 
 		return result;

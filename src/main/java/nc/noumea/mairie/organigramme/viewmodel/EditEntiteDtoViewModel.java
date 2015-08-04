@@ -41,7 +41,6 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
-import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
@@ -53,7 +52,6 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
-import org.zkoss.zhtml.Li;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
@@ -115,11 +113,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	@Override
 	public void initSetup(@ExecutionArgParam("entity") EntiteDto entiteDto) {
 		profilAgentDto = authentificationService.getCurrentUser();
-		Li li = entiteDto.getLi();
 		// On recharge l'entité depuis la base pour être sur d'être bien à jour
 		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
-		this.entity.setLi(li);
-		this.entity.setStatut(Statut.getStatutById(this.entity.getIdStatut()));
 	}
 
 	public ProfilAgentDto getProfilAgentDto() {

@@ -37,6 +37,7 @@ import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
 import nc.noumea.mairie.organigramme.dto.InfoFichePosteDto;
+import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 
@@ -73,7 +74,8 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 		initHeader(root);
 		Element graph = initRoot(root);
-		buildGraphMlTree(graph, exportDto.getEntiteDto(), exportDto.isAvecFichePoste(), mapIdLiOuvert);
+		buildGraphMlTree(graph, exportDto.getEntiteDto(), exportDto.isAvecFichePoste(), mapIdLiOuvert,
+				exportDto.getFiltreStatut());
 
 		ByteArrayOutputStream os_writer = new ByteArrayOutputStream();
 		try {
@@ -124,7 +126,7 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	 *            : permet de savoir quel entité est dépliée
 	 */
 	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, boolean avecFichePoste,
-			Map<String, Boolean> mapIdLiOuvert) {
+			Map<String, Boolean> mapIdLiOuvert, FiltreStatut filtreStatut) {
 
 		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite()
 				: "#FFFFCF";
@@ -157,10 +159,14 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		String libelleCase = "";
 
 		// Si l'entité est dépliée, on affiche ses enfants
-		if (mapIdLiOuvert.get(entiteDto.getLi().getId())) {
+		if (mapIdLiOuvert.get(entiteDto.getIdLi())) {
 			for (EntiteDto enfant : entiteDto.getEnfants()) {
-				buildGraphMlTree(graph, enfant, avecFichePoste, mapIdLiOuvert);
-				genereEdge(graph, entiteDto, enfant);
+
+				if (filtreStatut.getListeStatut().contains(enfant.getStatut())
+						|| filtreStatut.equals(FiltreStatut.TOUS)) {
+					buildGraphMlTree(graph, enfant, avecFichePoste, mapIdLiOuvert, filtreStatut);
+					genereEdge(graph, entiteDto, enfant);
+				}
 			}
 
 			libelleCase = getLibelleCase(entiteDto, avecFichePoste, false);
@@ -198,9 +204,11 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 				libelleCase += "\n";
 
 				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
-					libelleCase += infoFichePosteDto.getNbFDP() + " " + infoFichePosteDto.getTitreFDP();
-					if (!new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
-						libelleCase += " (" + infoFichePosteDto.getTauxETP() + " ETP)\n";
+					if (new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
+						libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + ")\n";
+					} else {
+						libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + " / "
+								+ infoFichePosteDto.getTauxETP() + " ETP)\n";
 					}
 				}
 			}

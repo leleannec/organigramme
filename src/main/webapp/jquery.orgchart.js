@@ -257,10 +257,11 @@ function goToByScroll(id){
                 	 
                 	if(e.target.classList[0] == "hasChildren") {
                 		expandEntite($entiteDiv); 
+                		zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id"))); 
                 	}
                 	else {
                 		if($entiteDiv.hasClass("edit")) {
-                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null)); 
+                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null));
                         	removeEditEntite(opts);  
                 		}
                 		else {
@@ -274,7 +275,6 @@ function goToByScroll(id){
             	clearTimeout(timer);		//prevent single-click action
                 clicks = 0;             	//after action performed, reset counter
                 zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onDblClickEntite', $entiteDiv.attr("id"))); 
-            	removeEditEntite(opts);  
             }
         });
         

@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.util.CollectionUtils;
-import org.zkoss.zhtml.Li;
 
 import flexjson.JSON;
 
@@ -83,8 +82,6 @@ public class EntiteDto extends AbstractEntityDto {
 	@JsonDeserialize(using = JsonDateDeserializer.class)
 	private Date dateDeliberationInactif;
 
-	private Li li;
-	private Statut statut;
 	private Integer idAgentSuppression;
 
 	public EntiteDto() {
@@ -267,12 +264,12 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@JSON(include = false)
-	public Li getLi() {
-		return li;
-	}
+	public String getIdLi() {
+		if (this.getId() == null) {
+			return null;
+		}
 
-	public void setLi(Li li) {
-		this.li = li;
+		return "entite-id-" + this.getId().toString();
 	}
 
 	@JSON(include = false)
@@ -286,11 +283,11 @@ public class EntiteDto extends AbstractEntityDto {
 
 	@JSON(include = false)
 	public Statut getStatut() {
-		return statut;
-	}
+		if (this.getIdStatut() == null) {
+			return null;
+		}
 
-	public void setStatut(Statut statut) {
-		this.statut = statut;
+		return Statut.getStatutById(this.getIdStatut());
 	}
 
 	public String getCommentaire() {
@@ -365,12 +362,6 @@ public class EntiteDto extends AbstractEntityDto {
 		for (Transition transition : Transition.values()) {
 			boolean transitionDepuisStatutCourant = this.getStatut().equals(transition.getStatutSource());
 			if (transitionDepuisStatutCourant) {
-
-				// On se le statut de l'entité parent
-				if (this.getEntiteParent() != null) {
-					this.getEntiteParent().setStatut(Statut.getStatutById(this.getEntiteParent().getIdStatut()));
-				}
-
 				boolean statutParentNotPrevisionOrInactif = this.getEntiteParent() != null
 						&& this.getEntiteParent().getStatut() != Statut.PREVISION
 						&& this.getEntiteParent().getStatut() != Statut.INACTIF;
@@ -412,9 +403,6 @@ public class EntiteDto extends AbstractEntityDto {
 	public boolean tousEnfantEnStatut(List<Statut> listeStatut, List<EntiteDto> listeEnfant) {
 		for (EntiteDto entiteDto : listeEnfant) {
 
-			// On set le statut de l'entité
-			entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
-
 			if (!listeStatut.contains(entiteDto.getStatut())) {
 				return false;
 			}
@@ -433,8 +421,8 @@ public class EntiteDto extends AbstractEntityDto {
 		if (nouveauStatut == null) {
 			return false; // ne devrait pas arriver
 		}
-		if (this.statut != nouveauStatut) {
-			this.statut = nouveauStatut;
+		if (!this.getStatut().equals(nouveauStatut)) {
+			this.idStatut = nouveauStatut.getIdStatut();
 			return true;
 		}
 		return false;
@@ -443,6 +431,11 @@ public class EntiteDto extends AbstractEntityDto {
 	@JSON(include = false)
 	public boolean isActif() {
 		return this.getStatut() != null && this.getStatut() == Statut.ACTIF;
+	}
+
+	@JSON(include = false)
+	public boolean isTransitoire() {
+		return this.getStatut() != null && this.getStatut() == Statut.TRANSITOIRE;
 	}
 
 	@JSON(include = false)
