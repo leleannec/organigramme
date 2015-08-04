@@ -32,6 +32,8 @@ import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 
+import org.zkoss.zul.GroupComparator;
+
 public class ComparatorUtil {
 
 	public static class TypeEntiteComparator implements Comparator<TypeEntiteDto>, Serializable {
@@ -60,6 +62,35 @@ public class ComparatorUtil {
 
 		@Override
 		public int compare(FichePosteDto o1, FichePosteDto o2) {
+			return o1.getSigle().compareTo(o2.getSigle());
+		}
+	}
+
+	public static class FichePosteComparatorAvecSigleEnTete implements Comparator<FichePosteDto>,
+			GroupComparator<FichePosteDto>, Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		String sigle;
+
+		public FichePosteComparatorAvecSigleEnTete(String sigle) {
+			this.sigle = sigle;
+		}
+
+		@Override
+		public int compare(FichePosteDto o1, FichePosteDto o2) {
+			return o1.getSigle().compareTo(o2.getSigle());
+		}
+
+		@Override
+		public int compareGroup(FichePosteDto o1, FichePosteDto o2) {
+			if (o1.getSigle().equals(sigle)) {
+				return -1;
+			}
+			if (o2.getSigle().equals(sigle)) {
+				return 1;
+			}
+
 			return o1.getSigle().compareTo(o2.getSigle());
 		}
 	}

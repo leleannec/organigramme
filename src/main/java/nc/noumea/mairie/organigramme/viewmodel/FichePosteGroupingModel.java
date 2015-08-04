@@ -34,8 +34,16 @@ import org.zkoss.zul.GroupsModelArray;
 public class FichePosteGroupingModel extends GroupsModelArray<FichePosteDto, String, String, Object> {
 	private static final long serialVersionUID = 1L;
 
-	public FichePosteGroupingModel(List<FichePosteDto> data, Comparator<FichePosteDto> cmpr) {
+	public FichePosteGroupingModel(List<FichePosteDto> data, Comparator<FichePosteDto> cmpr, String sigleEntite) {
 		super(data.toArray(new FichePosteDto[0]), cmpr);
+
+		// On replie tous les groupes sauf celui de l'entité
+		for (int i = 0; i < this.getGroupCount(); i++) {
+			FichePosteDto fichePosteDto = this.getChild(i, 0);
+			if (!fichePosteDto.getSigle().equals(sigleEntite)) {
+				removeOpenGroup(i);
+			}
+		}
 	}
 
 	protected String createGroupHead(FichePosteDto[] groupdata, int index, int col) {
