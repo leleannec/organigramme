@@ -73,10 +73,12 @@ public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 		return readResponse(AccessRightOrganigrammeDto.class, res, url);
 	}
 
-	public List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren) {
+	public List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, String listIdStatutFDP,
+			boolean withEntiteChildren) {
 		String url = String.format(sirhWsBaseUrl + URL_FICHE_POSTE_PAR_ENTITE);
 		HashMap<String, String> params = new HashMap<>();
 		params.put("idEntite", idEntite.toString());
+		params.put("statutFDP", String.valueOf(listIdStatutFDP));
 		params.put("withEntiteChildren", String.valueOf(withEntiteChildren));
 		logger.debug("getFichePosteByIdEntite with url " + url);
 		ClientResponse res = createAndFireGetRequest(params, url);

@@ -37,7 +37,7 @@ public interface ISirhWSConsumer {
 
 	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
 
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, boolean withEntiteChildren);
+	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, String listIdStatutFDP, boolean withEntiteChildren);
 
 	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
 }

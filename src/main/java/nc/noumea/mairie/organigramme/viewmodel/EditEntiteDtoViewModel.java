@@ -41,6 +41,7 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
+import nc.noumea.mairie.organigramme.enums.StatutFichePoste;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
@@ -56,6 +57,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
@@ -92,8 +94,19 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private boolean dirty = false;
 
+	private boolean afficheFdpInactive = false;
+
 	public boolean isDirty() {
 		return dirty;
+	}
+
+	public boolean isAfficheFdpInactive() {
+		return afficheFdpInactive;
+	}
+
+	@NotifyChange("fichePosteGroupingModel")
+	public void setAfficheFdpInactive(boolean afficheFdpInactive) {
+		this.afficheFdpInactive = afficheFdpInactive;
 	}
 
 	public void setDirty(boolean dirty) {
@@ -182,10 +195,17 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer
-				.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+		String listIdStatutFDP = StatutFichePoste.getListIdStatutActif();
 
-		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
+		if (this.afficheFdpInactive) {
+			listIdStatutFDP += "," + StatutFichePoste.INACTIVE.getId();
+		}
+
+		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(),
+				listIdStatutFDP, true);
+
+		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparatorAvecSigleEnTete(
+				this.entity.getSigle()), this.entity.getSigle());
 	}
 
 	/**
@@ -211,6 +231,20 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel" })
 	public void selectOnglet(@BindingParam("onglet") int onglet) {
 		setOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
+	}
+
+	/**
+	 * Rafraichi l'entité depuis la base de donnée
+	 * 
+	 * @param entiteDto
+	 *            : l'entité à rafraîchir
+	 */
+	@Command
+	@NotifyChange({ "*" })
+	public void refreshEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
+		setDirty(false);
+		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
 	}
 
 	/**

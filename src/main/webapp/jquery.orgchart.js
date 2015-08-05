@@ -66,6 +66,8 @@ function expandEntite($entiteDiv) {
     	$row.removeClass("hiddenChildren").addClass("shownChildren");
         $row.nextAll("tr").show();
     } 
+    
+    zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id"))); 
 };
 
 function goToByScroll(id){
@@ -284,6 +286,7 @@ function goToByScroll(id){
          
         $entiteDiv.on("deplierReplierEntite", function(e) {
         	expandEntite($entiteDiv);
+        	
         });
          
         if ($childEntites.length > 0) {

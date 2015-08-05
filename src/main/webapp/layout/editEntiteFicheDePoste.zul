@@ -1,26 +1,32 @@
 <zk>
-	<grid mold="paging" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
-		<columns>
-			<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
-			<column label="Titre" sort="auto(titre)" />
-			<column label="Statut" sort="auto(statutFDP)" />
-			<column label="Catégorie" sort="auto(libelleCategorie)" />
-			<column label="Agent" sort="auto(agent)"/>
-			<column label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
-		</columns>
-		
-		<template name="model:group">
-            <group label="@load(each)" />
-        </template>
-        <template name="model">
-            <row>
-                <label value="@load(each.numero)" />
-                <label value="@load(each.titre)" />
-                <label value="@load(each.statutFDP)" />
-                <label value="@load(each.libelleCategorie)" />
-                <label value="@load(each.agent)" />
-                <label value="@load(each.reglementaire)" />
-            </row>
-        </template>
-	</grid>
+	<vlayout hflex="1" vflex="1">
+		<toolbar hflex="1">
+			<label value="Afficher les inactives" />
+			<checkbox checked="@bind(vm.afficheFdpInactive)" />  
+		</toolbar>	
+		<grid mold="paging" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
+			<columns>
+				<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
+				<column label="Titre" sort="auto(titre)" />
+				<column label="Statut" sort="auto(statutFDP)" />
+				<column label="Catégorie" sort="auto(libelleCategorie)" />
+				<column label="Agent" sort="auto(agent)"/>
+				<column label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
+			</columns>
+			
+			<template name="model:group">
+	            <group label="@load(each)" />
+	        </template>
+	        <template name="model">
+	            <row>
+	                <label value="@load(each.numero)" />
+	                <label value="@load(each.titre)" />
+	                <label value="@load(each.statutFDP)" />
+	                <label value="@load(each.libelleCategorie)" />
+	                <label value="@load(each.agent)" />
+	                <label value="@load(each.reglementaire)" />
+	            </row>
+	        </template>
+		</grid>
+	</vlayout>
 </zk>
