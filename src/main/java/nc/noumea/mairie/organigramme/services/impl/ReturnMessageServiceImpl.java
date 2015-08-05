@@ -72,6 +72,7 @@ public class ReturnMessageServiceImpl extends GenericServiceImpl<ReturnMessageDt
 	}
 
 	public void showNotificationStandard(String message) {
+
 		Clients.showNotification(message, "info", null, "top_center", 0);
 	}
 
