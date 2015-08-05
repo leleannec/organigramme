@@ -26,7 +26,7 @@ digraph "couleur_type_entite" {
       <TR><TD PORT="couleur_entite" COLSPAN="3" ALIGN="LEFT">couleur_entite</TD></TR>
       <TR><TD PORT="couleur_texte" COLSPAN="3" ALIGN="LEFT">couleur_texte</TD></TR>
       <TR><TD PORT="id_type_entite" COLSPAN="3" ALIGN="LEFT">id_type_entite</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="tables/couleur_type_entite.html"
     tooltip="couleur_type_entite"
