@@ -84,6 +84,9 @@ public class ComparatorUtil {
 
 		@Override
 		public int compareGroup(FichePosteDto o1, FichePosteDto o2) {
+			if (o1.getSigle().equals(o2.getSigle())) {
+				return 0;
+			}
 			if (o1.getSigle().equals(sigle)) {
 				return -1;
 			}
