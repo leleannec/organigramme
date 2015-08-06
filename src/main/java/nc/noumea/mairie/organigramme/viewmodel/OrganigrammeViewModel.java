@@ -333,14 +333,18 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	@Listen("onClickToutDeplier = #organigramme")
 	public void onClickToutDeplier(Event event) {
+		setEntity(null);
 		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), true);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), true);
+		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 	}
 
 	@Listen("onClickToutReplier = #organigramme")
 	public void onClickToutReplier(Event event) {
+		setEntity(null);
 		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), false);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), false);
+		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 	}
 
 	/**
