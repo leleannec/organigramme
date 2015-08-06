@@ -376,7 +376,7 @@
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                 </configuration>
                 <executions>
-                    <execution>
+                    <execution> 
                         <id>jacoco-initialize</id>
                         <goals>
                             <goal>prepare-agent</goal>
