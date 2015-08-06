@@ -76,7 +76,7 @@
 							<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('lancerExport', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
 						<toolbar hflex="3" sclass="align-center"> 
-							<label value="@load(vm.entity.labelCourt)" sclass="toolbar-libelle-entite"  visible="@load(vm.entity ne null)"/>
+							<label value="@load(vm.entity.labelCourt)" sclass="toolbar-libelle-entite" visible="@load(vm.entity ne null)"/>
 						</toolbar>
 						<hlayout hflex="2" sclass="no-padding-right align-right"> 
 							<toolbar hflex="4" sclass="no-padding-right" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
