@@ -41,7 +41,7 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
-import nc.noumea.mairie.organigramme.enums.Statut;
+import nc.noumea.mairie.organigramme.enums.StatutFichePoste;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
@@ -53,11 +53,11 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
-import org.zkoss.zhtml.Li;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
@@ -86,6 +86,10 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	/** Le currentUser connecté **/
 	private ProfilAgentDto profilAgentDto;
 
+	private FichePosteGroupingModel fichePosteGroupingModel;
+
+	private List<EntiteHistoDto> listeHistorique;
+
 	/**
 	 * L'onglet en cours de sélection (par défaut, quand on ouvre une entité
 	 * c'est caractéristique)
@@ -94,8 +98,34 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private boolean dirty = false;
 
+	private boolean afficheFdpInactive = false;
+
 	public boolean isDirty() {
 		return dirty;
+	}
+
+	public boolean isAfficheFdpInactive() {
+		return afficheFdpInactive;
+	}
+
+	public String getTitreOngletFdp() {
+		String result = "Fiches de postes";
+		if (this.fichePosteGroupingModel != null) {
+			int resultat = 0;
+			for (int i = 0; i < this.fichePosteGroupingModel.getGroupCount(); i++) {
+				resultat += this.fichePosteGroupingModel.getChildCount(i);
+			}
+			result += " (" + resultat + ")";
+		}
+
+		return result;
+	}
+
+	@NotifyChange({ "fichePosteGroupingModel", "titreOngletFdp" })
+	public void setAfficheFdpInactive(boolean afficheFdpInactive) {
+		this.afficheFdpInactive = afficheFdpInactive;
+		// On remet la liste à null pour qu'elle soit rechargée
+		this.fichePosteGroupingModel = null;
 	}
 
 	public void setDirty(boolean dirty) {
@@ -115,11 +145,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	@Override
 	public void initSetup(@ExecutionArgParam("entity") EntiteDto entiteDto) {
 		profilAgentDto = authentificationService.getCurrentUser();
-		Li li = entiteDto.getLi();
 		// On recharge l'entité depuis la base pour être sur d'être bien à jour
 		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
-		this.entity.setLi(li);
-		this.entity.setStatut(Statut.getStatutById(this.entity.getIdStatut()));
 	}
 
 	public ProfilAgentDto getProfilAgentDto() {
@@ -182,15 +209,51 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 * 
 	 * @return la liste des fiches de postes groupées par Sigle
 	 */
+	@NotifyChange("titreOngletFdp")
 	public FichePosteGroupingModel getFichePosteGroupingModel() {
 		if (this.entity == null || !this.ongletSelectionne.equals(EntiteOnglet.FDP)) {
 			return null;
 		}
 
-		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer
-				.getFichePosteByIdEntite(this.entity.getIdEntite(), true);
+		if (this.fichePosteGroupingModel != null) {
+			return this.fichePosteGroupingModel;
+		}
 
-		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparator());
+		String listIdStatutFDP = StatutFichePoste.getListIdStatutActif();
+
+		if (this.afficheFdpInactive) {
+			listIdStatutFDP += "," + StatutFichePoste.INACTIVE.getId();
+		}
+
+		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(),
+				listIdStatutFDP, true);
+
+		this.fichePosteGroupingModel = new FichePosteGroupingModel(listeFichePosteDto,
+				new ComparatorUtil.FichePosteComparatorAvecSigleEnTete(this.entity.getSigle()), this.entity.getSigle());
+
+		return this.fichePosteGroupingModel;
+	}
+
+	@Command
+	@NotifyChange("fichePosteGroupingModel")
+	public void replierTouteFdp() {
+		if (this.fichePosteGroupingModel != null) {
+			// On replie tous les groupes sauf celui de l'entité
+			for (int i = 0; i < this.fichePosteGroupingModel.getGroupCount(); i++) {
+				this.fichePosteGroupingModel.removeOpenGroup(i);
+			}
+		}
+	}
+
+	@Command
+	@NotifyChange("fichePosteGroupingModel")
+	public void deplierTouteFdp() {
+		if (this.fichePosteGroupingModel != null) {
+			// On replie tous les groupes sauf celui de l'entité
+			for (int i = 0; i < this.fichePosteGroupingModel.getGroupCount(); i++) {
+				this.fichePosteGroupingModel.addOpenGroup(i);
+			}
+		}
 	}
 
 	/**
@@ -203,7 +266,14 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), new HashMap<Integer, String>());
+		if (this.listeHistorique != null) {
+			return this.listeHistorique;
+		}
+
+		this.listeHistorique = adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(),
+				new HashMap<Integer, String>());
+
+		return this.listeHistorique;
 	}
 
 	@Command
@@ -213,9 +283,28 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	@Command
-	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel" })
+	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel", "titreOngletFdp" })
 	public void selectOnglet(@BindingParam("onglet") int onglet) {
 		setOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
+	}
+
+	/**
+	 * Rafraichi l'entité depuis la base de donnée
+	 * 
+	 * @param entiteDto
+	 *            : l'entité à rafraîchir
+	 */
+	@Command
+	@NotifyChange({ "*", "titreOngletFdp" })
+	public void refreshEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
+
+		// On force à null pour que ce soit rafraîchi
+		this.fichePosteGroupingModel = null;
+		this.listeHistorique = null;
+
+		setDirty(false);
+		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
 	}
 
 	/**

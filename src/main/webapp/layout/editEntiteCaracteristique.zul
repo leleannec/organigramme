@@ -56,7 +56,7 @@
 			<row>
 				<label value="Commentaire :" />
 				<textbox value="@bind(vm.entity.commentaire)" multiline="true" hflex="1" rows="10" onChanging="@command('onChangeValueEntity')"
-					maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'commentaire'))"/>
+					maxlength="@load(vm.getMaxLengthClassProperty('nc.noumea.mairie.organigramme.dto.EntiteDto', 'commentaire'))" disabled="@load(vm.entity.inactif)" />
 			</row>
 		</rows>
 	</grid>

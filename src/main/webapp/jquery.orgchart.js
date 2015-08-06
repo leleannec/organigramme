@@ -34,15 +34,11 @@ function refreshOrganigrammeSuiteZoom() {
 	deplierTout();
 }; 
 
-function refreshOrganigrammeSuiteDezoom() { 
-	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
-}; 
-
 function refreshOrganigrammeReplie() { 
-	$("#organigramme-root").orgChart({container: $("#chart"), replie: true}); 
+	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
 };
 
-function deplierTout() { 
+function deplierTout() {
 	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutDeplier', null)); 
 	refreshOrganigrammeReplie();
 	$(".entite").trigger("deplierReplierEntite");
@@ -50,7 +46,7 @@ function deplierTout() {
 
 function replierTout() {
 	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutReplier', null));
-	refreshOrganigrammeReplie();
+	refreshOrganigrammeReplie(); 
 }; 
 
 function expandEntiteFromIdDiv(id) {
@@ -70,6 +66,8 @@ function expandEntite($entiteDiv) {
     	$row.removeClass("hiddenChildren").addClass("shownChildren");
         $row.nextAll("tr").show();
     } 
+    
+    zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id"))); 
 };
 
 function goToByScroll(id){
@@ -143,7 +141,7 @@ function goToByScroll(id){
             	}
             	
             	editEntite($entiteToEdit, opts); 
-            	
+            	 
             	//On simule l'événement click zk pour passer côté serveur et charger le nouvel objet
             	var liWidget = zk.Widget.$($liToEdit);
             	zAu.send(new zk.Event(liWidget, "onClick", null));
@@ -264,7 +262,7 @@ function goToByScroll(id){
                 	}
                 	else {
                 		if($entiteDiv.hasClass("edit")) {
-                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null)); 
+                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null));
                         	removeEditEntite(opts);  
                 		}
                 		else {
@@ -278,7 +276,6 @@ function goToByScroll(id){
             	clearTimeout(timer);		//prevent single-click action
                 clicks = 0;             	//after action performed, reset counter
                 zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onDblClickEntite', $entiteDiv.attr("id"))); 
-            	removeEditEntite(opts);  
             }
         });
         
@@ -288,6 +285,7 @@ function goToByScroll(id){
          
         $entiteDiv.on("deplierReplierEntite", function(e) {
         	expandEntite($entiteDiv);
+        	
         });
          
         if ($childEntites.length > 0) {

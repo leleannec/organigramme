@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<database name="orga" schema="orga_adm" type="PostgreSQL - 9.3.6">
+<database name="orga" schema="orga_adm" type="PostgreSQL - 9.3.8">
    <tables>
-      <table name="couleur_type_entite" numRows="6" remarks="" schema="orga_adm" type="TABLE">
+      <table name="couleur_type_entite" numRows="7" remarks="" schema="orga_adm" type="TABLE">
          <column autoUpdated="true" defaultValue="nextval('s_couleur_type_entite'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial"/>
          <column autoUpdated="false" digits="0" id="1" name="version" nullable="true" remarks="" size="10" type="int4"/>
          <column autoUpdated="false" digits="0" id="2" name="couleur_entite" nullable="true" remarks="" size="10" type="varchar"/>

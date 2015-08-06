@@ -26,18 +26,12 @@ import nc.noumea.mairie.organigramme.core.dto.AbstractEntityDto;
  * #L%
  */
 
-public class ExportDto extends AbstractEntityDto {
+public class DuplicationDto extends AbstractEntityDto {
 
+	Integer idAgent;
 	EntiteDto entiteDto;
-	boolean avecFichePoste = false;
-
-	public boolean isAvecFichePoste() {
-		return avecFichePoste;
-	}
-
-	public void setAvecFichePoste(boolean avecFichePoste) {
-		this.avecFichePoste = avecFichePoste;
-	}
+	EntiteDto entiteDtoCible;
+	boolean withChildren = false;
 
 	public EntiteDto getEntiteDto() {
 		return entiteDto;
@@ -45,6 +39,30 @@ public class ExportDto extends AbstractEntityDto {
 
 	public void setEntiteDto(EntiteDto entiteDto) {
 		this.entiteDto = entiteDto;
+	}
+
+	public EntiteDto getEntiteDtoCible() {
+		return entiteDtoCible;
+	}
+
+	public void setEntiteDtoCible(EntiteDto entiteDtoCible) {
+		this.entiteDtoCible = entiteDtoCible;
+	}
+
+	public boolean isWithChildren() {
+		return withChildren;
+	}
+
+	public void setWithChildren(boolean withChildren) {
+		this.withChildren = withChildren;
+	}
+
+	public Integer getIdAgent() {
+		return idAgent;
+	}
+
+	public void setIdAgent(Integer idAgent) {
+		this.idAgent = idAgent;
 	}
 
 	@Override

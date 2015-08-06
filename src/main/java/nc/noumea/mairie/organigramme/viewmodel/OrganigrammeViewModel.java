@@ -27,6 +27,7 @@ package nc.noumea.mairie.organigramme.viewmodel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,8 @@ import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
+import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
@@ -48,9 +49,11 @@ import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
+import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -106,8 +109,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private static final String CREATE_ENTITE_VIEW = "/layout/createEntite.zul";
 
 	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity", "creable",
-			"listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
-			"selectedEntiteDtoZoom", "entiteDtoQueryListModel", "selectedFiltreStatut" };
+			"duplicable", "listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
+			"selectedEntiteDtoZoom", "entiteDtoQueryListModelRecherchable", "entiteDtoQueryListModelZoomable",
+			"selectedFiltreStatut" };
 
 	private OrganigrammeWorkflowViewModel organigrammeWorkflowViewModel = new OrganigrammeWorkflowViewModel(this);
 	public TreeViewModel treeViewModel = new TreeViewModel(this);
@@ -151,15 +155,15 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** Le currentUser connecté **/
 	ProfilAgentDto profilAgentDto;
 
-	/** Liste de toutes les entités zoomables et/ou recherchables **/
+	/** Liste de toutes les entités recherchables **/
 	private List<EntiteDto> listeEntite = new ArrayList<EntiteDto>();
 
-	/** ListModel de toutes les entités zoomables et/ou recherchables **/
-	private EntiteDtoQueryListModel entiteDtoQueryListModel;
+	/** ListModel de toutes les entités recherchables **/
+	private EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable;
 
 	public List<EntiteDto> getListeEntite() {
 
-		// On filtre la liste des entités zoomables et accessibles selon le
+		// On filtre la liste des entités recherchables selon le
 		// statut selectionné
 		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
 			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
@@ -203,12 +207,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.selectedFiltreStatut = selectedFiltreStatut;
 	}
 
-	public EntiteDtoQueryListModel getEntiteDtoQueryListModel() {
-		return entiteDtoQueryListModel;
+	public EntiteDtoQueryListModel getEntiteDtoQueryListModelRecherchable() {
+		return entiteDtoQueryListModelRecherchable;
 	}
 
-	public void setEntiteDtoQueryListModel(EntiteDtoQueryListModel entiteDtoQueryListModel) {
-		this.entiteDtoQueryListModel = entiteDtoQueryListModel;
+	public void setEntiteDtoQueryListModelRecherchable(EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable) {
+		this.entiteDtoQueryListModelRecherchable = entiteDtoQueryListModelRecherchable;
 	}
 
 	/**
@@ -233,6 +237,31 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		refreshArbreComplet();
 	}
 
+	public EntiteDtoQueryListModel getEntiteDtoQueryListModelZoomable() {
+		return new EntiteDtoQueryListModel(getAllEntiteAPlat());
+	}
+
+	private List<EntiteDto> getAllEntiteAPlat() {
+		EntiteDto entiteDto = adsWSConsumer.getCurrentTreeWithVDNRoot();
+
+		List<EntiteDto> result = new ArrayList<EntiteDto>();
+		result.add(entiteDto);
+		getAllEntiteAPlatRecursive(result, entiteDto.getEnfants());
+
+		Collections.sort(result, new ComparatorUtil.EntiteComparator());
+
+		return result;
+	}
+
+	private void getAllEntiteAPlatRecursive(List<EntiteDto> result, List<EntiteDto> listeEnfant) {
+		if (!CollectionUtils.isEmpty(listeEnfant)) {
+			for (EntiteDto entiteDto : listeEnfant) {
+				result.add(entiteDto);
+				getAllEntiteAPlatRecursive(result, entiteDto.getEnfants());
+			}
+		}
+	}
+
 	/**
 	 * Crée l'arbre et l'ajoute au {@link Vlayout} client et rafraichi le client
 	 */
@@ -245,7 +274,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@GlobalCommand
 	public void refreshOrganigrammeSuiteAjout(@BindingParam("entiteDto") EntiteDto entiteDto) {
 		refreshArbreComplet();
-		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getLi().getId() + "');");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + entiteDto.getIdLi() + "');");
 	}
 
 	@GlobalCommand
@@ -272,11 +301,20 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
 		EntiteDto entiteDtoFromBdd = entiteDto;
 		if (entiteDto != null) {
-			entiteDtoFromBdd = adsWSConsumer.getEntite(entiteDto.getIdEntite());
-			entiteDtoFromBdd.setLi(entiteDto.getLi());
+			entiteDtoFromBdd = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
 		}
 		setEntity(entiteDtoFromBdd);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
+	}
+
+	@Listen("onClickFlecheDeplierReplier = #organigramme")
+	public void onClickFlecheDeplierReplier(Event event) {
+		EntiteDto entiteDto = mapIdLiEntiteDto.get(event.getData());
+
+		boolean ouvert = mapIdLiOuvert.get(entiteDto.getIdLi()) != null ? !mapIdLiOuvert.get(entiteDto.getIdLi())
+				: false;
+		mapIdLiOuvert.put(entiteDto.getIdLi(), ouvert);
+		setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
 	}
 
 	/**
@@ -295,13 +333,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	@Listen("onClickToutDeplier = #organigramme")
 	public void onClickToutDeplier(Event event) {
-		mapIdLiOuvert.put(entiteDtoRoot.getLi().getId(), true);
+		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), true);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), true);
 	}
 
 	@Listen("onClickToutReplier = #organigramme")
 	public void onClickToutReplier(Event event) {
-		mapIdLiOuvert.put(entiteDtoRoot.getLi().getId(), false);
+		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), false);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), false);
 	}
 
@@ -315,7 +353,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	private void setLiOuvertOuFermeArbre(List<EntiteDto> listeEntiteDto, boolean ouvert) {
 		for (EntiteDto entiteDto : listeEntiteDto) {
-			mapIdLiOuvert.put(entiteDto.getLi().getId(), ouvert);
+			mapIdLiOuvert.put(entiteDto.getIdLi(), ouvert);
 			setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
 		}
 	}
@@ -353,14 +391,15 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * Recharge l'arbre complet, rafraichi le client et selectionne l'entité
 	 * crée
 	 * 
-	 * @param entiteDtoParent
-	 *            : l'entité parente
 	 * @param newEntiteDto
 	 *            : la nouvelle entitée
+	 * @param ouvreOnglet
+	 *            : doit-on ou non ouvrir l'onglet de l'entité créé à la fin de
+	 *            la méthode ?
 	 */
 	@GlobalCommand
-	public void refreshArbreSuiteAjout(@BindingParam("entiteDtoParent") EntiteDto entiteDtoParent,
-			@BindingParam("newEntiteDto") EntiteDto newEntiteDto) {
+	public void refreshArbreSuiteAjout(@BindingParam("newEntiteDto") EntiteDto newEntiteDto,
+			@BindingParam("ouvreOnglet") boolean ouvreOnglet) {
 
 		// Comme on est en train de créer une entité en statut prévisionnel, on
 		// force l'affichage du statut pour pouvoir voir cette nouvelle entité
@@ -372,21 +411,28 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		}
 		refreshArbreComplet();
 
-		// Vu qu'on vient de reconstruire l'arbre complet on recharge le nouveau
+		// Vu qu'on vient de reconstruire l'arbre complet on recharge les
+		// nouveaux
 		// DTO
 		newEntiteDto = OrganigrammeUtil.findEntiteDtoDansArbreById(entiteDtoRoot, newEntiteDto.getIdEntite(), null);
+		EntiteDto entiteDtoParent = OrganigrammeUtil.findEntiteDtoDansArbreById(entiteDtoRoot, newEntiteDto
+				.getEntiteParent().getIdEntite(), null);
 
 		setEntity(newEntiteDto);
-		mapIdLiOuvert.put(newEntiteDto.getLi().getId(), false);
+		mapIdLiOuvert.put(newEntiteDto.getIdLi(), false);
 		// Appel de la fonction javascript correspondante
-		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getLi().getId() + "', '"
-				+ entiteDtoParent.getLi().getId() + "');");
+		Clients.evalJavaScript("refreshOrganigrammeSuiteAjout('" + newEntiteDto.getIdLi() + "', '"
+				+ entiteDtoParent.getIdLi() + "');");
 
 		if (!filtreStatutPrevisionVisible) {
 			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
 		}
 
-		ouvreOnglet(newEntiteDto, 0);
+		if (ouvreOnglet) {
+			ouvreOnglet(newEntiteDto, 0);
+		} else {
+			Clients.evalJavaScript("goToByScroll('" + newEntiteDto.getIdLi() + "');");
+		}
 	}
 
 	/**
@@ -397,20 +443,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	@Command
 	public void deplierEntite(@BindingParam("entity") EntiteDto entiteDto) {
-		Clients.evalJavaScript("expandEntiteFromIdDiv('" + entiteDto.getLi().getId() + "');");
-	}
-
-	/**
-	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
-	 * entiteDto
-	 * 
-	 * @param exportDto
-	 *            : l'exportDto contenant l'entité à partir de laquelle on
-	 *            souhaite exporter et si on souhaite ou non exporter les FDP
-	 */
-	@GlobalCommand
-	public void exportGraphMLFromEntite(@BindingParam("exportDto") ExportDto exportDto) {
-		exportGraphMLService.exportGraphMLFromEntite(exportDto, mapIdLiOuvert);
+		Clients.evalJavaScript("expandEntiteFromIdDiv('" + entiteDto.getIdLi() + "');");
 	}
 
 	/**
@@ -485,6 +518,17 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
+	 * L'entité est-elle duplicable ?
+	 * 
+	 * @return true si l'entité est duplicable, false sinon
+	 */
+	public boolean isDuplicable() {
+		// On ne peux créer que si on a le rôle édition
+		return profilAgentDto.isEdition() && this.entity != null
+				&& (this.entity.isActif() || this.entity.isTransitoire());
+	}
+
+	/**
 	 * Met à jour l'entité avec les dates et les références de délibérations
 	 * saisies et passe la transition
 	 * 
@@ -533,7 +577,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		if (this.selectedEntiteDtoRecherche != null) {
 			setEntity(this.selectedEntiteDtoRecherche);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
-			Clients.evalJavaScript("goToByScroll('" + this.selectedEntiteDtoRecherche.getLi().getId() + "');");
+			Clients.evalJavaScript("goToByScroll('" + this.selectedEntiteDtoRecherche.getIdLi() + "');");
 			this.selectedEntiteDtoRecherche = null;
 		}
 	}
@@ -549,12 +593,19 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	@Command
+	public void refresh() {
+		refreshArbreComplet();
+		Clients.evalJavaScript("refreshOrganigrammeWithoutSelectedEntite();");
+		Clients.showNotification("Organigramme rafraîchi.", "info", null, "top_center", 0);
+	}
+
+	@Command
 	public void dezoomer() {
-		this.selectedEntiteDtoZoom = null;
+		setSelectedEntiteDtoZoom(null);
 		setEntity(null);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 		refreshArbreComplet();
-		Clients.evalJavaScript("refreshOrganigrammeSuiteDezoom();");
+		Clients.evalJavaScript("refreshOrganigrammeReplie();");
 	}
 
 	@Command
@@ -650,11 +701,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private void removeEntiteDtoIfNotInFiltre(EntiteDto entiteDto, FiltreStatut filtreStatut) {
 		List<EntiteDto> listeEnfant = new ArrayList<EntiteDto>();
 		listeEnfant.addAll(entiteDto.getEnfants());
-		// On se le statut de l'entité
-		entiteDto.setStatut(Statut.getStatutById(entiteDto.getIdStatut()));
 		for (EntiteDto entiteDtoEnfant : listeEnfant) {
-			// On se le statut de l'entité
-			entiteDtoEnfant.setStatut(Statut.getStatutById(entiteDtoEnfant.getIdStatut()));
 			if (!filtreStatut.getListeStatut().contains(entiteDtoEnfant.getStatut())) {
 				entiteDto.getEnfants().remove(entiteDtoEnfant);
 			} else {
@@ -671,13 +718,22 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return null;
 	}
 
+	/**
+	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
+	 * entiteDto
+	 */
 	@Command
-	public void ouvrirPopupCreateExport(@BindingParam("entity") EntiteDto entiteDto) {
-		ExportDto exportDto = new ExportDto();
-		exportDto.setEntiteDto(entiteDto);
+	public void lancerExport(@BindingParam("entity") EntiteDto entiteDto) {
+		exportGraphMLService.exportGraphMLFromEntite(entiteDto, this.selectedFiltreStatut, mapIdLiOuvert);
+	}
+
+	@Command
+	public void ouvrirPopupCreateDuplication(@BindingParam("entity") EntiteDto entiteDto) {
+		DuplicationDto duplicationDto = new DuplicationDto();
+		duplicationDto.setEntiteDto(entiteDto);
 		Map<String, Object> args = new HashMap<>();
-		args.put("exportDto", exportDto);
-		Executions.createComponents("/layout/createExporGraphML.zul", null, null);
-		BindUtils.postGlobalCommand(null, null, "ouvrePopupCreationExport", args);
+		args.put("duplicationDto", duplicationDto);
+		Executions.createComponents("/layout/createDuplication.zul", null, null);
+		BindUtils.postGlobalCommand(null, null, "ouvrePopupCreationDuplication", args);
 	}
 }

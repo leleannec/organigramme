@@ -27,7 +27,9 @@ package nc.noumea.mairie.organigramme.services;
 import java.util.List;
 
 import nc.noumea.mairie.organigramme.core.services.GenericService;
+import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
+import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.enums.Statut;
 
 public interface OrganigrammeService extends GenericService<EntiteDto> {
@@ -60,4 +62,22 @@ public interface OrganigrammeService extends GenericService<EntiteDto> {
 	 *         prévision
 	 */
 	List<EntiteDto> findAllNotPrevision();
+
+	/**
+	 * Renvoi la liste de toutes les {@link EntiteDto} qui sont en statut actif
+	 * ou prévision
+	 * 
+	 * @return la liste de toutes les {@link EntiteDto} qui sont en statut actif
+	 *         ou prévision
+	 */
+	List<EntiteDto> findAllActifOuPrevision();
+
+	/**
+	 * Duplique une entité ainsi que ses enfants (si besoin) vers une entité
+	 * cible
+	 * 
+	 * @param duplicationDto
+	 *            : le DTO permettant de dupliquer
+	 */
+	ReturnMessageDto dupliqueEntite(DuplicationDto duplicationDto);
 }
