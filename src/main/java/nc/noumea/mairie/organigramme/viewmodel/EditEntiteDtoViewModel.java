@@ -86,6 +86,10 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	/** Le currentUser connecté **/
 	private ProfilAgentDto profilAgentDto;
 
+	private FichePosteGroupingModel fichePosteGroupingModel;
+
+	private List<EntiteHistoDto> listeHistorique;
+
 	/**
 	 * L'onglet en cours de sélection (par défaut, quand on ouvre une entité
 	 * c'est caractéristique)
@@ -104,9 +108,24 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		return afficheFdpInactive;
 	}
 
-	@NotifyChange("fichePosteGroupingModel")
+	public String getTitreOngletFdp() {
+		String result = "Fiches de postes";
+		if (this.fichePosteGroupingModel != null) {
+			int resultat = 0;
+			for (int i = 0; i < this.fichePosteGroupingModel.getGroupCount(); i++) {
+				resultat += this.fichePosteGroupingModel.getChildCount(i);
+			}
+			result += " (" + resultat + ")";
+		}
+
+		return result;
+	}
+
+	@NotifyChange({ "fichePosteGroupingModel", "titreOngletFdp" })
 	public void setAfficheFdpInactive(boolean afficheFdpInactive) {
 		this.afficheFdpInactive = afficheFdpInactive;
+		// On remet la liste à null pour qu'elle soit rechargée
+		this.fichePosteGroupingModel = null;
 	}
 
 	public void setDirty(boolean dirty) {
@@ -190,9 +209,14 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 * 
 	 * @return la liste des fiches de postes groupées par Sigle
 	 */
+	@NotifyChange("titreOngletFdp")
 	public FichePosteGroupingModel getFichePosteGroupingModel() {
 		if (this.entity == null || !this.ongletSelectionne.equals(EntiteOnglet.FDP)) {
 			return null;
+		}
+
+		if (this.fichePosteGroupingModel != null) {
+			return this.fichePosteGroupingModel;
 		}
 
 		String listIdStatutFDP = StatutFichePoste.getListIdStatutActif();
@@ -204,8 +228,32 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		List<FichePosteDto> listeFichePosteDto = sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(),
 				listIdStatutFDP, true);
 
-		return new FichePosteGroupingModel(listeFichePosteDto, new ComparatorUtil.FichePosteComparatorAvecSigleEnTete(
-				this.entity.getSigle()), this.entity.getSigle());
+		this.fichePosteGroupingModel = new FichePosteGroupingModel(listeFichePosteDto,
+				new ComparatorUtil.FichePosteComparatorAvecSigleEnTete(this.entity.getSigle()), this.entity.getSigle());
+
+		return this.fichePosteGroupingModel;
+	}
+
+	@Command
+	@NotifyChange("fichePosteGroupingModel")
+	public void replierTouteFdp() {
+		if (this.fichePosteGroupingModel != null) {
+			// On replie tous les groupes sauf celui de l'entité
+			for (int i = 0; i < this.fichePosteGroupingModel.getGroupCount(); i++) {
+				this.fichePosteGroupingModel.removeOpenGroup(i);
+			}
+		}
+	}
+
+	@Command
+	@NotifyChange("fichePosteGroupingModel")
+	public void deplierTouteFdp() {
+		if (this.fichePosteGroupingModel != null) {
+			// On replie tous les groupes sauf celui de l'entité
+			for (int i = 0; i < this.fichePosteGroupingModel.getGroupCount(); i++) {
+				this.fichePosteGroupingModel.addOpenGroup(i);
+			}
+		}
 	}
 
 	/**
@@ -218,7 +266,14 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		return adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(), new HashMap<Integer, String>());
+		if (this.listeHistorique != null) {
+			return this.listeHistorique;
+		}
+
+		this.listeHistorique = adsWSConsumer.getListeEntiteHisto(this.entity.getIdEntite(),
+				new HashMap<Integer, String>());
+
+		return this.listeHistorique;
 	}
 
 	@Command
@@ -228,7 +283,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	@Command
-	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel" })
+	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel", "titreOngletFdp" })
 	public void selectOnglet(@BindingParam("onglet") int onglet) {
 		setOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
 	}
@@ -240,9 +295,14 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 *            : l'entité à rafraîchir
 	 */
 	@Command
-	@NotifyChange({ "*" })
+	@NotifyChange({ "*", "titreOngletFdp" })
 	public void refreshEntite(@BindingParam("entity") EntiteDto entiteDto) {
 		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
+
+		// On force à null pour que ce soit rafraîchi
+		this.fichePosteGroupingModel = null;
+		this.listeHistorique = null;
+
 		setDirty(false);
 		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
 	}

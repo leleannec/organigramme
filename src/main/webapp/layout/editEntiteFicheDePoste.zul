@@ -1,6 +1,8 @@
 <zk>
 	<vlayout hflex="1" vflex="1">
 		<toolbar hflex="1">
+			<toolbarbutton image="/imgs/icon/deplier.png" onClick="@command('deplierTouteFdp')" label="Tout déplier" autodisable="self" /> 
+			<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTouteFdp')" label="Tout replier" autodisable="self" />
 			<label value="Afficher les inactives" />
 			<checkbox checked="@bind(vm.afficheFdpInactive)" />  
 		</toolbar>	

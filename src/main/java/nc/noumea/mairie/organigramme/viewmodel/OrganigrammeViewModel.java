@@ -394,8 +394,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * 
 	 * @param newEntiteDto
 	 *            : la nouvelle entitée
-	 * @parma ouvreOnglet : doit-on ou non ouvrir l'onglet de l'entité créé à la
-	 *        fin de la méthode ?
+	 * @param ouvreOnglet
+	 *            : doit-on ou non ouvrir l'onglet de l'entité créé à la fin de
+	 *            la méthode ?
 	 */
 	@GlobalCommand
 	public void refreshArbreSuiteAjout(@BindingParam("newEntiteDto") EntiteDto newEntiteDto,
