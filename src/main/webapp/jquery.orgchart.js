@@ -141,7 +141,7 @@ function goToByScroll(id){
             	}
             	
             	editEntite($entiteToEdit, opts); 
-            	
+            	 
             	//On simule l'événement click zk pour passer côté serveur et charger le nouvel objet
             	var liWidget = zk.Widget.$($liToEdit);
             	zAu.send(new zk.Event(liWidget, "onClick", null));
@@ -259,7 +259,6 @@ function goToByScroll(id){
                 	 
                 	if(e.target.classList[0] == "hasChildren") {
                 		expandEntite($entiteDiv); 
-                		zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id"))); 
                 	}
                 	else {
                 		if($entiteDiv.hasClass("edit")) {

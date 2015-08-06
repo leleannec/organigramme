@@ -39,7 +39,6 @@ import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
@@ -448,19 +447,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	}
 
 	/**
-	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
-	 * entiteDto
-	 * 
-	 * @param exportDto
-	 *            : l'exportDto contenant l'entité à partir de laquelle on
-	 *            souhaite exporter et si on souhaite ou non exporter les FDP
-	 */
-	@GlobalCommand
-	public void exportGraphMLFromEntite(@BindingParam("exportDto") ExportDto exportDto) {
-		exportGraphMLService.exportGraphMLFromEntite(exportDto, mapIdLiOuvert);
-	}
-
-	/**
 	 * @return la liste des transitions autorisées pour cette entité
 	 */
 	public List<Transition> getListeTransitionAutorise() {
@@ -732,15 +718,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return null;
 	}
 
+	/**
+	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
+	 * entiteDto
+	 */
 	@Command
-	public void ouvrirPopupCreateExport(@BindingParam("entity") EntiteDto entiteDto) {
-		ExportDto exportDto = new ExportDto();
-		exportDto.setEntiteDto(entiteDto);
-		exportDto.setFiltreStatut(this.selectedFiltreStatut);
-		Map<String, Object> args = new HashMap<>();
-		args.put("exportDto", exportDto);
-		Executions.createComponents("/layout/createExportGraphML.zul", null, null);
-		BindUtils.postGlobalCommand(null, null, "ouvrePopupCreationExport", args);
+	public void lancerExport(@BindingParam("entity") EntiteDto entiteDto) {
+		exportGraphMLService.exportGraphMLFromEntite(entiteDto, this.selectedFiltreStatut, mapIdLiOuvert);
 	}
 
 	@Command
