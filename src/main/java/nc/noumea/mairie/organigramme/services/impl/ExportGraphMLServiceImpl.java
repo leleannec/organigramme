@@ -31,10 +31,8 @@ import java.util.Date;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.utility.DateUtil;
-import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.ws.SirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.dto.ExportDto;
 import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
 import nc.noumea.mairie.organigramme.dto.InfoFichePosteDto;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
@@ -59,13 +57,14 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	@Autowired
 	SirhWSConsumer sirhWSConsumer;
 
-	public void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
-		String nomFichier = "Export-" + exportDto.getEntiteDto().getSigle() + "-"
-				+ DateUtil.formatDateForFile(new Date()) + ".graphml";
-		Filedownload.save(exportGraphML(exportDto, mapIdLiOuvert), null, nomFichier);
+	public void exportGraphMLFromEntite(EntiteDto entiteDto, FiltreStatut filtreStatut,
+			Map<String, Boolean> mapIdLiOuvert) {
+		String nomFichier = "Export-" + entiteDto.getSigle() + "-" + DateUtil.formatDateForFile(new Date())
+				+ ".graphml";
+		Filedownload.save(exportGraphML(entiteDto, filtreStatut, mapIdLiOuvert), null, nomFichier);
 	}
 
-	private byte[] exportGraphML(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert) {
+	private byte[] exportGraphML(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert) {
 
 		DocumentFactory factory = DocumentFactory.getInstance();
 		Element root = factory.createElement("graphml");
@@ -74,8 +73,7 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 
 		initHeader(root);
 		Element graph = initRoot(root);
-		buildGraphMlTree(graph, exportDto.getEntiteDto(), exportDto.isAvecFichePoste(), mapIdLiOuvert,
-				exportDto.getFiltreStatut());
+		buildGraphMlTree(graph, entiteDto, mapIdLiOuvert, filtreStatut);
 
 		ByteArrayOutputStream os_writer = new ByteArrayOutputStream();
 		try {
@@ -105,8 +103,14 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		root.add(new Namespace("y", "http://www.yworks.com/xml/graphml"));
 		root.addElement("key").addAttribute("attr.name", "sigle").addAttribute("attr.type", "string")
 				.addAttribute("for", "node").addAttribute("id", "d4");
-		root.addElement("key").addAttribute("attr.name", "label").addAttribute("attr.type", "string")
+		root.addElement("key").addAttribute("attr.name", "libellé").addAttribute("attr.type", "string")
 				.addAttribute("for", "node").addAttribute("id", "d5");
+		root.addElement("key").addAttribute("attr.name", "sigle + libellé").addAttribute("attr.type", "string")
+				.addAttribute("for", "node").addAttribute("id", "d8");
+		root.addElement("key").addAttribute("attr.name", "sigle + FDP").addAttribute("attr.type", "string")
+				.addAttribute("for", "node").addAttribute("id", "d9");
+		root.addElement("key").addAttribute("attr.name", "sigle + libellé + FDP").addAttribute("attr.type", "string")
+				.addAttribute("for", "node").addAttribute("id", "d10");
 		root.addElement("key").addAttribute("yfiles.type", "nodegraphics").addAttribute("for", "node")
 				.addAttribute("id", "d6");
 		root.addElement("key").addAttribute("yfiles.type", "edgegraphics").addAttribute("for", "edge")
@@ -119,14 +123,13 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	 * @param graph
 	 *            : le graph général
 	 * @param entiteDto
-	 *            : l'entité dto à construire
-	 * @param avecFichePoste
-	 *            : doit-on exporter les fiches de postes ?
+	 *            : l'entité dto à construire : doit-on exporter les fiches de
+	 *            postes ?
 	 * @param mapIdLiOuvert
 	 *            : permet de savoir quel entité est dépliée
 	 */
-	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, boolean avecFichePoste,
-			Map<String, Boolean> mapIdLiOuvert, FiltreStatut filtreStatut) {
+	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, Map<String, Boolean> mapIdLiOuvert,
+			FiltreStatut filtreStatut) {
 
 		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite()
 				: "#FFFFCF";
@@ -137,6 +140,14 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		Element el = graph.addElement("node").addAttribute("id", String.valueOf(entiteDto.getId()));
 		el.addElement("data").addAttribute("key", "d4").setText(entiteDto.getSigle());
 		el.addElement("data").addAttribute("key", "d5").setText(entiteDto.getLabel());
+		el.addElement("data").addAttribute("key", "d8").setText(entiteDto.getSigle() + "\n" + entiteDto.getLabel());
+
+		String sigleEtFdp = getLibelleCase(entiteDto, !mapIdLiOuvert.get(entiteDto.getIdLi()), entiteDto.getSigle());
+		String libelleEtFdp = getLibelleCase(entiteDto, !mapIdLiOuvert.get(entiteDto.getIdLi()), entiteDto.getSigle()
+				+ "\n" + entiteDto.getLabel());
+
+		el.addElement("data").addAttribute("key", "d9").setText(sigleEtFdp);
+		el.addElement("data").addAttribute("key", "d10").setText(libelleEtFdp);
 
 		Element elD6 = el.addElement("data").addAttribute("key", "d6");
 		Element elGenericNode = elD6.addElement("y:ShapeNode");
@@ -156,28 +167,19 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		elGenericNode.addElement("y:Fill").addAttribute("color", couleurEntite);
 		elGenericNode.addElement("y:Shape").addAttribute("type", forme);
 
-		String libelleCase = "";
-
 		// Si l'entité est dépliée, on affiche ses enfants
 		if (mapIdLiOuvert.get(entiteDto.getIdLi())) {
 			for (EntiteDto enfant : entiteDto.getEnfants()) {
 
 				if (filtreStatut.getListeStatut().contains(enfant.getStatut())
 						|| filtreStatut.equals(FiltreStatut.TOUS)) {
-					buildGraphMlTree(graph, enfant, avecFichePoste, mapIdLiOuvert, filtreStatut);
+					buildGraphMlTree(graph, enfant, mapIdLiOuvert, filtreStatut);
 					genereEdge(graph, entiteDto, enfant);
 				}
 			}
-
-			libelleCase = getLibelleCase(entiteDto, avecFichePoste, false);
-
-		} else {
-			// Sinon, si elle a des enfants on ne les affiche pas mais on agrége
-			// les FDP de ses enfants
-			libelleCase = getLibelleCase(entiteDto, avecFichePoste, true);
 		}
 
-		elGenericNode.addElement("y:NodeLabel").addAttribute("textColor", couleurTexte).setText(libelleCase);
+		elGenericNode.addElement("y:NodeLabel").addAttribute("textColor", couleurTexte).setText(entiteDto.getSigle());
 	}
 
 	/**
@@ -185,31 +187,26 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	 * 
 	 * @param entiteDto
 	 *            : l'entité
-	 * @param avecFichePoste
-	 *            : doit-on afficher les fiches de postes ?
 	 * @param withEntiteChildren
 	 *            : selon si l'entité est dépliée ou non on affiche les FDP des
 	 *            enfants ou non
+	 * @param libelleCase
+	 *            : le libellé de la case
 	 * @return le libellé à mettre dans la case Yed
 	 */
-	private String getLibelleCase(EntiteDto entiteDto, boolean avecFichePoste, boolean withEntiteChildren) {
+	private String getLibelleCase(EntiteDto entiteDto, boolean withEntiteChildren, String libelleCase) {
 
-		String libelleCase = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
+		InfoEntiteDto infoEntiteDto = sirhWSConsumer.getInfoFDPByEntite(entiteDto.getIdEntite(), withEntiteChildren);
+		if (infoEntiteDto != null && !CollectionUtils.isEmpty(infoEntiteDto.getListeInfoFDP())) {
 
-		if (avecFichePoste) {
-			InfoEntiteDto infoEntiteDto = sirhWSConsumer
-					.getInfoFDPByEntite(entiteDto.getIdEntite(), withEntiteChildren);
-			if (infoEntiteDto != null && !CollectionUtils.isEmpty(infoEntiteDto.getListeInfoFDP())) {
+			libelleCase += "\n";
 
-				libelleCase += "\n";
-
-				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
-					if (new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
-						libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + ")\n";
-					} else {
-						libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + " / "
-								+ infoFichePosteDto.getTauxETP() + " ETP)\n";
-					}
+			for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
+				if (new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
+					libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + ")\n";
+				} else {
+					libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + " / "
+							+ infoFichePosteDto.getTauxETP() + " ETP)\n";
 				}
 			}
 		}

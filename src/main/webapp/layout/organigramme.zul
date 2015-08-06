@@ -73,7 +73,7 @@
 							<toolbarbutton image="/imgs/icon/dupliquer.png" label="Dupliquer l'entité" onClick="@command('ouvrirPopupCreateDuplication', entity=vm.entity)" visible="@load(vm.duplicable)" autodisable="self" />
 							<toolbarbutton image="/imgs/icon/zoom.png" label="Zoomer" onClick="@command('zoomSurEntite', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 							<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
-							<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('ouvrirPopupCreateExport', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
+							<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('lancerExport', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
 						<toolbar hflex="3" sclass="align-center"> 
 							<label value="@load(vm.entity.labelCourt)" sclass="toolbar-libelle-entite"  visible="@load(vm.entity ne null)"/>

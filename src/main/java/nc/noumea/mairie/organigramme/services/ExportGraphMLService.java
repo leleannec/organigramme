@@ -27,7 +27,7 @@ package nc.noumea.mairie.organigramme.services;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.dto.ExportDto;
+import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 
 /**
  * Service pour gérer les exports graphML.
@@ -40,11 +40,12 @@ public interface ExportGraphMLService {
 	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
 	 * entiteDto
 	 * 
-	 * @param exportDto
-	 *            : l'exportDto contenant l'entité à partir de laquelle on
-	 *            souhaite exporter et si on souhaite ou non exporter les FDP
+	 * @param entiteDto
+	 *            : l'entité à partir de laquelle on souhaite exporter
+	 * @param filtreStatut
+	 *            : le filtre en cours
 	 * @param mapIdLiOuvert
 	 *            : permet de savoir quel entité est dépliée
 	 */
-	void exportGraphMLFromEntite(ExportDto exportDto, Map<String, Boolean> mapIdLiOuvert);
+	void exportGraphMLFromEntite(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert);
 }
