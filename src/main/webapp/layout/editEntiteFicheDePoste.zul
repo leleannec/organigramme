@@ -1,11 +1,17 @@
 <zk>
 	<vlayout hflex="1" vflex="1">
-		<toolbar hflex="1">
-			<toolbarbutton image="/imgs/icon/deplier.png" onClick="@command('deplierTouteFdp')" label="Tout déplier" autodisable="self" /> 
-			<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTouteFdp')" label="Tout replier" autodisable="self" />
-			<label value="Afficher les inactives" />
-			<checkbox checked="@bind(vm.afficheFdpInactive)" />  
-		</toolbar>	
+		<hlayout hflex="1" sclass="no-padding-right"> 
+			<toolbar hflex="1">
+				<toolbarbutton image="/imgs/icon/deplier.png" onClick="@command('deplierTouteFdp')" label="Tout déplier" autodisable="self" /> 
+				<toolbarbutton image="/imgs/icon/replier.png" onClick="@command('replierTouteFdp')" label="Tout replier" autodisable="self" />
+			</toolbar>
+			<hlayout hflex="1" sclass="no-padding-right align-right">
+				<toolbar hflex="1">
+					<label value="Afficher les inactives" sclass="no-padding-right align-right" />
+					<checkbox checked="@bind(vm.afficheFdpInactive)" sclass="no-padding-right align-right" />  
+				</toolbar>	
+			</hlayout>
+		</hlayout>
 		<grid mold="paging" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
 			<columns>
 				<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
