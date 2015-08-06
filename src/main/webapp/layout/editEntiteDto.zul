@@ -9,7 +9,7 @@
 		<tabbox vflex="1">
 			<tabs>
 				<tab label="Caractéristiques" onClick="@command('selectOnglet', onglet=0)" />
-				<tab label="Fiches de postes" onClick="@command('selectOnglet', onglet=1)" />
+				<tab label="@load(vm.titreOngletFdp)" onClick="@command('selectOnglet', onglet=1)" />
 				<tab label="Historique" id="tabHistorique" onClick="@command('selectOnglet', onglet=2)" />
 			</tabs>
 			<tabpanels>
