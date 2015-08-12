@@ -237,11 +237,15 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 		entiteDto.setEntiteRemplacee(entiteDtoRemplace);
 		entiteDto.setIdAgentCreation(duplicationDto.getIdAgent());
 
+		HashMap<String, String> params = new HashMap<>();
+		if(duplicationDto.isWithChildren()) 
+			params.put("withChildren", "true");
+		
 		String url = adsWsBaseUrl + URL_DUPLIQUE_ENTITE;
 		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class)
 				.deepSerialize(entiteDto);
 
-		ClientResponse res = createAndFirePostRequest(new HashMap<String, String>(), url, json);
+		ClientResponse res = createAndFirePostRequest(params, url, json);
 		return readResponse(ReturnMessageDto.class, res, url);
 	}
 }
