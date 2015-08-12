@@ -3,22 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
-	<changeSet author="AgileSoft.NC" id="create_couleur_type_entite">
-
-        <createSequence sequenceName="s_couleur_type_entite"/>
+	<changeSet author="lemth83" id="e4140df0-3fdd-11e5-b970-0800200c9a66-1">
+        	<createSequence sequenceName="orga_s_couleur_type_entite"/>
 		
 		<!-- Table des couleurs par type d'entité -->
-		<createTable tableName="couleur_type_entite">
-            <column name="id" type="INT8" defaultValueComputed="nextval('s_couleur_type_entite')">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="INT4"/>
-            <column name="couleur_entite" type="VARCHAR(10)"/>
-            <column name="couleur_texte" type="VARCHAR(10)"/>
-            <column name="id_type_entite" type="INT4"/>
+		<createTable tableName="orga_couleur_type_entite">
+		    <column name="id" type="INT8">
+		        <constraints nullable="false"/>
+		    </column>
+		    <column name="version" type="INT4"/>
+		    <column name="couleur_entite" type="VARCHAR(10)"/>
+		    <column name="couleur_texte" type="VARCHAR(10)"/>
+		    <column name="id_type_entite" type="INT4"/>
 		</createTable>
-		
-		<addPrimaryKey tableName="couleur_type_entite" columnNames="id"/>
+
+		<addPrimaryKey columnNames="id" constraintName="PK_orga_couleur_type_entite" tableName="orga_couleur_type_entite"/>
+        	<addDefaultValue tableName="orga_couleur_type_entite" columnName="id" defaultValueSequenceNext="orga_s_couleur_type_entite" />
 	</changeSet>
 </databaseChangeLog>
-
