@@ -239,7 +239,7 @@ public class AdsWSConsumer extends BaseWsConsumer implements IAdsWSConsumer {
 
 		HashMap<String, String> params = new HashMap<>();
 		if(duplicationDto.isWithChildren()) 
-			params.put("withChildren", "true");
+			params.put("withChildren", "true"); 
 		
 		String url = adsWsBaseUrl + URL_DUPLIQUE_ENTITE;
 		String json = new JSONSerializer().exclude("*.class").transform(new MSDateTransformer(), Date.class)
