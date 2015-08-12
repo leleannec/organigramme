@@ -171,8 +171,8 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		if (mapIdLiOuvert.get(entiteDto.getIdLi())) {
 			for (EntiteDto enfant : entiteDto.getEnfants()) {
 
-				if (filtreStatut.getListeStatut().contains(enfant.getStatut())
-						|| filtreStatut.equals(FiltreStatut.TOUS)) {
+				if (filtreStatut.equals(FiltreStatut.TOUS)
+						|| filtreStatut.getListeStatut().contains(enfant.getStatut())) {
 					buildGraphMlTree(graph, enfant, mapIdLiOuvert, filtreStatut);
 					genereEdge(graph, entiteDto, enfant);
 				}
