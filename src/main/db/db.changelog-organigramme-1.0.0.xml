@@ -18,6 +18,6 @@
 		</createTable>
 
 		<addPrimaryKey columnNames="id" constraintName="PK_orga_couleur_type_entite" tableName="orga_couleur_type_entite"/>
-        	<addDefaultValue tableName="orga_couleur_type_entite" columnName="id" defaultValueSequenceNext="orga_s_couleur_type_entite" />
+        <addDefaultValue tableName="orga_couleur_type_entite" columnName="id" defaultValueSequenceNext="orga_s_couleur_type_entite" />
 	</changeSet>
 </databaseChangeLog>
