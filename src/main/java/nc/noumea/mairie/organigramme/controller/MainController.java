@@ -72,7 +72,7 @@ import org.zkoss.zul.Tabs;
 /**
  * MainController permettant de gérer tous les comportements généraux de
  * l'application. Construction de la sidebar, gestion des ouvertures d'onglets,
- * ...
+ * ....
  * 
  * @author Thomas
  */
