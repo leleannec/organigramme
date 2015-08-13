@@ -41,6 +41,7 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
+import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.StatutFichePoste;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
@@ -50,6 +51,7 @@ import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.DependsOn;
 import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
@@ -380,5 +382,16 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 					}
 				});
 
+	}
+
+	/**
+	 * @return statut de l'entité
+	 */
+	@DependsOn("entity")
+	public Statut getStatut() {
+		if (this.entity == null) {
+			return null;
+		}
+		return entity.getStatut();
 	}
 }
