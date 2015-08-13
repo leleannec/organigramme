@@ -323,7 +323,7 @@ public class MainController extends SelectorComposer<Component> {
 		}
 
 		// Si l'onglet n'est pas déjà ouvert on le crée
-		Tab tab = new Tab();
+		final Tab tab = new Tab();
 		tab.setLabel(labelOnglet);
 		if (abstractEntity != null) {
 			String className = OrganigrammeUtil.getSimpleClassNameOfObject(abstractEntity);
@@ -337,6 +337,18 @@ public class MainController extends SelectorComposer<Component> {
 		Tabpanel tabPanel = new Tabpanel();
 		final Map<String, Object> map = new HashMap<String, Object>();
 		map.put("entity", abstractEntity);
+
+		tab.addEventListener(Events.ON_CLOSE, new EventListener<Event>() {
+
+			@Override
+			public void onEvent(Event event) throws Exception {
+				Map<String, Object> mapEntiteOnglet = new HashMap<String, Object>();
+				mapEntiteOnglet.put("entity", abstractEntity);
+				mapEntiteOnglet.put("tab", tab);
+				BindUtils.postGlobalCommand(null, null, "onCloseEntiteOnglet", mapEntiteOnglet);
+				event.stopPropagation();
+			}
+		});
 
 		mainTabboxTabPanels.appendChild(tabPanel);
 		Executions.createComponents(locationUri, tabPanel, map);
