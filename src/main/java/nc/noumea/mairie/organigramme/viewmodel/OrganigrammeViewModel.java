@@ -429,7 +429,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 				+ entiteDtoParent.getIdLi() + "');");
 
 		if (!filtreStatutPrevisionVisible) {
-			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
+			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité",
+					"Information", Messagebox.OK, Messagebox.INFORMATION);
 		}
 
 		if (ouvreOnglet) {
