@@ -27,7 +27,7 @@ package nc.noumea.mairie.organigramme.enums;
 public enum TypeHisto {
 
 	CREATION(0, "Création"), MODIFICATION(1, "Modification"), SUPPRESSION(2, "Suppression"), CHANGEMENT_STATUT(3,
-			"Chgt. Statut");
+			"Chgt. Statut"), CREATION_DUPLICATION(4, "Création via duplication");
 
 	private Integer idRefTypeHisto;
 	private String libelle;
@@ -48,6 +48,8 @@ public enum TypeHisto {
 				return SUPPRESSION;
 			case 3:
 				return CHANGEMENT_STATUT;
+			case 4:
+				return CREATION_DUPLICATION;
 			default:
 				return null;
 		}
