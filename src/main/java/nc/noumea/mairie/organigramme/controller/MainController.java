@@ -117,7 +117,7 @@ public class MainController extends SelectorComposer<Component> {
 		// d'entités
 		if (currentUser.isAdministrateur()) {
 			// Onglet à afficher par défaut
-			ouvreOnglet(null, "Type d'entité", "/layout/listeTypeEntite.zul", true, false, null);
+			ouvreOnglet(null, "Types d'entité", "/layout/listeTypeEntite.zul", true, false, null);
 		}
 
 		for (SidebarItem item : listeItems) {
