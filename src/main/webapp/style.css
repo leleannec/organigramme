@@ -250,16 +250,16 @@ div#zk_proc-t.z-loading {
 }
 
 .ui-tooltip, .arrow:after {
-    background: black !important;
-    border: 2px solid white !important;
+    background: #CEECF5 !important; 
+    border: 2px solid black !important;
   }
   
  .ui-tooltip {
    padding: 10px 20px !important;
-   color: white !important;
+   color: black !important;
    border-radius: 20px !important;
    font: bold 12px "Helvetica Neue", Sans-Serif !important;
-   box-shadow: 0 0 7px black !important;
+   box-shadow: 0 0 7px white !important;
  }
  
  .arrow {
