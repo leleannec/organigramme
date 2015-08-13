@@ -16,6 +16,17 @@
    background:#F0F8FF;
 }
 
+.toolbar-orga {
+	border-color: #C5C5C5; 
+	border-style: solid; 
+	border-width: 1px 0 1px; 
+	display: block;
+	padding: 2px;
+	background: -webkit-linear-gradient(top, #F0F8FF 0%, #CEECF5 100%);
+    background: linear-gradient(to bottom, #F0F8FF 0%, #CEECF5 100%);
+	position: relative; zoom: 1;
+}
+
 .hide { 
 	display : none;
 }
@@ -90,9 +101,13 @@
 }
 
 .statut-en-cours {
-	background-color:#5D3870;
-	color: white;
-	padding: 10px 10px;
+    background-color: #0077FF;
+    color: white;
+    padding: 8px 8px;
+    height: 30px !important;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
 }  
 
 .toolbar-libelle-entite {

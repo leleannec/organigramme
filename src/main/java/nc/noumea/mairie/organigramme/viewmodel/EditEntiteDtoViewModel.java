@@ -41,6 +41,7 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
+import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.StatutFichePoste;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
@@ -50,7 +51,9 @@ import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.DependsOn;
 import org.zkoss.bind.annotation.ExecutionArgParam;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.event.EventListener;
@@ -61,6 +64,7 @@ import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
+import org.zkoss.zul.Tab;
 
 @Init(superclass = true)
 @VariableResolver(DelegatingVariableResolver.class)
@@ -96,13 +100,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 **/
 	private EntiteOnglet ongletSelectionne = EntiteOnglet.CARACTERISTIQUE;
 
-	private boolean dirty = false;
-
 	private boolean afficheFdpInactive = false;
-
-	public boolean isDirty() {
-		return dirty;
-	}
 
 	public boolean isAfficheFdpInactive() {
 		return afficheFdpInactive;
@@ -128,16 +126,16 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		this.fichePosteGroupingModel = null;
 	}
 
-	public void setDirty(boolean dirty) {
-		boolean majTitreOnglet = this.dirty != dirty;
-		this.dirty = dirty;
+	public void setEntiteDirty(boolean dirty) {
+		boolean majTitreOnglet = this.entity.isDirty() != dirty;
+		this.entity.setDirty(dirty);
 		if (majTitreOnglet) {
 			updateTitreOnglet();
 		}
 	}
 
 	private void updateTitreOnglet() {
-		String suffixe = this.dirty ? " (*)" : null;
+		String suffixe = this.entity.isDirty() ? " (*)" : null;
 		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
 				new UpdateOngletAbstractEntityEvent(this.entity, suffixe));
 	}
@@ -277,9 +275,9 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	@Command
-	@NotifyChange("dirty")
+	@NotifyChange("entity")
 	public void onChangeValueEntity() {
-		setDirty(true);
+		setEntiteDirty(true);
 	}
 
 	@Command
@@ -303,7 +301,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		this.fichePosteGroupingModel = null;
 		this.listeHistorique = null;
 
-		setDirty(false);
+		setEntiteDirty(false);
 		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
 	}
 
@@ -316,7 +314,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 * @return true si tout s'est bien passé, false sinon
 	 */
 	@Command
-	@NotifyChange({ "entity", "dirty" })
+	@NotifyChange({ "entity", "listeHistorique" })
 	public boolean updateEntite(@BindingParam("entity") EntiteDto entiteDto) {
 
 		if (!profilAgentDto.isEdition() || showErrorPopup(entiteDto)) {
@@ -337,7 +335,9 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		mapEntite.put("entiteDto", entiteDto);
 		BindUtils.postGlobalCommand(null, null, "refreshOrganigrammeSuiteAjout", mapEntite);
 
-		setDirty(false);
+		setEntiteDirty(false);
+		this.listeHistorique = null;
+
 		return true;
 	}
 
@@ -378,5 +378,45 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 					}
 				});
 
+	}
+
+	@GlobalCommand
+	public void onCloseEntiteOnglet(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("tab") Tab tab) {
+		if (entiteDto.getId().equals(this.entity.getId())) {
+			if (this.entity.isDirty()) {
+				final EntiteDto entiteASauver = this.entity;
+				final Tab tabAFermer = tab;
+				Messagebox.show(
+						"Voulez-vous enregistrer les modifications apportées à l'entité '" + this.entity.getSigle()
+								+ "' ?", "Fermeture de l'onglet", new Messagebox.Button[] { Messagebox.Button.YES,
+								Messagebox.Button.NO, Messagebox.Button.CANCEL }, Messagebox.QUESTION,
+						new EventListener<Messagebox.ClickEvent>() {
+
+							@Override
+							public void onEvent(ClickEvent evt) {
+								if (evt.getName().equals("onYes")) {
+									updateEntite(entiteASauver);
+									tabAFermer.onClose();
+								}
+								if (evt.getName().equals("onNo")) {
+									tabAFermer.onClose();
+								}
+							}
+						});
+			} else {
+				tab.onClose();
+			}
+		}
+	}
+
+	/**
+	 * @return statut de l'entité
+	 */
+	@DependsOn("entity")
+	public Statut getStatut() {
+		if (this.entity == null) {
+			return null;
+		}
+		return entity.getStatut();
 	}
 }

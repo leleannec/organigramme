@@ -222,9 +222,6 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		}
 
 		li.setId("entite-id-" + entiteDto.getId().toString());
-		if (this.organigrammeViewModel.mapIdLiOuvert.get(li.getId()) == null) {
-			this.organigrammeViewModel.mapIdLiOuvert.put(li.getId(), false);
-		}
 
 		// On maintient une map permettant d'aller plus vite lors d'un click
 		// event pour retrouver l'EntiteDto correspondant à l'id du Li

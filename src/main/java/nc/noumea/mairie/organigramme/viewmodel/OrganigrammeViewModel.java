@@ -150,7 +150,7 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * Map permettant de savoir si le Li est ouvert ou non à partir de son id
 	 * html client
 	 **/
-	Map<String, Boolean> mapIdLiOuvert;
+	Map<String, Boolean> mapIdLiOuvert = new HashMap<String, Boolean>();
 
 	/** Le currentUser connecté **/
 	ProfilAgentDto profilAgentDto;
@@ -228,7 +228,9 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		// permet de gérer le onClickEntite
 		Selectors.wireEventListeners(view, this);
 
-		mapIdLiOuvert = new HashMap<String, Boolean>();
+		for (EntiteDto entiteDto : getAllEntiteAPlat()) {
+			mapIdLiOuvert.put("entite-id-" + entiteDto.getId().toString(), false);
+		}
 		vlayout = (Vlayout) Selectors.iterable(view, "#organigramme").iterator().next();
 		profilAgentDto = authentificationService.getCurrentUser();
 
@@ -314,7 +316,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		boolean ouvert = mapIdLiOuvert.get(entiteDto.getIdLi()) != null ? !mapIdLiOuvert.get(entiteDto.getIdLi())
 				: false;
 		mapIdLiOuvert.put(entiteDto.getIdLi(), ouvert);
-		setLiOuvertOuFermeArbre(entiteDto.getEnfants(), ouvert);
 	}
 
 	/**
@@ -429,7 +430,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 				+ entiteDtoParent.getIdLi() + "');");
 
 		if (!filtreStatutPrevisionVisible) {
-			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité");
+			Messagebox.show("Le filtre d'affichage a été changé pour vous permettre de visualiser la nouvelle entité",
+					"Information", Messagebox.OK, Messagebox.INFORMATION);
 		}
 
 		if (ouvreOnglet) {

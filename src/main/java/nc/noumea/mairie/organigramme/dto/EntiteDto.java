@@ -83,6 +83,7 @@ public class EntiteDto extends AbstractEntityDto {
 	private Date dateDeliberationInactif;
 
 	private Integer idAgentSuppression;
+	private boolean dirty = false;
 
 	public EntiteDto() {
 		enfants = new ArrayList<>();
@@ -318,6 +319,15 @@ public class EntiteDto extends AbstractEntityDto {
 	@JSON(include = false)
 	public Integer getVersion() {
 		return null;
+	}
+
+	@JSON(include = false)
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 
 	@Override

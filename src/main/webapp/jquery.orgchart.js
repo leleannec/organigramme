@@ -39,14 +39,14 @@ function refreshOrganigrammeReplie() {
 };
 
 function deplierTout() {
-	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutDeplier', null)); 
 	refreshOrganigrammeReplie();
 	$(".entite").trigger("deplierReplierEntite");
+	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutDeplier', null)); 
 };
 
 function replierTout() {
+	refreshOrganigrammeReplie();
 	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickToutReplier', null));
-	refreshOrganigrammeReplie(); 
 }; 
 
 function expandEntiteFromIdDiv(id) {
@@ -285,7 +285,6 @@ function goToByScroll(id){
          
         $entiteDiv.on("deplierReplierEntite", function(e) {
         	expandEntite($entiteDiv);
-        	
         });
          
         if ($childEntites.length > 0) {
