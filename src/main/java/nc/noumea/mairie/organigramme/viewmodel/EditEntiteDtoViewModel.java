@@ -316,7 +316,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 * @return true si tout s'est bien passé, false sinon
 	 */
 	@Command
-	@NotifyChange({ "entity", "dirty" })
+	@NotifyChange({ "entity", "dirty", "listeHistorique" })
 	public boolean updateEntite(@BindingParam("entity") EntiteDto entiteDto) {
 
 		if (!profilAgentDto.isEdition() || showErrorPopup(entiteDto)) {
@@ -338,6 +338,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		BindUtils.postGlobalCommand(null, null, "refreshOrganigrammeSuiteAjout", mapEntite);
 
 		setDirty(false);
+		this.listeHistorique = null;
+
 		return true;
 	}
 
