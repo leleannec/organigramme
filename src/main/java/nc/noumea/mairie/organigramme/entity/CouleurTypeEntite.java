@@ -30,6 +30,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
@@ -41,14 +42,15 @@ import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
  * @author AgileSoft.NC
  */
 @Entity
+@Table(name = "orga_couleur_type_entite")
 public class CouleurTypeEntite extends AbstractEntity {
 
 	@Version
 	private Integer version;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "s_couleur_type_entite")
-	@SequenceGenerator(name = "s_couleur_type_entite", sequenceName = "s_couleur_type_entite", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orga_s_couleur_type_entite")
+	@SequenceGenerator(name = "orga_s_couleur_type_entite", sequenceName = "orga_s_couleur_type_entite", allocationSize = 1)
 	Long id;
 
 	@Override
