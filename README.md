@@ -17,5 +17,5 @@ use ZK EE for free.
 
 # Partners
 
-We'd like to thank [AgileSoft](http://www.agilesoft.nc/) team for developing
+We'd like to thank [AgileSoft.NC](http://www.agilesoft.nc/) team for developing
 for us this software.
