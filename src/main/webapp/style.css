@@ -10,6 +10,10 @@
 	overflow: hidden;
 }
 
+.grid-fdp .z-paging-info {
+	display: none !important;
+}
+
 #chart {
    width: 100%;
    overflow: hidden;

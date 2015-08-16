@@ -15,7 +15,7 @@
 			</hlayout>
 		</hlayout> 
 		<hlayout hflex="1" vflex="1" visible="@load(not vm.afficheFdpTableau)"> 
-			<grid mold="paging" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
+			<grid mold="paging" sclass="grid-fdp" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
 				<columns>
 					<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
 					<column label="Titre" sort="auto(titre)" />
