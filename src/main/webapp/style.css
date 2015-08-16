@@ -85,6 +85,10 @@
 	color:red;
 }
 
+.z-notification-info .z-notification-content {
+    text-align: justify;
+}
+
 .loginPage {
 	background:url('/imgs/bg-login.jpg') no-repeat center center fixed;
 	-webkit-background-size: cover;
