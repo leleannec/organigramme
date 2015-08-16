@@ -92,6 +92,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private FichePosteGroupingModel fichePosteGroupingModel;
 
+	private List<FichePosteDto> listeFichePoste;
+
 	private List<EntiteHistoDto> listeHistorique;
 
 	/**
@@ -102,8 +104,15 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private boolean afficheFdpInactive = false;
 
+	private boolean afficheFdpTableau = false;
+
 	public boolean isAfficheFdpInactive() {
 		return afficheFdpInactive;
+	}
+
+	@DependsOn({ "fichePosteGroupingModel", "listeFichePoste" })
+	public boolean isAfficheFdpTableau() {
+		return afficheFdpTableau;
 	}
 
 	public String getTitreOngletFdp() {
@@ -114,12 +123,21 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 				resultat += this.fichePosteGroupingModel.getChildCount(i);
 			}
 			result += " (" + resultat + ")";
+		} else if (this.listeFichePoste != null) {
+			result += " (" + this.listeFichePoste.size() + ")";
 		}
 
 		return result;
 	}
 
-	@NotifyChange({ "fichePosteGroupingModel", "titreOngletFdp" })
+	@NotifyChange({ "fichePosteGroupingModel", "listeFichePoste" })
+	public void setAfficheFdpTableau(boolean afficheFdpTableau) {
+		this.afficheFdpTableau = afficheFdpTableau;
+		// On remet la liste à null pour qu'elle soit rechargée
+		this.fichePosteGroupingModel = null;
+	}
+
+	@NotifyChange({ "fichePosteGroupingModel", "listeFichePoste" })
 	public void setAfficheFdpInactive(boolean afficheFdpInactive) {
 		this.afficheFdpInactive = afficheFdpInactive;
 		// On remet la liste à null pour qu'elle soit rechargée
@@ -213,7 +231,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		if (this.fichePosteGroupingModel != null) {
+		if (this.fichePosteGroupingModel != null || this.afficheFdpTableau) {
 			return this.fichePosteGroupingModel;
 		}
 
@@ -230,6 +248,30 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 				new ComparatorUtil.FichePosteComparatorAvecSigleEnTete(this.entity.getSigle()), this.entity.getSigle());
 
 		return this.fichePosteGroupingModel;
+	}
+
+	/**
+	 * Renvoie la liste des fiches de postes
+	 * 
+	 * @return la liste des fiches de postes
+	 */
+	@NotifyChange("titreOngletFdp")
+	public List<FichePosteDto> getListeFichePoste() {
+		if (this.entity == null || !this.ongletSelectionne.equals(EntiteOnglet.FDP)) {
+			return null;
+		}
+
+		if (this.listeFichePoste != null || !this.afficheFdpTableau) {
+			return this.listeFichePoste;
+		}
+
+		String listIdStatutFDP = StatutFichePoste.getListIdStatutActif();
+
+		if (this.afficheFdpInactive) {
+			listIdStatutFDP += "," + StatutFichePoste.INACTIVE.getId();
+		}
+
+		return sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), listIdStatutFDP, true);
 	}
 
 	@Command
@@ -299,6 +341,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 		// On force à null pour que ce soit rafraîchi
 		this.fichePosteGroupingModel = null;
+		this.listeFichePoste = null;
 		this.listeHistorique = null;
 
 		setEntiteDirty(false);
