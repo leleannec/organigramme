@@ -154,7 +154,8 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		elGenericNode.addElement("y:Geometry").addAttribute("height", "40.0").addAttribute("width", "80.0");
 
 		if (entiteDto.getStatut() == Statut.PREVISION) {
-			elGenericNode.addElement("y:BorderStyle").addAttribute("type", "dashed");
+			elGenericNode.addElement("y:BorderStyle").addAttribute("type", "dashed")
+					.addAttribute("color", couleurTexte);
 		}
 		if (entiteDto.getStatut() == Statut.TRANSITOIRE) {
 			forme = "parallelogram";
