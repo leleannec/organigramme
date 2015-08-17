@@ -93,9 +93,9 @@
 										<custom-attributes statut="${each.statut.name}" />
 									</toolbarbutton>
 								</template> 
-							</toolbar>
+							</toolbar> 
 							<toolbar hflex="1" sclass="no-padding-right toolbar-orga">
-								<label value="@load(vm.statut.libelle)" sclass="statut-en-cours"  visible="@load(vm.entity ne null)"/>
+								<label width="100px" value="@load(vm.statut.libelle)" sclass="statut-en-cours" visible="@load(vm.entity ne null)"/>
 							</toolbar>
 						</hlayout>
 					</hlayout>
