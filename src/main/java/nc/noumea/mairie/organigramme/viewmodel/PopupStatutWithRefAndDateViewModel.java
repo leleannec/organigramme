@@ -127,7 +127,7 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 			}
 
 			entity.setDateDeliberationInactif(dateDeliberation);
-			entity.setRefDeliberationInactif(refDeliberation);
+			entity.setRefDeliberationInactif(refDeliberation); 
 		}
 
 		Map<String, Object> args = new HashMap<>();
