@@ -87,7 +87,7 @@
 							<toolbarbutton image="@load(vm.urlImageFavoris)" sclass="toolbar-favoris-entite" label="" onClick="@command('ajoutOuRetireFavoris', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
 						<hlayout hflex="1" sclass="no-padding-right align-right"> 
-							<toolbar hflex="5"  sclass="no-padding-right toolbar-orga" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
+							<toolbar hflex="3" sclass="no-padding-right toolbar-orga" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
 								<template name="children"> 
 									<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}" autodisable="self">
 										<custom-attributes statut="${each.statut.name}" />
