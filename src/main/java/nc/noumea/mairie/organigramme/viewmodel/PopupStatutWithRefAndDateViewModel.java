@@ -114,7 +114,18 @@ public class PopupStatutWithRefAndDateViewModel extends AbstractPopupViewModel<E
 		if (transition.getStatut() == Statut.ACTIF) {
 			entity.setDateDeliberationActif(dateDeliberation);
 			entity.setRefDeliberationActif(refDeliberation);
-		} else if (transition.getStatut() == Statut.INACTIF || transition.getStatut() == Statut.TRANSITOIRE) {
+		} else if (dateDeliberation != null
+				&& (transition.getStatut() == Statut.INACTIF || transition.getStatut() == Statut.TRANSITOIRE)) {
+
+			if (DateUtil.compare(dateDeliberation, entity.getDateDeliberationActif()) < 0) {
+				Messagebox.show(
+						"La date de délibération / CTP d'inactivation doit être supérieure ou égale à la "
+								+ "date de délibération / CTP d'activation ("
+								+ DateUtil.formatDate(entity.getDateDeliberationActif()) + ")", "Erreur",
+						Messagebox.OK, Messagebox.EXCLAMATION);
+				return;
+			}
+
 			entity.setDateDeliberationInactif(dateDeliberation);
 			entity.setRefDeliberationInactif(refDeliberation);
 		}
