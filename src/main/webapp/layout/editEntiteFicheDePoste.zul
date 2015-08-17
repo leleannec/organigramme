@@ -19,9 +19,9 @@
 				<columns>
 					<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
 					<column label="Titre" sort="auto(titre)" />
-					<column label="Statut" sort="auto(statutFDP)" />
-					<column label="Catégorie" sort="auto(libelleCategorie)" />
-					<column label="Agent" sort="auto(agent)"/>
+					<column label="Statut" sort="auto(statutFDP)" width="100px" />
+					<column label="Catégorie" sort="auto(libelleCategorie)" width="400px" />
+					<column label="Agent" sort="auto(agent)" width="300px"/>
 					<column label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
 				</columns>
 				
@@ -45,9 +45,9 @@
 				<listhead menupopup="auto" sizable="true">
 					<listheader label="Numéro" sort="auto(numero)" width="90px" align="center"/>
 					<listheader label="Titre" sort="auto(titre)"/>
-					<listheader label="Statut" sort="auto(statutFDP)"/>
-					<listheader label="Catégorie" sort="auto(libelleCategorie)"/>
-					<listheader label="Agent" sort="auto(agent)"/>
+					<listheader label="Statut" sort="auto(statutFDP)" width="90px"/>
+					<listheader label="Catégorie" sort="auto(libelleCategorie)" width="400px"/>
+					<listheader label="Agent" sort="auto(agent)" width="300px"/>
 					<listheader label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
 				</listhead>
 				<template name="model">
