@@ -59,12 +59,12 @@ public class ReturnMessageServiceImpl extends GenericServiceImpl<ReturnMessageDt
 			}
 
 			if (!CollectionUtils.isEmpty(listeErreur)) {
-				showNotificationErreur(StringUtils.join(listeErreur, "\n"));
+				showNotificationErreur(StringUtils.join(listeErreur, "<br><br>"));
 				return false;
 			}
 
 			if (!CollectionUtils.isEmpty(listeInformation)) {
-				showNotificationStandard(StringUtils.join(listeInformation, "\n"));
+				showNotificationStandard(StringUtils.join(listeInformation, "<br><br>"));
 			}
 		}
 
@@ -72,7 +72,6 @@ public class ReturnMessageServiceImpl extends GenericServiceImpl<ReturnMessageDt
 	}
 
 	public void showNotificationStandard(String message) {
-
 		Clients.showNotification(message, "info", null, "top_center", 0);
 	}
 

@@ -7,34 +7,72 @@
 			</toolbar>
 			<hlayout hflex="1" sclass="no-padding-right align-right">
 				<toolbar hflex="1">
+					<label value="Afficher sous forme de tableau" sclass="no-padding-right align-right" />
+					<checkbox checked="@bind(vm.afficheFdpTableau)" sclass="no-padding-right align-right" />  
 					<label value="Afficher les inactives" sclass="no-padding-right align-right" />
 					<checkbox checked="@bind(vm.afficheFdpInactive)" sclass="no-padding-right align-right" />  
 				</toolbar>	
 			</hlayout>
+		</hlayout> 
+		<hlayout hflex="1" vflex="1" visible="@load(not vm.afficheFdpTableau)"> 
+			<grid mold="paging" sclass="grid-fdp" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
+				<columns>
+					<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
+					<column label="Titre" sort="auto(titre)" />
+					<column label="Statut" sort="auto(statutFDP)" />
+					<column label="Catégorie" sort="auto(libelleCategorie)" />
+					<column label="Agent" sort="auto(agent)"/>
+					<column label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
+				</columns>
+				
+				<template name="model:group">
+		            <group label="@load(each)" />
+		        </template>
+		        <template name="model">
+		            <row>
+		                <label value="@load(each.numero)" />
+		                <label value="@load(each.titre)" />
+		                <label value="@load(each.statutFDP)" />
+		                <label value="@load(each.libelleCategorie)" />
+		                <label value="@load(each.agent)" />
+		                <label value="@load(each.reglementaire)" />
+		            </row>
+		        </template>
+			</grid>
 		</hlayout>
-		<grid mold="paging" model="@bind(vm.fichePosteGroupingModel)" hflex="1" vflex="1" pageSize="50">
-			<columns>
-				<column label="Numéro" sort="auto(numero)" width="90px" align="center"/>
-				<column label="Titre" sort="auto(titre)" />
-				<column label="Statut" sort="auto(statutFDP)" />
-				<column label="Catégorie" sort="auto(libelleCategorie)" />
-				<column label="Agent" sort="auto(agent)"/>
-				<column label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
-			</columns>
-			
-			<template name="model:group">
-	            <group label="@load(each)" />
-	        </template>
-	        <template name="model">
-	            <row>
-	                <label value="@load(each.numero)" />
-	                <label value="@load(each.titre)" />
-	                <label value="@load(each.statutFDP)" />
-	                <label value="@load(each.libelleCategorie)" />
-	                <label value="@load(each.agent)" />
-	                <label value="@load(each.reglementaire)" />
-	            </row>
-	        </template>
-		</grid>
+		<hlayout hflex="1" vflex="1" visible="@load(vm.afficheFdpTableau)"> 
+			<listbox mold="paging" model="@bind(vm.listeFichePoste)" vflex="1" pageSize="50">
+				<listhead menupopup="auto" sizable="true">
+					<listheader label="Numéro" sort="auto(numero)" width="90px" align="center"/>
+					<listheader label="Titre" sort="auto(titre)"/>
+					<listheader label="Statut" sort="auto(statutFDP)"/>
+					<listheader label="Catégorie" sort="auto(libelleCategorie)"/>
+					<listheader label="Agent" sort="auto(agent)"/>
+					<listheader label="Réglementaire" sort="auto(reglementaire)" width="90px" align="center"/>
+				</listhead>
+				<template name="model">
+					<listitem onDoubleClick="@command('editTypeEntite')">
+						<listcell>
+							<label value="@load(each.numero)" />
+						</listcell> 
+						<listcell>
+							<label value="@load(each.titre)" />
+						</listcell> 
+						<listcell>
+							<label value="@load(each.statutFDP)" />
+						</listcell> 
+						<listcell>
+							<label value="@load(each.libelleCategorie)" />
+						</listcell>
+						<listcell>
+							<label value="@load(each.agent)" />
+						</listcell>
+						<listcell>
+							<label value="@load(each.reglementaire)" />
+						</listcell>
+					</listitem>
+				</template>
+			</listbox>
+		</hlayout>
 	</vlayout>
 </zk>
