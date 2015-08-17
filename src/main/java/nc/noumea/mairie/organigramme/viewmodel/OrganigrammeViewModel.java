@@ -130,6 +130,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** L'{@link EntiteDto} représentant l'entité recherchée **/
 	EntiteDto selectedEntiteDtoRecherche;
 
+	/**
+	 * L'{@link EntiteDto} représentant l'entité zommé côté IHM, pour pouvoir la
+	 * vider à chaque zoom
+	 **/
+	EntiteDto selectedEntiteDtoZoomIhm;
+
 	/** L'{@link EntiteDto} représentant l'entité zommé **/
 	EntiteDto selectedEntiteDtoZoom;
 
@@ -204,6 +210,15 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public void setSelectedEntiteDtoZoom(EntiteDto selectedEntiteDtoZoom) {
 		this.selectedEntiteDtoZoom = selectedEntiteDtoZoom;
+	}
+
+	public EntiteDto getSelectedEntiteDtoZoomIhm() {
+		return selectedEntiteDtoZoomIhm;
+	}
+
+	public void setSelectedEntiteDtoZoomIhm(EntiteDto selectedEntiteDtoZoomIhm) {
+		this.selectedEntiteDtoZoom = selectedEntiteDtoZoomIhm;
+		this.selectedEntiteDtoZoomIhm = null;
 	}
 
 	public FiltreStatut getSelectedFiltreStatut() {
@@ -352,7 +367,14 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	@Listen("onClickToutDeplier = #organigramme")
 	public void onClickToutDeplier(Event event) {
-		setEntity(null);
+		// Si on arrive ici suite à une recherche ou un zoom, on laisse l'entité
+		// du view
+		// model selectionnée et on remet à vide la recherche
+		if (this.selectedEntiteDtoRecherche != null) {
+			this.selectedEntiteDtoRecherche = null;
+		} else if (this.selectedEntiteDtoZoom == null) {
+			setEntity(null);
+		}
 		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), true);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), true);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
@@ -602,7 +624,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			setEntity(this.selectedEntiteDtoRecherche);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 			Clients.evalJavaScript("goToByScroll('" + this.selectedEntiteDtoRecherche.getIdLi() + "');");
-			this.selectedEntiteDtoRecherche = null;
 		}
 	}
 
@@ -635,10 +656,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@Command
 	public void selectionneEntiteZoom() {
 		if (this.selectedEntiteDtoZoom != null) {
-			setEntity(null);
+			setEntity(this.selectedEntiteDtoZoom);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 			refreshArbreComplet();
-			Clients.evalJavaScript("refreshOrganigrammeSuiteZoom();");
+			Clients.evalJavaScript("refreshOrganigrammeSuiteZoom('" + "entite-id-"
+					+ this.selectedEntiteDtoZoom.getIdEntite() + "');");
 		}
 	}
 

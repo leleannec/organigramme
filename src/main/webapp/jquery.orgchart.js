@@ -29,9 +29,9 @@ function refreshOrganigrammeWithoutSelectedEntite() {
 	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true}); 
 }; 
 
-function refreshOrganigrammeSuiteZoom() { 
-	$("#organigramme-root").orgChart({container: $("#chart"), removeEditEntite: true, replie: true});
+function refreshOrganigrammeSuiteZoom(idLi) { 
 	deplierTout();
+	$("#organigramme-root").orgChart({container: $("#chart"), editEntiteId: idLi});
 }; 
 
 function refreshOrganigrammeReplie() { 

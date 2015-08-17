@@ -44,14 +44,14 @@
 						<toolbar hflex="1" sclass="align-right">
 							<toolbarbutton image="/imgs/icon/back.png" onClick="@command('dezoomer')" label="Retour à VDN" visible="@load(vm.selectedEntiteDtoZoom ne null)" autodisable="self" />
 							<label value="Favoris :"/>
-							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.listeEntiteFavorisDto)" width="250px" 
+							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoomIhm)" model="@load(vm.listeEntiteFavorisDto)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')">
 								<template name="model">
 									<comboitem label="${each.sigleWithLibelleStatut}" />
 								</template>
 							</combobox>
 							<label value="Zoomer sur :"/>
-							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.entiteDtoQueryListModelZoomable)" width="250px" 
+							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoomIhm)" model="@load(vm.entiteDtoQueryListModelZoomable)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')" autodrop="true" buttonVisible="false">
 								<template name="model">
 									<comboitem label="${each.sigleWithLibelleStatut}" />
