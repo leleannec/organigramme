@@ -124,6 +124,10 @@
     position: absolute;
 }
 
+.toolbar-favoris-entite {
+    margin-left: -25px;
+}
+
 .no-padding-right .z-hlayout-inner {
 	padding-right: 0px !important;  
 }

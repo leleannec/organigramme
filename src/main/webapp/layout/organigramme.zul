@@ -43,6 +43,13 @@
 						</toolbar>
 						<toolbar hflex="1" sclass="align-right">
 							<toolbarbutton image="/imgs/icon/back.png" onClick="@command('dezoomer')" label="Retour à VDN" visible="@load(vm.selectedEntiteDtoZoom ne null)" autodisable="self" />
+							<label value="Favoris :"/>
+							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.listeEntiteFavorisDto)" width="250px" 
+								onSelect="@command('selectionneEntiteZoom')">
+								<template name="model">
+									<comboitem label="${each.sigleWithLibelleStatut}" />
+								</template>
+							</combobox>
 							<label value="Zoomer sur :"/>
 							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoom)" model="@load(vm.entiteDtoQueryListModelZoomable)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')" autodrop="true" buttonVisible="false">
@@ -77,6 +84,7 @@
 						</toolbar>
 						<toolbar hflex="3" sclass="align-center toolbar-orga"> 
 							<label value="@load(vm.entity.labelCourt)" sclass="toolbar-libelle-entite" visible="@load(vm.entity ne null)"/>
+							<toolbarbutton image="@load(vm.urlImageFavoris)" sclass="toolbar-favoris-entite" label="" onClick="@command('ajoutOuRetireFavoris', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
 						<hlayout hflex="2" sclass="no-padding-right align-right"> 
 							<toolbar hflex="4" sclass="no-padding-right toolbar-orga" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">

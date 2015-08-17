@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+	<changeSet author="lemth83" id="e4140df0-3fdd-11e5-b970-0800200c9a66-1">
+       	<createSequence sequenceName="orga_s_entite_favoris"/>
+		
+		<!-- Table des entités favoris -->
+		<createTable tableName="orga_entite_favoris">
+		    <column name="id" type="INT8">
+		        <constraints nullable="false"/>
+		    </column>
+		    <column name="version" type="INT4"/>
+		    <column name="id_agent" type="INT8"/>
+		    <column name="id_entite" type="INT8"/>
+		</createTable>
+
+		<addPrimaryKey columnNames="id" constraintName="PK_orga_entite_favoris" tableName="orga_entite_favoris"/>
+        <addDefaultValue tableName="orga_entite_favoris" columnName="id" defaultValueSequenceNext="orga_s_entite_favoris" />
+	</changeSet>
+</databaseChangeLog>

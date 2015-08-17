@@ -40,11 +40,13 @@ import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+import nc.noumea.mairie.organigramme.entity.EntiteFavoris;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
 import nc.noumea.mairie.organigramme.query.EntiteDtoQueryListModel;
 import nc.noumea.mairie.organigramme.services.CouleurTypeEntiteService;
+import nc.noumea.mairie.organigramme.services.EntiteFavorisService;
 import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
@@ -104,6 +106,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	TypeEntiteService typeEntiteService;
 	@WireVariable
 	ReturnMessageService returnMessageService;
+	@WireVariable
+	EntiteFavorisService entiteFavorisService;
 	// @formatter:on
 
 	private static final String CREATE_ENTITE_VIEW = "/layout/createEntite.zul";
@@ -111,9 +115,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity", "creable",
 			"duplicable", "listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
 			"selectedEntiteDtoZoom", "entiteDtoQueryListModelRecherchable", "entiteDtoQueryListModelZoomable",
-			"selectedFiltreStatut" };
+			"selectedFiltreStatut", "urlImageFavoris" };
 
 	private OrganigrammeWorkflowViewModel organigrammeWorkflowViewModel = new OrganigrammeWorkflowViewModel(this);
+
 	public TreeViewModel treeViewModel = new TreeViewModel(this);
 
 	/** Le vlayout général dans lequel sera ajouté l'arbre **/
@@ -145,6 +150,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 * son id html client
 	 **/
 	Map<String, EntiteDto> mapIdLiEntiteDto;
+
+	List<EntiteDto> listeEntiteFavorisDto = new ArrayList<EntiteDto>();
 
 	/**
 	 * Map permettant de savoir si le Li est ouvert ou non à partir de son id
@@ -215,6 +222,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.entiteDtoQueryListModelRecherchable = entiteDtoQueryListModelRecherchable;
 	}
 
+	public List<EntiteDto> getListeEntiteFavorisDto() {
+		Collections.sort(listeEntiteFavorisDto, new ComparatorUtil.EntiteComparator());
+
+		return listeEntiteFavorisDto;
+	}
+
 	/**
 	 * Point d'entrée du viewModel. Fait un appel à ADS afin de récupérer
 	 * l'arbre et le crée
@@ -237,6 +250,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on
 		// est sur d'avoir une version bien à jour
 		refreshArbreComplet();
+
+		// Gestion des favoris
+		for (EntiteFavoris entiteFavoris : entiteFavorisService.findByIdAgent(profilAgentDto.getIdAgent())) {
+			this.listeEntiteFavorisDto.add(mapIdLiEntiteDto.get("entite-id-" + entiteFavoris.getIdEntite()));
+		}
 	}
 
 	public EntiteDtoQueryListModel getEntiteDtoQueryListModelZoomable() {
@@ -722,6 +740,52 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public String getComboVide() {
 		return null;
+	}
+
+	public String getUrlImageFavoris() {
+		if (this.entity != null && !CollectionUtils.isEmpty(this.listeEntiteFavorisDto)) {
+			for (EntiteDto entiteDto : this.listeEntiteFavorisDto) {
+				if (entiteDto.getIdEntite().equals(this.entity.getIdEntite())) {
+					return "/imgs/icon/favoris.png";
+				}
+			}
+		}
+
+		return "/imgs/icon/no-favoris.png";
+	}
+
+	/**
+	 * Ajoute ou retire une entité favoris
+	 */
+	@NotifyChange({ "urlImageFavoris", "listeEntiteFavorisDto" })
+	@Command
+	public void ajoutOuRetireFavoris(@BindingParam("entity") EntiteDto entiteDto) {
+		boolean dejaFavoris = false;
+		if (this.entity != null && !CollectionUtils.isEmpty(this.listeEntiteFavorisDto)) {
+			for (EntiteDto entiteFavorisDto : this.listeEntiteFavorisDto) {
+				if (entiteFavorisDto.getIdEntite().equals(entiteDto.getIdEntite())) {
+					this.listeEntiteFavorisDto.remove(entiteFavorisDto);
+					EntiteFavoris entiteFavoris = entiteFavorisService.findByIdAgentAndIdEntite(
+							this.profilAgentDto.getIdAgent(), entiteFavorisDto.getIdEntite());
+					entiteFavorisService.delete(entiteFavoris);
+					dejaFavoris = true;
+					Clients.showNotification("L'entité " + this.entity.getSigle() + " a été retirée de vos favoris.",
+							"info", null, "top_center", 0);
+					break;
+				}
+			}
+		}
+
+		if (!dejaFavoris) {
+			EntiteFavoris entiteFavoris = new EntiteFavoris();
+			entiteFavoris.setIdAgent(this.profilAgentDto.getIdAgent());
+			entiteFavoris.setIdEntite(entiteDto.getIdEntite());
+			entiteFavorisService.save(entiteFavoris);
+
+			this.listeEntiteFavorisDto.add(mapIdLiEntiteDto.get("entite-id-" + entiteFavoris.getIdEntite()));
+			Clients.showNotification("L'entité " + this.entity.getSigle() + " a été ajoutée à vos favoris.", "info",
+					null, "top_center", 0);
+		}
 	}
 
 	/**
