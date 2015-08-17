@@ -94,7 +94,7 @@
 }
 
 .loginPage {
-	background:url('/imgs/bg-login.jpg') no-repeat center center fixed;
+	background:url('imgs/bg-login.jpg') no-repeat center center fixed;
 	-webkit-background-size: cover;
      -moz-background-size: cover;
      -o-background-size: cover;
@@ -102,7 +102,7 @@
 }
 
 .mandatory {
-	background-image:url('/imgs/mandatory.jpg');
+	background-image:url('imgs/mandatory.jpg');
 	background-position:top right;
 	background-repeat:no-repeat;
 	padding-right:13px;
@@ -122,10 +122,11 @@
 	font-size: 1.3em !important;
 	margin-top: 5px;
     position: absolute;
+    margin-left: -60px;
 }
 
 .toolbar-favoris-entite {
-    margin-left: -25px;
+    margin-left: -85px;
 }
 
 .no-padding-right .z-hlayout-inner {

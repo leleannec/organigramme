@@ -345,6 +345,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		this.listeHistorique = null;
 
 		setEntiteDirty(false);
+		updateTitreOnglet();
 		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
 	}
 

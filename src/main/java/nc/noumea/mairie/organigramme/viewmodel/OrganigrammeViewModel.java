@@ -816,7 +816,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	@Command
 	public void lancerExport(@BindingParam("entity") EntiteDto entiteDto) {
-		exportGraphMLService.exportGraphMLFromEntite(entiteDto, this.selectedFiltreStatut, mapIdLiOuvert);
+		exportGraphMLService.exportGraphMLFromEntite(mapIdLiEntiteDto.get("entite-id-" + entiteDto.getIdEntite()),
+				this.selectedFiltreStatut, mapIdLiOuvert);
 	}
 
 	@Command
