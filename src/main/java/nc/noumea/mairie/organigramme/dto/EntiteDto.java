@@ -369,6 +369,11 @@ public class EntiteDto extends AbstractEntityDto {
 		// construit la liste de toutes les transitions possibles depuis le
 		// statut source
 		List<Transition> listeTransition = new ArrayList<>();
+
+		if (this.getStatut() == null) {
+			return listeTransition;
+		}
+
 		for (Transition transition : Transition.values()) {
 			boolean transitionDepuisStatutCourant = this.getStatut().equals(transition.getStatutSource());
 			if (transitionDepuisStatutCourant) {

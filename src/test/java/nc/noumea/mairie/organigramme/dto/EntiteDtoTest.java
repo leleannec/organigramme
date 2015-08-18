@@ -28,11 +28,120 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nc.noumea.mairie.organigramme.enums.Statut;
+import nc.noumea.mairie.organigramme.enums.Transition;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class EntiteDtoTest {
+
+	@Test
+	public void checkFeuille() {
+		EntiteDto entiteDto = new EntiteDto();
+
+		Assert.assertTrue(entiteDto.isFeuille());
+
+		List<EntiteDto> listeEnfant = new ArrayList<EntiteDto>();
+		entiteDto.setEnfants(listeEnfant);
+		Assert.assertTrue(entiteDto.isFeuille());
+
+		listeEnfant.add(new EntiteDto());
+		Assert.assertFalse(entiteDto.isFeuille());
+	}
+
+	@Test
+	public void checkStatut() {
+		EntiteDto entiteDto = new EntiteDto();
+
+		Assert.assertFalse(entiteDto.isActif());
+		Assert.assertFalse(entiteDto.isInactif());
+		Assert.assertFalse(entiteDto.isTransitoire());
+		Assert.assertFalse(entiteDto.isPrevision());
+		Assert.assertFalse(entiteDto.isTransitoireOuInactif());
+
+		// Prévision
+		entiteDto.setIdStatut(0);
+		Assert.assertFalse(entiteDto.isActif());
+		Assert.assertFalse(entiteDto.isInactif());
+		Assert.assertFalse(entiteDto.isTransitoire());
+		Assert.assertTrue(entiteDto.isPrevision());
+		Assert.assertFalse(entiteDto.isTransitoireOuInactif());
+
+		// Actif
+		entiteDto.setIdStatut(1);
+		Assert.assertTrue(entiteDto.isActif());
+		Assert.assertFalse(entiteDto.isInactif());
+		Assert.assertFalse(entiteDto.isTransitoire());
+		Assert.assertFalse(entiteDto.isPrevision());
+		Assert.assertFalse(entiteDto.isTransitoireOuInactif());
+
+		// Transitoire
+		entiteDto.setIdStatut(2);
+		Assert.assertFalse(entiteDto.isActif());
+		Assert.assertFalse(entiteDto.isInactif());
+		Assert.assertTrue(entiteDto.isTransitoire());
+		Assert.assertFalse(entiteDto.isPrevision());
+		Assert.assertTrue(entiteDto.isTransitoireOuInactif());
+
+		// Inactif
+		entiteDto.setIdStatut(3);
+		Assert.assertFalse(entiteDto.isActif());
+		Assert.assertTrue(entiteDto.isInactif());
+		Assert.assertFalse(entiteDto.isTransitoire());
+		Assert.assertFalse(entiteDto.isPrevision());
+		Assert.assertTrue(entiteDto.isTransitoireOuInactif());
+	}
+
+	@Test
+	public void getListeTransitionAutorise() {
+		EntiteDto entiteDto = new EntiteDto();
+
+		Assert.assertEquals(entiteDto.getListeTransitionAutorise(), new ArrayList<Transition>());
+
+		// Prévision sans parent
+		entiteDto.setIdStatut(0);
+		Assert.assertEquals(entiteDto.getListeTransitionAutorise(), new ArrayList<Transition>());
+
+		EntiteDto entiteDtoParent = new EntiteDto();
+		entiteDto.setEntiteParent(entiteDtoParent);
+
+		// Parent en prévision
+		entiteDtoParent.setIdStatut(0);
+		Assert.assertEquals(entiteDto.getListeTransitionAutorise(), new ArrayList<Transition>());
+
+		// Parent en inactif
+		entiteDtoParent.setIdStatut(3);
+		Assert.assertEquals(entiteDto.getListeTransitionAutorise(), new ArrayList<Transition>());
+
+		// Parent en actif
+		entiteDtoParent.setIdStatut(1);
+		List<Transition> result = new ArrayList<Transition>();
+		result.add(Transition.ACTIF_APRES_PREVISION);
+		Assert.assertEqualsNoOrder(entiteDto.getListeTransitionAutorise().toArray(), result.toArray());
+
+		// Parent en transitoire
+		entiteDtoParent.setIdStatut(2);
+		Assert.assertEqualsNoOrder(entiteDto.getListeTransitionAutorise().toArray(), result.toArray());
+
+		// Actif
+		entiteDto.setIdStatut(1);
+		result = new ArrayList<Transition>();
+		result.add(Transition.INACTIF_APRES_ACTIF);
+		result.add(Transition.TRANSITOIRE);
+		Assert.assertEqualsNoOrder(entiteDto.getListeTransitionAutorise().toArray(), result.toArray());
+
+		// Transitoire
+		entiteDto.setIdStatut(2);
+		result = new ArrayList<Transition>();
+		result.add(Transition.INACTIF_APRES_TRANSITOIRE);
+		Assert.assertEqualsNoOrder(entiteDto.getListeTransitionAutorise().toArray(), result.toArray());
+
+		// Inactif
+		entiteDto.setIdStatut(3);
+		result = new ArrayList<Transition>();
+		Assert.assertEquals(entiteDto.getListeTransitionAutorise(), new ArrayList<Transition>());
+
+	}
 
 	@Test
 	public void tousEnfantEnStatut() {

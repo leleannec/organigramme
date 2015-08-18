@@ -115,6 +115,11 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		return afficheFdpTableau;
 	}
 
+	public boolean isModifiable() {
+		// On ne peux modifier que si on a le rôle édition
+		return profilAgentDto.isEdition() && this.entity != null;
+	}
+
 	public String getTitreOngletFdp() {
 		String result = "Fiches de postes";
 		if (this.fichePosteGroupingModel != null) {
