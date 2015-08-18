@@ -475,11 +475,24 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@JSON(include = false)
-	public String getSigleWithLibelleStatut() {
+	public String getSigleWithLibelleStatutAndDirection() {
+
+		EntiteDto entiteDtoDirection = findEntiteDtoDirection(this);
+		String directionEtSigle = (entiteDtoDirection != null ? entiteDtoDirection.getSigle() + " > " : "")
+				+ this.sigle;
+
 		if (this.getStatut() != null && this.getStatut() != Statut.ACTIF) {
-			return this.sigle + " (" + this.getStatut().getLibelle() + ")";
+			return directionEtSigle + " (" + this.getStatut().getLibelle() + ")";
 		}
-		return this.sigle;
+		return directionEtSigle;
+	}
+
+	private EntiteDto findEntiteDtoDirection(EntiteDto entiteDto) {
+		if (entiteDto.getTypeEntite() != null && entiteDto.getTypeEntite().getLabel().equals("Direction")) {
+			return entiteDto;
+		} else {
+			return findEntiteDtoDirection(entiteDto.getEntiteParent());
+		}
 	}
 
 	@JSON(include = false)
