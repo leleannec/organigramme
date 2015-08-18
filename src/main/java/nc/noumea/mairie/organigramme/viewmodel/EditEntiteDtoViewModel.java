@@ -340,8 +340,20 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 *            : l'entité à rafraîchir
 	 */
 	@Command
-	@NotifyChange({ "*", "titreOngletFdp" })
+	@NotifyChange({ "*" })
 	public void refreshEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		refreshEntiteGeneric(entiteDto, true);
+	}
+
+	@GlobalCommand
+	@NotifyChange({ "*" })
+	public void refreshEntiteGlobalCommand(@BindingParam("entity") EntiteDto entiteDto) {
+		if (entiteDto.getId().equals(this.entity.getId())) {
+			refreshEntiteGeneric(entiteDto, false);
+		}
+	}
+
+	private void refreshEntiteGeneric(EntiteDto entiteDto, boolean showNotification) {
 		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
 
 		// On force à null pour que ce soit rafraîchi
@@ -351,7 +363,9 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 		setEntiteDirty(false);
 		updateTitreOnglet();
-		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
+		if (showNotification) {
+			Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
+		}
 	}
 
 	/**

@@ -12,7 +12,7 @@
 					<label value="Nouvelle entité parente ?" />
 						<combobox selectedItem="@bind(vm.entity.entiteDtoCible)" model="@load(vm.listeEntiteCible)"  hflex="1" readonly="true">
 						<template name="model">
-							<comboitem label="${each.sigleWithLibelleStatut}" />
+							<comboitem label="${each.sigleWithLibelleStatutAndDirection}" />
 						</template>
 					</combobox>
 				</row>

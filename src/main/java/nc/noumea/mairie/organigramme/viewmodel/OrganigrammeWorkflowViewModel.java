@@ -152,6 +152,11 @@ public class OrganigrammeWorkflowViewModel extends AbstractEditViewModel<EntiteD
 			// dans son nouvel état
 			forcerAffichageStatut(transition);
 
+			// On refresh si l'onglet est ouvert pour qu'il se mette à jour
+			final Map<String, Object> mapEntite = new HashMap<String, Object>();
+			mapEntite.put("entity", this.entity());
+			BindUtils.postGlobalCommand(null, null, "refreshEntiteGlobalCommand", mapEntite);
+
 			this.organigrammeViewModel.creeArbreEtRafraichiClient();
 			return true;
 		}

@@ -33,7 +33,7 @@
 				<combobox selectedItem="@bind(vm.entity.entiteRemplacee)" model="@load(vm.listeEntiteRemplace)" onChange="@command('onChangeValueEntity')"
 					hflex="1" disabled="@load(not vm.editable)" readonly="true">
 					<template name="model">
-						<comboitem label="${each.sigleWithLibelleStatut}" />
+						<comboitem label="${each.sigleWithLibelleStatutAndDirection}" />
 					</template>
 				</combobox>
 			</row> 

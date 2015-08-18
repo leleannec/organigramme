@@ -47,21 +47,21 @@
 							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoomIhm)" model="@load(vm.listeEntiteFavorisDto)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')">
 								<template name="model">
-									<comboitem label="${each.sigleWithLibelleStatut}" />
+									<comboitem label="${each.sigleWithLibelleStatutAndDirection}" />
 								</template>
 							</combobox>
 							<label value="Zoomer sur :"/>
 							<combobox selectedItem="@bind(vm.selectedEntiteDtoZoomIhm)" model="@load(vm.entiteDtoQueryListModelZoomable)" width="250px" 
 								onSelect="@command('selectionneEntiteZoom')" autodrop="true" buttonVisible="false">
 								<template name="model">
-									<comboitem label="${each.sigleWithLibelleStatut}" />
+									<comboitem label="${each.sigleWithLibelleStatutAndDirection}" />
 								</template>
 							</combobox>
 							<label value="Accèder à :" />
 							<combobox selectedItem="@bind(vm.selectedEntiteDtoRecherche)" model="@load(vm.entiteDtoQueryListModelRecherchable)" 	
 								onSelect="@command('selectionneEntiteRecherche')" autodrop="true" buttonVisible="false" width="250px" >
 								<template name="model">
-									<comboitem label="${each.sigleWithLibelleStatut}" />
+									<comboitem label="${each.sigleWithLibelleStatutAndDirection}" />
 								</template>
 							</combobox>
 							<label value="Afficher :" />
@@ -82,12 +82,12 @@
 							<toolbarbutton image="/imgs/icon/deplier.png" label="Déplier/replier" onClick="@command('deplierEntite', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 							<toolbarbutton image="/imgs/icon/exporter.png" label="Exporter" onClick="@command('lancerExport', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
-						<toolbar hflex="1" sclass="align-center toolbar-orga"> 
+						<toolbar hflex="2" sclass="align-center toolbar-orga"> 
 							<label value="@load(vm.entity.labelCourt)" sclass="toolbar-libelle-entite" visible="@load(vm.entity ne null)"/>
 							<toolbarbutton image="@load(vm.urlImageFavoris)" sclass="toolbar-favoris-entite" label="" onClick="@command('ajoutOuRetireFavoris', entity=vm.entity)" autodisable="self" visible="@load(vm.entity ne null)" />
 						</toolbar>
-						<hlayout hflex="1" sclass="no-padding-right align-right"> 
-							<toolbar hflex="3" sclass="no-padding-right toolbar-orga" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
+						<hlayout hflex="1" sclass="no-padding-right align-right">  
+							<toolbar hflex="2" sclass="no-padding-right toolbar-orga" children="@load(vm.listeTransitionAutorise)" visible="@load(vm.creable)">
 								<template name="children"> 
 									<toolbarbutton label="${each.libelle}" onClick="@command('passerTransition', transition=each)" image="${each.buttonImage}" autodisable="self">
 										<custom-attributes statut="${each.statut.name}" />

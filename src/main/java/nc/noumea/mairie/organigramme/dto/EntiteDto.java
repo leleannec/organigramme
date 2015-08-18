@@ -63,6 +63,7 @@ public class EntiteDto extends AbstractEntityDto {
 	private List<EntiteDto> enfants;
 	private EntiteDto entiteParent;
 	private EntiteDto entiteRemplacee;
+	private EntiteDto entiteDirection;
 
 	private Integer idStatut;
 	private Integer idAgentCreation;
@@ -299,6 +300,15 @@ public class EntiteDto extends AbstractEntityDto {
 		this.commentaire = commentaire;
 	}
 
+	@JSON(include = false)
+	public EntiteDto getEntiteDirection() {
+		return entiteDirection;
+	}
+
+	public void setEntiteDirection(EntiteDto entiteDirection) {
+		this.entiteDirection = entiteDirection;
+	}
+
 	@Override
 	@JSON(include = false)
 	public String getLibelleCourt() {
@@ -475,11 +485,14 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@JSON(include = false)
-	public String getSigleWithLibelleStatut() {
+	public String getSigleWithLibelleStatutAndDirection() {
+
+		String directionEtSigle = (entiteDirection != null ? entiteDirection.getSigle() + " > " : "") + this.sigle;
+
 		if (this.getStatut() != null && this.getStatut() != Statut.ACTIF) {
-			return this.sigle + " (" + this.getStatut().getLibelle() + ")";
+			return directionEtSigle + " (" + this.getStatut().getLibelle() + ")";
 		}
-		return this.sigle;
+		return directionEtSigle;
 	}
 
 	@JSON(include = false)
