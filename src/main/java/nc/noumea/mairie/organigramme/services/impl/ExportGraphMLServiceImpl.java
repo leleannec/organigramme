@@ -24,11 +24,16 @@ package nc.noumea.mairie.organigramme.services.impl;
  * #L%
  */
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import nc.noumea.mairie.organigramme.core.utility.DateUtil;
 import nc.noumea.mairie.organigramme.core.ws.SirhWSConsumer;
@@ -39,6 +44,7 @@ import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 
+import org.apache.commons.codec.binary.Base64;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
@@ -58,21 +64,22 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	SirhWSConsumer sirhWSConsumer;
 
 	public void exportGraphMLFromEntite(EntiteDto entiteDto, FiltreStatut filtreStatut,
-			Map<String, Boolean> mapIdLiOuvert) {
+			Map<String, Boolean> mapIdLiOuvert) throws IOException {
 		String nomFichier = "Export-" + entiteDto.getSigle() + "-" + DateUtil.formatDateForFile(new Date())
 				+ ".graphml";
 		Filedownload.save(exportGraphML(entiteDto, filtreStatut, mapIdLiOuvert), null, nomFichier);
 	}
 
-	private byte[] exportGraphML(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert) {
+	private byte[] exportGraphML(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert)
+			throws IOException {
 
 		DocumentFactory factory = DocumentFactory.getInstance();
 		Element root = factory.createElement("graphml");
 		Document document = factory.createDocument(root);
 		document.setXMLEncoding("utf-8");
 
-		initHeader(root);
 		Element graph = initRoot(root);
+		initHeader(root);
 		buildGraphMlTree(graph, entiteDto, mapIdLiOuvert, filtreStatut);
 
 		ByteArrayOutputStream os_writer = new ByteArrayOutputStream();
@@ -105,31 +112,37 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 				.addAttribute("for", "node").addAttribute("id", "d4");
 		root.addElement("key").addAttribute("attr.name", "libellé").addAttribute("attr.type", "string")
 				.addAttribute("for", "node").addAttribute("id", "d5");
+		root.addElement("key").addAttribute("yfiles.type", "nodegraphics").addAttribute("for", "node")
+				.addAttribute("id", "d6");
+		root.addElement("key").addAttribute("yfiles.type", "edgegraphics").addAttribute("for", "edge")
+				.addAttribute("id", "d7");
 		root.addElement("key").addAttribute("attr.name", "sigle + libellé").addAttribute("attr.type", "string")
 				.addAttribute("for", "node").addAttribute("id", "d8");
 		root.addElement("key").addAttribute("attr.name", "sigle + FDP").addAttribute("attr.type", "string")
 				.addAttribute("for", "node").addAttribute("id", "d9");
 		root.addElement("key").addAttribute("attr.name", "sigle + libellé + FDP").addAttribute("attr.type", "string")
 				.addAttribute("for", "node").addAttribute("id", "d10");
-		root.addElement("key").addAttribute("yfiles.type", "nodegraphics").addAttribute("for", "node")
-				.addAttribute("id", "d6");
-		root.addElement("key").addAttribute("yfiles.type", "edgegraphics").addAttribute("for", "edge")
-				.addAttribute("id", "d7");
+		root.addElement("key").addAttribute("attr.name", "sigle + libellé + N° FDP")
+				.addAttribute("attr.type", "string").addAttribute("for", "node").addAttribute("id", "d11");
+		root.addElement("key").addAttribute("yfiles.type", "resources").addAttribute("for", "graphml")
+				.addAttribute("id", "d12");
 	}
 
 	/**
 	 * Recursive method to build graphml nodes and edges for the entire tree
 	 * 
 	 * @param graph
-	 *            : le graph général
+	 *            : l'élément graph
 	 * @param entiteDto
 	 *            : l'entité dto à construire : doit-on exporter les fiches de
 	 *            postes ?
 	 * @param mapIdLiOuvert
 	 *            : permet de savoir quel entité est dépliée
+	 * @throws IOException
+	 *             : si le logo n'a pas pu être ajouté au graphml
 	 */
 	protected void buildGraphMlTree(Element graph, EntiteDto entiteDto, Map<String, Boolean> mapIdLiOuvert,
-			FiltreStatut filtreStatut) {
+			FiltreStatut filtreStatut) throws IOException {
 
 		String couleurEntite = entiteDto.getTypeEntite() != null ? entiteDto.getTypeEntite().getCouleurEntite()
 				: "#FFFFCF";
@@ -142,12 +155,16 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		el.addElement("data").addAttribute("key", "d5").setText(entiteDto.getLabel());
 		el.addElement("data").addAttribute("key", "d8").setText(entiteDto.getSigle() + "\n" + entiteDto.getLabel());
 
-		String sigleEtFdp = getLibelleCase(entiteDto, !mapIdLiOuvert.get(entiteDto.getIdLi()), entiteDto.getSigle());
-		String libelleEtFdp = getLibelleCase(entiteDto, !mapIdLiOuvert.get(entiteDto.getIdLi()), entiteDto.getSigle()
-				+ "\n" + entiteDto.getLabel());
+		String libelleFdp = getLibelleCaseWithLibelleFdp(entiteDto, !mapIdLiOuvert.get(entiteDto.getIdLi()), true);
+		String numeroFdp = getLibelleCaseWithLibelleFdp(entiteDto, !mapIdLiOuvert.get(entiteDto.getIdLi()), false);
 
-		el.addElement("data").addAttribute("key", "d9").setText(sigleEtFdp);
-		el.addElement("data").addAttribute("key", "d10").setText(libelleEtFdp);
+		String sigleEtLibelleFdp = entiteDto.getSigle() + "\n" + libelleFdp;
+		String sigletEtLibelleEtLibelleFdp = entiteDto.getSigle() + "\n" + entiteDto.getLabel() + "\n" + libelleFdp;
+		String sigletEtLibelleEtNumeroFdp = entiteDto.getSigle() + "\n" + entiteDto.getLabel() + "\n" + numeroFdp;
+
+		el.addElement("data").addAttribute("key", "d9").setText(sigleEtLibelleFdp);
+		el.addElement("data").addAttribute("key", "d10").setText(sigletEtLibelleEtLibelleFdp);
+		el.addElement("data").addAttribute("key", "d11").setText(sigletEtLibelleEtNumeroFdp);
 
 		Element elD6 = el.addElement("data").addAttribute("key", "d6");
 		Element elGenericNode = elD6.addElement("y:ShapeNode");
@@ -181,6 +198,37 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 		}
 
 		elGenericNode.addElement("y:NodeLabel").addAttribute("textColor", couleurTexte).setText(entiteDto.getSigle());
+
+		ajoutLogoMairie(graph);
+	}
+
+	/**
+	 * Permet d'ajouter le logo de la mairie au fichier d'export
+	 * 
+	 * @param graph
+	 *            : l'élément graph
+	 * @throws IOException
+	 *             : si le logo ne peux pas être lu ou ajouté au fichier
+	 */
+	private void ajoutLogoMairie(Element graph) throws IOException {
+		Element elKeyResource = graph.getParent().addElement("data").addAttribute("key", "d12");
+		Element elResource = elKeyResource.addElement("y:Resources").addElement("y:Resource");
+		elResource.addAttribute("id", "1").addAttribute("type", "java.awt.image.BufferedImage");
+		InputStream is = this.getClass().getClassLoader().getResourceAsStream("logo-mairie.jpg");
+		BufferedImage img = ImageIO.read(is);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(img, "jpg", baos);
+		baos.flush();
+		String encodedImage = Base64.encodeBase64String(baos.toByteArray());
+		baos.close();
+		elResource.setText(encodedImage);
+
+		Element el = graph.addElement("node").addAttribute("id", "0");
+		Element elD6 = el.addElement("data").addAttribute("key", "d6");
+		Element elImageNode = elD6.addElement("y:ImageNode");
+		elImageNode.addElement("y:Geometry").addAttribute("height", "136.3").addAttribute("width", "143.0")
+				.addAttribute("x", "256.0").addAttribute("y", "-291.0");
+		elImageNode.addElement("y:Image").addAttribute("alphaImage", "true").addAttribute("refid", "1");
 	}
 
 	/**
@@ -191,28 +239,37 @@ public class ExportGraphMLServiceImpl implements ExportGraphMLService {
 	 * @param withEntiteChildren
 	 *            : selon si l'entité est dépliée ou non on affiche les FDP des
 	 *            enfants ou non
-	 * @param libelleCase
-	 *            : le libellé de la case
+	 * @param libelleFdpSinonNumero
+	 *            : si true, on affichera les libellés des FDP, si false on
+	 *            affichera les numéros des FDP séparés par une virgule
 	 * @return le libellé à mettre dans la case Yed
 	 */
-	private String getLibelleCase(EntiteDto entiteDto, boolean withEntiteChildren, String libelleCase) {
+	private String getLibelleCaseWithLibelleFdp(EntiteDto entiteDto, boolean withEntiteChildren,
+			boolean libelleFdpSinonNumero) {
+
+		String result = "";
 
 		InfoEntiteDto infoEntiteDto = sirhWSConsumer.getInfoFDPByEntite(entiteDto.getIdEntite(), withEntiteChildren);
 		if (infoEntiteDto != null && !CollectionUtils.isEmpty(infoEntiteDto.getListeInfoFDP())) {
 
-			libelleCase += "\n";
-
-			for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
-				if (new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
-					libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + ")\n";
-				} else {
-					libelleCase += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + " / "
-							+ infoFichePosteDto.getTauxETP() + " ETP)\n";
+			if (libelleFdpSinonNumero) {
+				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
+					if (new Double(infoFichePosteDto.getNbFDP()).equals(infoFichePosteDto.getTauxETP())) {
+						result += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + ")\n";
+					} else {
+						result += infoFichePosteDto.getTitreFDP() + " (" + infoFichePosteDto.getNbFDP() + " / "
+								+ infoFichePosteDto.getTauxETP() + " ETP)\n";
+					}
+				}
+			} else {
+				for (InfoFichePosteDto infoFichePosteDto : infoEntiteDto.getListeInfoFDP()) {
+					// TODO
+					// result += infoFichePosteDto.getNumero() + "\n";
 				}
 			}
 		}
 
-		return libelleCase;
+		return result;
 	}
 
 	private void genereEdge(Element graph, EntiteDto entiteDto, EntiteDto enfant) {

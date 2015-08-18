@@ -24,6 +24,7 @@ package nc.noumea.mairie.organigramme.viewmodel;
  * #L%
  */
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,23 +175,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	/** ListModel de toutes les entités recherchables **/
 	private EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable;
 
-	public List<EntiteDto> getListeEntite() {
-
-		// On filtre la liste des entités recherchables selon le
-		// statut selectionné
-		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
-			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
-			listeEntiteClone.addAll(this.listeEntite);
-			for (EntiteDto entiteDto : listeEntiteClone) {
-				if (!this.selectedFiltreStatut.getListeStatut().contains(entiteDto.getStatut())) {
-					listeEntite.remove(entiteDto);
-				}
-			}
-		}
-
-		return listeEntite;
-	}
-
 	// setté par le treeViewModel
 	public void setListeEntite(List<EntiteDto> listeEntite) {
 		this.listeEntite = listeEntite;
@@ -235,6 +219,23 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public void setEntiteDtoQueryListModelRecherchable(EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable) {
 		this.entiteDtoQueryListModelRecherchable = entiteDtoQueryListModelRecherchable;
+	}
+
+	public List<EntiteDto> getListeEntite() {
+
+		// On filtre la liste des entités recherchables selon le
+		// statut selectionné
+		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
+			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
+			listeEntiteClone.addAll(this.listeEntite);
+			for (EntiteDto entiteDto : listeEntiteClone) {
+				if (!this.selectedFiltreStatut.getListeStatut().contains(entiteDto.getStatut())) {
+					listeEntite.remove(entiteDto);
+				}
+			}
+		}
+
+		return listeEntite;
 	}
 
 	public List<EntiteDto> getListeEntiteFavorisDto() {
@@ -816,8 +817,13 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 */
 	@Command
 	public void lancerExport(@BindingParam("entity") EntiteDto entiteDto) {
-		exportGraphMLService.exportGraphMLFromEntite(mapIdLiEntiteDto.get("entite-id-" + entiteDto.getIdEntite()),
-				this.selectedFiltreStatut, mapIdLiOuvert);
+		try {
+			exportGraphMLService.exportGraphMLFromEntite(mapIdLiEntiteDto.get("entite-id-" + entiteDto.getIdEntite()),
+					this.selectedFiltreStatut, mapIdLiOuvert);
+		} catch (IOException e) {
+			AbstractViewModel
+					.showErrorPopup("Une erreur est survenu lors de l'ajout du logo de la Mairie dans le fichier d'export");
+		}
 	}
 
 	@Command
