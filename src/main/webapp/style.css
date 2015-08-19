@@ -19,6 +19,11 @@
    overflow: hidden;
    background:#F0F8FF;
 }
+.chart {
+   width: 100%;
+   overflow: hidden;
+   background:#F0F8FF;
+}
 
 .toolbar-orga {
 	border-color: #C5C5C5; 

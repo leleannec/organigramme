@@ -66,8 +66,9 @@ function expandEntite($entiteDiv) {
     	$row.removeClass("hiddenChildren").addClass("shownChildren");
         $row.nextAll("tr").show();
     } 
-    
-    zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id"))); 
+    if(null != $entiteDiv.attr("id") && $entiteDiv.attr("id").substr(0,6)=='entite') {
+    	zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickFlecheDeplierReplier', $entiteDiv.attr("id")));
+    }
 };
 
 function goToByScroll(id){
@@ -261,18 +262,20 @@ function goToByScroll(id){
                 		expandEntite($entiteDiv); 
                 	}
                 	else {
-                		if($entiteDiv.hasClass("edit")) {
-                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null));
-                        	removeEditEntite(opts);  
-                		}
-                		else {
-                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', $entiteDiv.attr("id"))); 
-                    		editEntite($entiteDiv, opts);  
+                		if(null != $entiteDiv.attr("id") && $entiteDiv.attr("id").substr(0,6)=='entite') {
+	                		if($entiteDiv.hasClass("edit")) {
+	                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', null));
+	                        	removeEditEntite(opts);  
+	                		}
+	                		else {
+	                			zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onClickEntite', $entiteDiv.attr("id"))); 
+	                    		editEntite($entiteDiv, opts);  
+	                		}
                 		}
                 	}
                     clicks = 0;             //after action performed, reset counter
                 }, DELAY);
-            } else { 
+            } else if(null != $entiteDiv.attr("id") && $entiteDiv.attr("id").substr(0,6)=='entite') { 
             	clearTimeout(timer);		//prevent single-click action
                 clicks = 0;             	//after action performed, reset counter
                 zAu.send(new zk.Event(zk.Widget.$('$organigramme'), 'onDblClickEntite', $entiteDiv.attr("id"))); 

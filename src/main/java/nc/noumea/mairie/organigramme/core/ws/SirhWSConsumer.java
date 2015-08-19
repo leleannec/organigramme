@@ -30,6 +30,7 @@ import java.util.List;
 
 import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
+import nc.noumea.mairie.organigramme.dto.FichePosteTreeNodeDto;
 import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
@@ -53,6 +54,7 @@ public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 	private static final String URL_AUTORISATION_ORGANIGRAMME = "utilisateur/getAutorisationOrganigramme";
 	private static final String URL_FICHE_POSTE_PAR_ENTITE = "fichePostes/listFichePosteByIdEntite";
 	private static final String URL_FICHE_POSTE_INFO_PAR_ENTITE = "fichePostes/getInfoFDPByEntite";
+	private static final String URL_TREE_FICHE_POSTE_PAR_ENTITE = "fichePostes/treeFichesPosteByIdEntite";
 
 	public ProfilAgentDto getAgent(Integer idAgent) {
 		String url = String.format(sirhWsBaseUrl + URL_AGENT);
@@ -97,5 +99,19 @@ public class SirhWSConsumer extends BaseWsConsumer implements ISirhWSConsumer {
 		logger.debug("getInfoFDPByEntite with url " + url);
 		ClientResponse res = createAndFireGetRequest(params, url);
 		return readResponse(InfoEntiteDto.class, res, url);
+	}
+	
+	@Override
+	public List<FichePosteTreeNodeDto> getTreeFichesPosteByEntite(Integer idEntite) {
+		
+		String url = String.format(sirhWsBaseUrl + URL_TREE_FICHE_POSTE_PAR_ENTITE);
+		
+		HashMap<String, String> params = new HashMap<>();
+		params.put("idEntite", idEntite.toString());
+		
+		logger.debug("getTreeFichesPosteByEntite with url " + url);
+		
+		ClientResponse res = createAndFireGetRequest(params, url);
+		return readResponseAsList(FichePosteTreeNodeDto.class, res, url);
 	}
 }

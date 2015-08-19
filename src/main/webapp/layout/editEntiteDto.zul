@@ -16,6 +16,7 @@
 				<tab label="Caractéristiques" onClick="@command('selectOnglet', onglet=0)" />
 				<tab label="@load(vm.titreOngletFdp)" onClick="@command('selectOnglet', onglet=1)" />
 				<tab label="Historique" id="tabHistorique" onClick="@command('selectOnglet', onglet=2)" />
+				<tab label="Organigramme de fiches de poste" id="tabTreeFichesPoste" onClick="@command('selectOnglet', onglet=3)" />
 			</tabs>
 			<tabpanels>
 				<tabpanel style="overflow:auto"> 
@@ -26,6 +27,9 @@
 				</tabpanel>
 				<tabpanel style="overflow:auto">
 					<include src="/layout/editEntiteHistorique.zul" />
+				</tabpanel>
+				<tabpanel style="overflow:auto" id="tabpanelTreeFichesPoste">
+					<include id="includeTreeFichesPoste" src="/layout/editTreeFichesPoste.zul" />
 				</tabpanel>
 			</tabpanels>
 		</tabbox>

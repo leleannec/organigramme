@@ -31,12 +31,14 @@ import java.util.Map;
 
 import nc.noumea.mairie.organigramme.core.event.UpdateOngletAbstractEntityEvent;
 import nc.noumea.mairie.organigramme.core.services.AuthentificationService;
+import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractEditViewModel;
 import nc.noumea.mairie.organigramme.core.ws.IAdsWSConsumer;
 import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.EntiteHistoDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
+import nc.noumea.mairie.organigramme.dto.FichePosteTreeNodeDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
@@ -48,23 +50,37 @@ import nc.noumea.mairie.organigramme.services.ReturnMessageService;
 import nc.noumea.mairie.organigramme.services.TypeEntiteService;
 import nc.noumea.mairie.organigramme.utils.ComparatorUtil;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.DependsOn;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zhtml.Li;
+import org.zkoss.zhtml.Ul;
+import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
 import org.zkoss.zul.Tab;
+import org.zkoss.zul.Vlayout;
 
 @Init(superclass = true)
 @VariableResolver(DelegatingVariableResolver.class)
@@ -72,6 +88,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private static final long serialVersionUID = 1L;
 
+	private static Logger log = LoggerFactory.getLogger(EditEntiteDtoViewModel.class);
+	
 	// @formatter:off
 	@WireVariable
 	IAdsWSConsumer adsWSConsumer;
@@ -95,6 +113,10 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	private List<FichePosteDto> listeFichePoste;
 
 	private List<EntiteHistoDto> listeHistorique;
+	
+	/** Le vlayout général dans lequel sera ajouté l'arbre **/
+	Vlayout vlayoutTreeFichesPoste;
+	Component view;
 
 	/**
 	 * L'onglet en cours de sélection (par défaut, quand on ouvre une entité
@@ -331,6 +353,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	@NotifyChange({ "listeHistorique", "fichePosteGroupingModel", "titreOngletFdp" })
 	public void selectOnglet(@BindingParam("onglet") int onglet) {
 		setOngletSelectionne(EntiteOnglet.getEntiteOngletByPosition(onglet));
+		afterCompose(getView());
 	}
 
 	/**
@@ -442,6 +465,220 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 				});
 
 	}
+	
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+		
+		if(null != view && null == getView()) {
+			setView(view);
+		}
+		
+		if(getOngletSelectionne().equals(EntiteOnglet.ORGANIGRAMME_FICHES_POSTE)) {
+			vlayoutTreeFichesPoste = (Vlayout) view.getFellow("tb").getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
+					.getFellow("windowsTreeFichesPoste").getFellow("treeFichesPoste").getFellow("vlayoutTreeFichesPoste");
+			
+			refreshArbreComplet();
+			
+			try {
+				Executions.createComponentsDirectly(
+						createTreeFichesPoste(this.entity.getIdEntite()), 
+						null, 
+						view.getFellow("tb").getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
+						.getFellow("windowsTreeFichesPoste").getFellow("treeFichesPoste"), null);
+			} catch (Exception e) {
+				log.debug("Une erreur est survenue dans la creation du planning : " + e.getMessage());
+			}
+		}
+	}
+	
+	private void refreshArbreComplet() {
+		creeArbre(this.entity);
+	}
+	
+	public void creeArbre(EntiteDto entiteDtoRoot) {
+
+		List<FichePosteTreeNodeDto> listFichePosteTreeNodeDto = sirhWSConsumer.getTreeFichesPosteByEntite(entiteDtoRoot.getIdEntite());
+		
+		Vlayout vlayout = vlayoutTreeFichesPoste;
+		Component arbre = genereArbre(listFichePosteTreeNodeDto, null, null);
+		if (!CollectionUtils.isEmpty(vlayout.getChildren())) {
+			vlayout.removeChild(vlayout.getChildren().get(0));
+		}
+		if (arbre == null) {
+			return;
+		}
+		vlayout.appendChild(arbre);
+	}
+	
+	private String createTreeFichesPoste(Integer idEntite) {
+		
+		StringBuffer result = new StringBuffer();
+				
+		result.append("<html>");
+		result.append("<script type=\"text/javascript\">");
+		result.append("		$(\"#organigramme-fichesPoste-"+idEntite+"\").orgChart({container: $('#chart"+idEntite+"')});");
+		result.append("     $('#chart"+idEntite+"').kinetic();");
+		result.append("     var hauteurFenetre = $(\"#panel-entier"+idEntite+"\").parent().parent().parent().height();");
+		result.append("     $('#chart"+idEntite+"').height(hauteurFenetre - 10);");
+		result.append("     $('#panel-entier"+idEntite+"').height(hauteurFenetre);");
+		result.append("     $(window).trigger('resize');");
+		result.append("</script>");
+		result.append("<div id=\"panel-entier"+idEntite+"\">");
+		result.append("<vlayout vflex=\"1\" hflex=\"1\"> ");
+		result.append("<div id=\"chart"+idEntite+"\" class=\"chart\" /> ");
+		result.append("</vlayout>");
+		result.append("</div>");
+		result.append("</html>");
+		
+		return result.toString();
+	}
+	
+	/**
+	 * Génére les composants {@link Ul}/{@link Li} qui forment l'arbre (ces
+	 * {@link Ul}/{@link Li} html seront retravaillées par le plugin jQuery Org
+	 * Chart afin de les transformer en div/table/tr/td et de les afficher sous
+	 * forme d'arbre)
+	 * 
+	 * @param entiteDto
+	 *            : le {@link EntiteDto} racine qui contient tout l'arbre
+	 * @param mapIdTypeEntiteCouleurEntite
+	 *            : la map des différentes couleurs pour les types d'entités qui
+	 *            va nous permettre de setter chaque couleur de chaque type
+	 *            d'entité
+	 * @param mapIdTypeEntiteCouleurTexte
+	 *            : la map des différentes couleurs pour les types d'entités qui
+	 *            va nous permettre de setter chaque couleur de chaque type
+	 *            d'entité
+	 * @return le {@link Ul} de plus haut niveau qui est ajouté au
+	 *         {@link Vlayout}
+	 */
+	public Component genereArbre(List<FichePosteTreeNodeDto> listFichePosteTreeNodeDto, Map<Long, String> mapIdTypeEntiteCouleurEntite,
+			Map<Long, String> mapIdTypeEntiteCouleurTexte) {
+
+		if (listFichePosteTreeNodeDto == null || listFichePosteTreeNodeDto.isEmpty()) {
+			return null;
+		}
+
+		// On vide la map de correspondance id HTML<->EntiteDTO car on va la
+		// renseigner dans creeLiEntite()
+//		organigrammeViewModel.mapIdLiEntiteDto = new HashMap<String, EntiteDto>();
+
+		// On recrée la liste de toutes les entités
+//		organigrammeViewModel.setListeEntite(new ArrayList<EntiteDto>());
+
+		// Initialisation de l'entité ROOT
+		Ul ulRoot = new Ul();
+		ulRoot.setId("organigramme-fichesPoste-" + this.entity.getIdEntite());
+		ulRoot.setSclass("hide");
+//		setCouleur(mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte, null);
+//		for(FichePosteTreeNodeDto node : listFichePosteTreeNodeDto) {
+//			
+//			Li li = creeLiEntite(ulRoot, node);
+//	//		organigrammeViewModel.getListeEntite().add(entiteDto);
+//	
+//			// Initialisation du reste de l'arbre
+//			genereArborescenceHtml(node.getFichePostesEnfant(), li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);
+//
+//		}
+		FichePosteTreeNodeDto rootFictif = new FichePosteTreeNodeDto();
+		rootFictif.setIdFichePoste(0);
+		rootFictif.setNumero("0000/00");
+		Li li = creeLiEntite(ulRoot, rootFictif);
+
+		// Initialisation du reste de l'arbre
+		genereArborescenceHtml(listFichePosteTreeNodeDto, li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);
+
+		
+		// Maintenant qu'on a setté la liste de entités disponibles à la
+		// recherche, on renseigne la ListModel
+//		organigrammeViewModel.setEntiteDtoQueryListModelRecherchable(new EntiteDtoQueryListModel(organigrammeViewModel
+//				.getListeEntite()));
+
+		return ulRoot;
+	}
+	
+	/**
+	 * Crée une feuille unitaire et lui ajoute un événement onClick qui
+	 * permettra d'effecture des opérations sur cette feuille
+	 * 
+	 * @param ul
+	 *            : le {@link Ul} parent
+	 * @param entiteDto
+	 *            : l'{@link EntiteDto} a transformer en {@link Li}
+	 * @return le composant {@link Li} représentant l'entité
+	 */
+	public Li creeLiEntite(Ul ul, final FichePosteTreeNodeDto node) {
+
+		Li li = new Li();
+		String numFichePoste = OrganigrammeUtil.splitByNumberAndSeparator(node.getNumero(), 8, "\n");
+		
+		Div divNumFichePoste = new Div();
+		divNumFichePoste.appendChild(new Label(numFichePoste));
+		li.appendChild(divNumFichePoste);
+		Div divAgent = new Div();
+		divAgent.appendChild(new Label(node.getAgent()));
+		li.appendChild(divAgent);
+		li.setParent(ul);
+		li.setSclass("statut-" + StringUtils.lowerCase(node.getStatutFDP()) + " fichePoste");
+//		li.setDynamicProperty("title", creeTooltipEntite(entiteDto));
+//		boolean couleurEntiteTypeEntiteRenseigne = node.getTypeEntite() != null
+//				&& !StringUtils.isBlank(entiteDto.getTypeEntite().getCouleurEntite());
+//		if (couleurEntiteTypeEntiteRenseigne) {
+//			li.setStyle("background-color:" + entiteDto.getTypeEntite().getCouleurEntite() + "; color:"
+//					+ entiteDto.getTypeEntite().getCouleurTexte() + ";");
+//		} else {
+			li.setStyle("background-color:#FFFFCF; color:#000000;");
+//		}
+
+		li.setId("fiche-poste-id-" + node.getIdFichePoste().toString());
+//		if (this.organigrammeViewModel.mapIdLiOuvert.get(li.getId()) == null) {
+//			this.organigrammeViewModel.mapIdLiOuvert.put(li.getId(), false);
+//		}
+
+		// On maintient une map permettant d'aller plus vite lors d'un click
+		// event pour retrouver l'EntiteDto correspondant à l'id du Li
+//		organigrammeViewModel.mapIdLiEntiteDto.put(li.getId(), entiteDto);
+
+		return li;
+	}
+	
+	public Component genereArborescenceHtml(List<FichePosteTreeNodeDto> listeFichePosteTreeNodeDto, Component component,
+			Map<Long, String> mapIdTypeEntiteCouleur, Map<Long, String> mapIdTypeEntiteCouleurTexte) {
+
+		Ul ul = new Ul();
+		ul.setParent(component);
+
+		for (final FichePosteTreeNodeDto fichePosteTreeNode : listeFichePosteTreeNodeDto) {
+//			setCouleur(mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte, entiteDto);
+
+			Li li = creeLiEntite(ul, fichePosteTreeNode);
+
+//			organigrammeViewModel.getListeEntite().add(entiteDto);
+
+			if (null != fichePosteTreeNode.getFichePostesEnfant()
+					&& !fichePosteTreeNode.getFichePostesEnfant().isEmpty()) {
+				genereArborescenceHtml(fichePosteTreeNode.getFichePostesEnfant(), li, mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte);
+			}
+		}
+
+		return ul;
+	}
+
+	public Vlayout getVlayoutTreeFichesPoste() {
+		return vlayoutTreeFichesPoste;
+	}
+
+	public void setVlayoutTreeFichesPoste(Vlayout vlayoutTreeFichesPoste) {
+		this.vlayoutTreeFichesPoste = vlayoutTreeFichesPoste;
+	}
+
+	public Component getView() {
+		return view;
+	}
+
+	public void setView(Component view) {
+		this.view = view;
+	}
 
 	@GlobalCommand
 	public void onCloseEntiteOnglet(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("tab") Tab tab) {
@@ -482,4 +719,5 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		}
 		return entity.getStatut();
 	}
+	
 }
