@@ -10,7 +10,16 @@
 	overflow: hidden;
 }
 
+.grid-fdp .z-paging-info {
+	display: none !important;
+}
+
 #chart {
+   width: 100%;
+   overflow: hidden;
+   background:#F0F8FF;
+}
+.chart {
    width: 100%;
    overflow: hidden;
    background:#F0F8FF;
@@ -85,8 +94,12 @@
 	color:red;
 }
 
+.z-notification-info .z-notification-content {
+    text-align: justify;
+}
+
 .loginPage {
-	background:url('/imgs/bg-login.jpg') no-repeat center center fixed;
+	background:url('imgs/bg-login.jpg') no-repeat center center fixed;
 	-webkit-background-size: cover;
      -moz-background-size: cover;
      -o-background-size: cover;
@@ -94,7 +107,7 @@
 }
 
 .mandatory {
-	background-image:url('/imgs/mandatory.jpg');
+	background-image:url('imgs/mandatory.jpg');
 	background-position:top right;
 	background-repeat:no-repeat;
 	padding-right:13px;
@@ -108,12 +121,18 @@
     display: block;
     text-align: center;
     margin: 0 auto;
+    float: right;
 }  
 
 .toolbar-libelle-entite {
 	font-size: 1.3em !important;
 	margin-top: 5px;
     position: absolute;
+    margin-left: -60px;
+}
+
+.toolbar-favoris-entite {
+    margin-left: -85px;
 }
 
 .no-padding-right .z-hlayout-inner {
@@ -245,8 +264,13 @@ div#zk_proc-t.z-loading {
 }
 
 .statut-inactif {
-	background-color: gray !important; 
-	background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,.3) 5px, rgba(255,255,255,.3) 10px);
+	background: repeating-linear-gradient(
+				  45deg,
+				  rgba(0, 0, 0, 0.2),
+				  rgba(0, 0, 0, 0.2) 5px,
+				  rgba(0, 0, 0, 0.4) 5px,
+				  rgba(0, 0, 0, 0.3) 10px
+				); 
 }
 
 .ui-tooltip, .arrow:after {

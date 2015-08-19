@@ -35,6 +35,7 @@ import nc.noumea.mairie.organigramme.core.utility.OrganigrammeUtil;
 import nc.noumea.mairie.organigramme.core.viewmodel.AbstractViewModel;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.entity.CouleurTypeEntite;
+import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.query.EntiteDtoQueryListModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -210,13 +211,20 @@ public class TreeViewModel extends AbstractViewModel<EntiteDto> implements Seria
 		String sigleSplit = OrganigrammeUtil.splitByNumberAndSeparator(entiteDto.getSigle(), 8, "\n");
 		li.appendChild(new Label(sigleSplit));
 		li.setParent(ul);
+
 		li.setSclass("statut-" + StringUtils.lowerCase(entiteDto.getStatut().name()));
 		li.setDynamicProperty("title", creeTooltipEntite(entiteDto));
 		boolean couleurEntiteTypeEntiteRenseigne = entiteDto.getTypeEntite() != null
 				&& !StringUtils.isBlank(entiteDto.getTypeEntite().getCouleurEntite());
 		if (couleurEntiteTypeEntiteRenseigne) {
-			li.setStyle("background-color:" + entiteDto.getTypeEntite().getCouleurEntite() + "; color:"
-					+ entiteDto.getTypeEntite().getCouleurTexte() + ";");
+			String style = "background-color:" + entiteDto.getTypeEntite().getCouleurEntite() + "; color:"
+					+ entiteDto.getTypeEntite().getCouleurTexte() + ";";
+
+			if (entiteDto.getStatut().equals(Statut.PREVISION)) {
+				style += "border-color: " + entiteDto.getTypeEntite().getCouleurTexte() + ";";
+			}
+
+			li.setStyle(style);
 		} else {
 			li.setStyle("background-color:#FFFFCF; color:#000000;");
 		}

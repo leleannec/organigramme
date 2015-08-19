@@ -24,6 +24,7 @@ package nc.noumea.mairie.organigramme.services;
  * #L%
  */
 
+import java.io.IOException;
 import java.util.Map;
 
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
@@ -46,6 +47,9 @@ public interface ExportGraphMLService {
 	 *            : le filtre en cours
 	 * @param mapIdLiOuvert
 	 *            : permet de savoir quel entité est dépliée
+	 * @throws IOException
+	 *             : si le logo n'a pas pu être ajouté au graphml
 	 */
-	void exportGraphMLFromEntite(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert);
+	void exportGraphMLFromEntite(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert)
+			throws IOException;
 }

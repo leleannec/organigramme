@@ -1,4 +1,4 @@
-package nc.noumea.mairie.organigramme.core.ws;
+package nc.noumea.mairie.organigramme.services;
 
 /*
  * #%L
@@ -26,21 +26,28 @@ package nc.noumea.mairie.organigramme.core.ws;
 
 import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteDto;
-import nc.noumea.mairie.organigramme.dto.FichePosteTreeNodeDto;
-import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
-import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+import nc.noumea.mairie.organigramme.core.services.GenericService;
+import nc.noumea.mairie.organigramme.entity.EntiteFavoris;
 
-public interface ISirhWSConsumer {
+public interface EntiteFavorisService extends GenericService<EntiteFavoris> {
 
-	ProfilAgentDto getAgent(Integer idAgent);
+	/**
+	 * Recherche la liste des favoris par agent
+	 * 
+	 * @param idAgent
+	 *            : l'id de l'agent
+	 * @return la liste des entités favoris de l'agent
+	 */
+	List<EntiteFavoris> findByIdAgent(Integer idAgent);
 
-	AccessRightOrganigrammeDto getAutorisationOrganigramme(Integer idAgent);
-
-	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, String listIdStatutFDP, boolean withEntiteChildren);
-
-	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
-
-	List<FichePosteTreeNodeDto> getTreeFichesPosteByEntite(Integer idEntite);
+	/**
+	 * Recherche un favoris pour un agent et une entité
+	 * 
+	 * @param idAgent
+	 *            : l'id de l'agent
+	 * @param idEntite
+	 *            : l'id de l'entité
+	 * @return un favoris pour un agent et une entité
+	 */
+	EntiteFavoris findByIdAgentAndIdEntite(Integer idAgent, Integer idEntite);
 }

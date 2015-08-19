@@ -24,6 +24,7 @@ package nc.noumea.mairie.organigramme.viewmodel;
  * #L%
  */
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,11 +41,13 @@ import nc.noumea.mairie.organigramme.core.ws.ISirhWSConsumer;
 import nc.noumea.mairie.organigramme.dto.DuplicationDto;
 import nc.noumea.mairie.organigramme.dto.EntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
+import nc.noumea.mairie.organigramme.entity.EntiteFavoris;
 import nc.noumea.mairie.organigramme.enums.FiltreStatut;
 import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.Transition;
 import nc.noumea.mairie.organigramme.query.EntiteDtoQueryListModel;
 import nc.noumea.mairie.organigramme.services.CouleurTypeEntiteService;
+import nc.noumea.mairie.organigramme.services.EntiteFavorisService;
 import nc.noumea.mairie.organigramme.services.ExportGraphMLService;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
@@ -104,6 +107,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	TypeEntiteService typeEntiteService;
 	@WireVariable
 	ReturnMessageService returnMessageService;
+	@WireVariable
+	EntiteFavorisService entiteFavorisService;
 	// @formatter:on
 
 	private static final String CREATE_ENTITE_VIEW = "/layout/createEntite.zul";
@@ -111,9 +116,10 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	private static final String[] LISTE_PROP_A_NOTIFIER_ENTITE = new String[] { "statut", "entity", "creable",
 			"duplicable", "listeTransitionAutorise", "listeEntite", "mapIdLiEntiteDto", "selectedEntiteDtoRecherche",
 			"selectedEntiteDtoZoom", "entiteDtoQueryListModelRecherchable", "entiteDtoQueryListModelZoomable",
-			"selectedFiltreStatut" };
+			"selectedFiltreStatut", "urlImageFavoris" };
 
 	private OrganigrammeWorkflowViewModel organigrammeWorkflowViewModel = new OrganigrammeWorkflowViewModel(this);
+
 	public TreeViewModel treeViewModel = new TreeViewModel(this);
 
 	/** Le vlayout général dans lequel sera ajouté l'arbre **/
@@ -124,6 +130,12 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/** L'{@link EntiteDto} représentant l'entité recherchée **/
 	EntiteDto selectedEntiteDtoRecherche;
+
+	/**
+	 * L'{@link EntiteDto} représentant l'entité zommé côté IHM, pour pouvoir la
+	 * vider à chaque zoom
+	 **/
+	EntiteDto selectedEntiteDtoZoomIhm;
 
 	/** L'{@link EntiteDto} représentant l'entité zommé **/
 	EntiteDto selectedEntiteDtoZoom;
@@ -146,6 +158,8 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	 **/
 	Map<String, EntiteDto> mapIdLiEntiteDto;
 
+	List<EntiteDto> listeEntiteFavorisDto = new ArrayList<EntiteDto>();
+
 	/**
 	 * Map permettant de savoir si le Li est ouvert ou non à partir de son id
 	 * html client
@@ -160,23 +174,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	/** ListModel de toutes les entités recherchables **/
 	private EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable;
-
-	public List<EntiteDto> getListeEntite() {
-
-		// On filtre la liste des entités recherchables selon le
-		// statut selectionné
-		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
-			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
-			listeEntiteClone.addAll(this.listeEntite);
-			for (EntiteDto entiteDto : listeEntiteClone) {
-				if (!this.selectedFiltreStatut.getListeStatut().contains(entiteDto.getStatut())) {
-					listeEntite.remove(entiteDto);
-				}
-			}
-		}
-
-		return listeEntite;
-	}
 
 	// setté par le treeViewModel
 	public void setListeEntite(List<EntiteDto> listeEntite) {
@@ -199,6 +196,15 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		this.selectedEntiteDtoZoom = selectedEntiteDtoZoom;
 	}
 
+	public EntiteDto getSelectedEntiteDtoZoomIhm() {
+		return selectedEntiteDtoZoomIhm;
+	}
+
+	public void setSelectedEntiteDtoZoomIhm(EntiteDto selectedEntiteDtoZoomIhm) {
+		this.selectedEntiteDtoZoom = selectedEntiteDtoZoomIhm;
+		this.selectedEntiteDtoZoomIhm = null;
+	}
+
 	public FiltreStatut getSelectedFiltreStatut() {
 		return selectedFiltreStatut;
 	}
@@ -213,6 +219,29 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	public void setEntiteDtoQueryListModelRecherchable(EntiteDtoQueryListModel entiteDtoQueryListModelRecherchable) {
 		this.entiteDtoQueryListModelRecherchable = entiteDtoQueryListModelRecherchable;
+	}
+
+	public List<EntiteDto> getListeEntite() {
+
+		// On filtre la liste des entités recherchables selon le
+		// statut selectionné
+		if (this.selectedFiltreStatut != null && !this.selectedFiltreStatut.equals(FiltreStatut.TOUS)) {
+			List<EntiteDto> listeEntiteClone = new ArrayList<EntiteDto>();
+			listeEntiteClone.addAll(this.listeEntite);
+			for (EntiteDto entiteDto : listeEntiteClone) {
+				if (!this.selectedFiltreStatut.getListeStatut().contains(entiteDto.getStatut())) {
+					listeEntite.remove(entiteDto);
+				}
+			}
+		}
+
+		return listeEntite;
+	}
+
+	public List<EntiteDto> getListeEntiteFavorisDto() {
+		Collections.sort(listeEntiteFavorisDto, new ComparatorUtil.EntiteComparator());
+
+		return listeEntiteFavorisDto;
 	}
 
 	/**
@@ -237,6 +266,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		// On recharge l'arbre complet d'ADS et on rafraichi le client. Ainsi on
 		// est sur d'avoir une version bien à jour
 		refreshArbreComplet();
+
+		// Gestion des favoris
+		for (EntiteFavoris entiteFavoris : entiteFavorisService.findByIdAgent(profilAgentDto.getIdAgent())) {
+			this.listeEntiteFavorisDto.add(mapIdLiEntiteDto.get("entite-id-" + entiteFavoris.getIdEntite()));
+		}
 	}
 
 	public EntiteDtoQueryListModel getEntiteDtoQueryListModelZoomable() {
@@ -334,7 +368,14 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 
 	@Listen("onClickToutDeplier = #organigramme")
 	public void onClickToutDeplier(Event event) {
-		setEntity(null);
+		// Si on arrive ici suite à une recherche ou un zoom, on laisse l'entité
+		// du view
+		// model selectionnée et on remet à vide la recherche
+		if (this.selectedEntiteDtoRecherche != null) {
+			this.selectedEntiteDtoRecherche = null;
+		} else if (this.selectedEntiteDtoZoom == null) {
+			setEntity(null);
+		}
 		mapIdLiOuvert.put(entiteDtoRoot.getIdLi(), true);
 		setLiOuvertOuFermeArbre(entiteDtoRoot.getEnfants(), true);
 		notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
@@ -584,7 +625,6 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 			setEntity(this.selectedEntiteDtoRecherche);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 			Clients.evalJavaScript("goToByScroll('" + this.selectedEntiteDtoRecherche.getIdLi() + "');");
-			this.selectedEntiteDtoRecherche = null;
 		}
 	}
 
@@ -617,10 +657,11 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 	@Command
 	public void selectionneEntiteZoom() {
 		if (this.selectedEntiteDtoZoom != null) {
-			setEntity(null);
+			setEntity(this.selectedEntiteDtoZoom);
 			notifyChange(LISTE_PROP_A_NOTIFIER_ENTITE);
 			refreshArbreComplet();
-			Clients.evalJavaScript("refreshOrganigrammeSuiteZoom();");
+			Clients.evalJavaScript("refreshOrganigrammeSuiteZoom('" + "entite-id-"
+					+ this.selectedEntiteDtoZoom.getIdEntite() + "');");
 		}
 	}
 
@@ -724,13 +765,65 @@ public class OrganigrammeViewModel extends AbstractViewModel<EntiteDto> implemen
 		return null;
 	}
 
+	public String getUrlImageFavoris() {
+		if (this.entity != null && !CollectionUtils.isEmpty(this.listeEntiteFavorisDto)) {
+			for (EntiteDto entiteDto : this.listeEntiteFavorisDto) {
+				if (entiteDto.getIdEntite().equals(this.entity.getIdEntite())) {
+					return "/imgs/icon/favoris.png";
+				}
+			}
+		}
+
+		return "/imgs/icon/no-favoris.png";
+	}
+
+	/**
+	 * Ajoute ou retire une entité favoris
+	 */
+	@NotifyChange({ "urlImageFavoris", "listeEntiteFavorisDto" })
+	@Command
+	public void ajoutOuRetireFavoris(@BindingParam("entity") EntiteDto entiteDto) {
+		boolean dejaFavoris = false;
+		if (this.entity != null && !CollectionUtils.isEmpty(this.listeEntiteFavorisDto)) {
+			for (EntiteDto entiteFavorisDto : this.listeEntiteFavorisDto) {
+				if (entiteFavorisDto.getIdEntite().equals(entiteDto.getIdEntite())) {
+					this.listeEntiteFavorisDto.remove(entiteFavorisDto);
+					EntiteFavoris entiteFavoris = entiteFavorisService.findByIdAgentAndIdEntite(
+							this.profilAgentDto.getIdAgent(), entiteFavorisDto.getIdEntite());
+					entiteFavorisService.delete(entiteFavoris);
+					dejaFavoris = true;
+					Clients.showNotification("L'entité " + this.entity.getSigle() + " a été retirée de vos favoris.",
+							"info", null, "top_center", 0);
+					break;
+				}
+			}
+		}
+
+		if (!dejaFavoris) {
+			EntiteFavoris entiteFavoris = new EntiteFavoris();
+			entiteFavoris.setIdAgent(this.profilAgentDto.getIdAgent());
+			entiteFavoris.setIdEntite(entiteDto.getIdEntite());
+			entiteFavorisService.save(entiteFavoris);
+
+			this.listeEntiteFavorisDto.add(mapIdLiEntiteDto.get("entite-id-" + entiteFavoris.getIdEntite()));
+			Clients.showNotification("L'entité " + this.entity.getSigle() + " a été ajoutée à vos favoris.", "info",
+					null, "top_center", 0);
+		}
+	}
+
 	/**
 	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
 	 * entiteDto
 	 */
 	@Command
 	public void lancerExport(@BindingParam("entity") EntiteDto entiteDto) {
-		exportGraphMLService.exportGraphMLFromEntite(entiteDto, this.selectedFiltreStatut, mapIdLiOuvert);
+		try {
+			exportGraphMLService.exportGraphMLFromEntite(mapIdLiEntiteDto.get("entite-id-" + entiteDto.getIdEntite()),
+					this.selectedFiltreStatut, mapIdLiOuvert);
+		} catch (IOException e) {
+			AbstractViewModel
+					.showErrorPopup("Une erreur est survenu lors de l'ajout du logo de la Mairie dans le fichier d'export");
+		}
 	}
 
 	@Command

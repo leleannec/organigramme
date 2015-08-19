@@ -1,0 +1,17 @@
+
+div.orgChart div.entite.fichePoste {
+	position			  : relative;
+    cursor                : default;
+    border                : 1px solid black;
+    display               : inline-block;
+    padding               : 0 4px;
+    width                 : 120px !important;
+    height                : 63px !important;
+    background-color      : #ffffcf;
+    line-height           : 85%;
+    border-radius         : 8px;
+}
+
+.hide {
+	display: none !important;
+}

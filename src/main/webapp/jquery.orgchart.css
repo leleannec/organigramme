@@ -9,6 +9,7 @@ div.orgChart h2 {
     margin                : 0px;
     font-size             : 1em;
     border-bottom         : none;
+    height                : 80%;
 }
 
 div.orgChart ul {
@@ -65,9 +66,7 @@ div.orgChart div.entite {
 }
 
 div.orgChart div.hasChildren {
-    bottom: 5px;
-  	position: absolute;
-  	left: 26px;
+    margin: 0 auto;
   	width: 0px;
 	height: 0px;
 	border-left: 8px solid transparent;
