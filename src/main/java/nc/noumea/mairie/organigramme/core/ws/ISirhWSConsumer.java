@@ -28,6 +28,7 @@ import java.util.List;
 
 import nc.noumea.mairie.organigramme.dto.AccessRightOrganigrammeDto;
 import nc.noumea.mairie.organigramme.dto.FichePosteDto;
+import nc.noumea.mairie.organigramme.dto.FichePosteTreeNodeDto;
 import nc.noumea.mairie.organigramme.dto.InfoEntiteDto;
 import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 
@@ -40,4 +41,6 @@ public interface ISirhWSConsumer {
 	List<FichePosteDto> getFichePosteByIdEntite(Integer idEntite, String listIdStatutFDP, boolean withEntiteChildren);
 
 	InfoEntiteDto getInfoFDPByEntite(Integer idEntite, boolean withEntiteChildren);
+
+	List<FichePosteTreeNodeDto> getTreeFichesPosteByEntite(Integer idEntite);
 }
