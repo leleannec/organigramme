@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+
+	
+ 	<changeSet author="nicno85" id="9798f6f0-4615-11e5-b970-0800200c9a66-1">
+        	<delete tableName="orga_couleur_type_entite"/>
+   	 </changeSet>
+
+ 	<changeSet author="nicno85" id="9798f6f0-4615-11e5-b970-0800200c9a66-2">
+		<!--BLEU-->
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#0000ff"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Mairie-->
+			<column name="id_type_entite" value="24"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#0000ff"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Secrétariat Général-->
+			<column name="id_type_entite" value="23"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#0000ff"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Direction-->
+			<column name="id_type_entite" value="3"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#0000ff"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Conseil Municipal-->
+			<column name="id_type_entite" value="25"/>
+		</insert>
+		<!--JAUNE-->
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Cellule-->
+			<column name="id_type_entite" value="8"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Cabinet-->
+			<column name="id_type_entite" value="7"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Service-->
+			<column name="id_type_entite" value="9"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Plateforme-->
+			<column name="id_type_entite" value="15"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Unité-->
+			<column name="id_type_entite" value="17"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Division-->
+			<column name="id_type_entite" value="4"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ffff00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Centre-->
+			<column name="id_type_entite" value="16"/>
+		</insert>
+        	<!--VERT-->
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Section-->
+			<column name="id_type_entite" value="5"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Secrétariat-->
+			<column name="id_type_entite" value="20"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Pôle-->
+			<column name="id_type_entite" value="6"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Subdivision-->
+			<column name="id_type_entite" value="13"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Département-->
+			<column name="id_type_entite" value="22"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Peloton-->
+			<column name="id_type_entite" value="18"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Atelier-->
+			<column name="id_type_entite" value="10"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#00cc00"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Magasin-->
+			<column name="id_type_entite" value="11"/>
+		</insert>
+        	<!--ORANGE-->
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ff6600"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Bureau-->
+			<column name="id_type_entite" value="14"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ff6600"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Régie-->
+			<column name="id_type_entite" value="21"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ff6600"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Equipe-->
+			<column name="id_type_entite" value="12"/>
+		</insert>
+        	<insert tableName="orga_couleur_type_entite">
+			<column name="couleur_entite" value="#ff6600"/>
+			<column name="couleur_texte" value="#000000"/>
+			<!--Brigade-->
+			<column name="id_type_entite" value="19"/>
+		</insert>
+   	</changeSet>
+</databaseChangeLog>
+
