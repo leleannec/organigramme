@@ -466,9 +466,16 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	}
 	
+	/**
+	 * L AfterCompose construit des elements javascript et html apres la construction de la page ZUL en HTML par ZK.
+	 * Cela nous permet donc d inserer nos arbres de fiches de poste customisés avec des DI propre a chaque entite.
+	 * 
+	 * @param view Component
+	 */
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		
+		// on sauvegarde la vue pour le changement de sous-onglet
 		if(null != view && null == getView()) {
 			setView(view);
 		}
@@ -477,7 +484,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			vlayoutTreeFichesPoste = (Vlayout) view.getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
 					.getFellow("windowsTreeFichesPoste").getFellow("treeFichesPoste").getFellow("vlayoutTreeFichesPoste");
 			
-			refreshArbreComplet();
+			creeArbre(this.entity);
 			
 			try {
 				Executions.createComponentsDirectly(
@@ -491,16 +498,17 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		}
 	}
 	
-	private void refreshArbreComplet() {
-		creeArbre(this.entity);
-	}
-	
+	/**
+	 * Creer un arbre de fiche de poste en recuperant un arbre de FichePosteTreeNodeDto depuis SIRH-WS
+	 * 
+	 * @param entiteDtoRoot EntiteDto
+	 */
 	public void creeArbre(EntiteDto entiteDtoRoot) {
 
 		List<FichePosteTreeNodeDto> listFichePosteTreeNodeDto = sirhWSConsumer.getTreeFichesPosteByEntite(entiteDtoRoot.getIdEntite());
 		
 		Vlayout vlayout = vlayoutTreeFichesPoste;
-		Component arbre = genereArbre(listFichePosteTreeNodeDto, null, null);
+		Component arbre = genereArbre(listFichePosteTreeNodeDto);
 		if (!CollectionUtils.isEmpty(vlayout.getChildren())) {
 			vlayout.removeChild(vlayout.getChildren().get(0));
 		}
@@ -510,6 +518,12 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		vlayout.appendChild(arbre);
 	}
 	
+	/**
+	 * Permet d inserer les fonctions javascripts et les layout et div utile au framework jquery.orgchart
+	 * 
+	 * @param idEntite
+	 * @return
+	 */
 	private String createTreeFichesPoste(Integer idEntite) {
 		
 		StringBuffer result = new StringBuffer();
@@ -541,73 +555,34 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 * 
 	 * @param entiteDto
 	 *            : le {@link EntiteDto} racine qui contient tout l'arbre
-	 * @param mapIdTypeEntiteCouleurEntite
-	 *            : la map des différentes couleurs pour les types d'entités qui
-	 *            va nous permettre de setter chaque couleur de chaque type
-	 *            d'entité
-	 * @param mapIdTypeEntiteCouleurTexte
-	 *            : la map des différentes couleurs pour les types d'entités qui
-	 *            va nous permettre de setter chaque couleur de chaque type
-	 *            d'entité
 	 * @return le {@link Ul} de plus haut niveau qui est ajouté au
 	 *         {@link Vlayout}
 	 */
-	public Component genereArbre(List<FichePosteTreeNodeDto> listFichePosteTreeNodeDto, Map<Long, String> mapIdTypeEntiteCouleurEntite,
-			Map<Long, String> mapIdTypeEntiteCouleurTexte) {
+	public Component genereArbre(List<FichePosteTreeNodeDto> listFichePosteTreeNodeDto) {
 
 		if (listFichePosteTreeNodeDto == null || listFichePosteTreeNodeDto.isEmpty()) {
 			return null;
 		}
 
-		// On vide la map de correspondance id HTML<->EntiteDTO car on va la
-		// renseigner dans creeLiEntite()
-//		organigrammeViewModel.mapIdLiEntiteDto = new HashMap<String, EntiteDto>();
-
-		// On recrée la liste de toutes les entités
-//		organigrammeViewModel.setListeEntite(new ArrayList<EntiteDto>());
-
 		// Initialisation de l'entité ROOT
 		Ul ulRoot = new Ul();
 		ulRoot.setId("organigramme-fichesPoste-" + this.entity.getIdEntite());
 		ulRoot.setSclass("hide");
-//		setCouleur(mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte, null);
-//		for(FichePosteTreeNodeDto node : listFichePosteTreeNodeDto) {
-//			
-//			Li li = creeLiEntite(ulRoot, node);
-//	//		organigrammeViewModel.getListeEntite().add(entiteDto);
-//	
-//			// Initialisation du reste de l'arbre
-//			genereArborescenceHtml(node.getFichePostesEnfant(), li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);
-//
-//		}
+		
 		FichePosteTreeNodeDto rootFictif = new FichePosteTreeNodeDto();
 		rootFictif.setIdFichePoste(0);
 		rootFictif.setNumero("0000/00");
 		Li li = creeLiEntite(ulRoot, rootFictif);
 		li.setSclass("hide");
-		
-		FichePosteTreeNodeDto rootFictif2 = new FichePosteTreeNodeDto();
-		rootFictif2.setIdFichePoste(0);
-		rootFictif2.setNumero("0000/00");
-		Li li2 = creeLiEntite(ulRoot, rootFictif2);
-		
-		
 
 		// Initialisation du reste de l'arbre
-		genereArborescenceHtml(listFichePosteTreeNodeDto, li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);
-
-		
-		// Maintenant qu'on a setté la liste de entités disponibles à la
-		// recherche, on renseigne la ListModel
-//		organigrammeViewModel.setEntiteDtoQueryListModelRecherchable(new EntiteDtoQueryListModel(organigrammeViewModel
-//				.getListeEntite()));
+		genereArborescenceHtml(listFichePosteTreeNodeDto, li);
 
 		return ulRoot;
 	}
 	
 	/**
-	 * Crée une feuille unitaire et lui ajoute un événement onClick qui
-	 * permettra d'effecture des opérations sur cette feuille
+	 * Crée une feuille unitaire 
 	 * 
 	 * @param ul
 	 *            : le {@link Ul} parent
@@ -628,44 +603,32 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		li.appendChild(divAgent);
 		li.setParent(ul);
 		li.setSclass("statut-" + StringUtils.lowerCase(node.getStatutFDP()) + " fichePoste");
-//		li.setDynamicProperty("title", creeTooltipEntite(entiteDto));
-//		boolean couleurEntiteTypeEntiteRenseigne = node.getTypeEntite() != null
-//				&& !StringUtils.isBlank(entiteDto.getTypeEntite().getCouleurEntite());
-//		if (couleurEntiteTypeEntiteRenseigne) {
-//			li.setStyle("background-color:" + entiteDto.getTypeEntite().getCouleurEntite() + "; color:"
-//					+ entiteDto.getTypeEntite().getCouleurTexte() + ";");
-//		} else {
-			li.setStyle("background-color:#FFFFCF; color:#000000;");
-//		}
+		li.setStyle("background-color:#FFFFCF; color:#000000;");
 
 		li.setId("fiche-poste-id-" + node.getIdFichePoste().toString());
-//		if (this.organigrammeViewModel.mapIdLiOuvert.get(li.getId()) == null) {
-//			this.organigrammeViewModel.mapIdLiOuvert.put(li.getId(), false);
-//		}
-
-		// On maintient une map permettant d'aller plus vite lors d'un click
-		// event pour retrouver l'EntiteDto correspondant à l'id du Li
-//		organigrammeViewModel.mapIdLiEntiteDto.put(li.getId(), entiteDto);
 
 		return li;
 	}
 	
-	public Component genereArborescenceHtml(List<FichePosteTreeNodeDto> listeFichePosteTreeNodeDto, Component component,
-			Map<Long, String> mapIdTypeEntiteCouleur, Map<Long, String> mapIdTypeEntiteCouleurTexte) {
+	/**
+	 * Genere l arborescence de l arbre avec les fiches de poste enfant
+	 * 
+	 * @param listeFichePosteTreeNodeDto List<FichePosteTreeNodeDto>
+	 * @param component Component
+	 * @return Component
+	 */
+	public Component genereArborescenceHtml(List<FichePosteTreeNodeDto> listeFichePosteTreeNodeDto, Component component) {
 
 		Ul ul = new Ul();
 		ul.setParent(component);
 
 		for (final FichePosteTreeNodeDto fichePosteTreeNode : listeFichePosteTreeNodeDto) {
-//			setCouleur(mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte, entiteDto);
 
 			Li li = creeLiEntite(ul, fichePosteTreeNode);
 
-//			organigrammeViewModel.getListeEntite().add(entiteDto);
-
 			if (null != fichePosteTreeNode.getFichePostesEnfant()
 					&& !fichePosteTreeNode.getFichePostesEnfant().isEmpty()) {
-				genereArborescenceHtml(fichePosteTreeNode.getFichePostesEnfant(), li, mapIdTypeEntiteCouleur, mapIdTypeEntiteCouleurTexte);
+				genereArborescenceHtml(fichePosteTreeNode.getFichePostesEnfant(), li);
 			}
 		}
 
