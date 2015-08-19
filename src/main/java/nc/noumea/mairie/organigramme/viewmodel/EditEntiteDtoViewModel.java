@@ -474,7 +474,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		}
 		
 		if(getOngletSelectionne().equals(EntiteOnglet.ORGANIGRAMME_FICHES_POSTE)) {
-			vlayoutTreeFichesPoste = (Vlayout) view.getFellow("tb").getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
+			vlayoutTreeFichesPoste = (Vlayout) view.getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
 					.getFellow("windowsTreeFichesPoste").getFellow("treeFichesPoste").getFellow("vlayoutTreeFichesPoste");
 			
 			refreshArbreComplet();
@@ -483,7 +483,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 				Executions.createComponentsDirectly(
 						createTreeFichesPoste(this.entity.getIdEntite()), 
 						null, 
-						view.getFellow("tb").getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
+						view.getFellow("tabpanelTreeFichesPoste").getFellow("includeTreeFichesPoste")
 						.getFellow("windowsTreeFichesPoste").getFellow("treeFichesPoste"), null);
 			} catch (Exception e) {
 				log.debug("Une erreur est survenue dans la creation du planning : " + e.getMessage());
@@ -584,6 +584,14 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		rootFictif.setIdFichePoste(0);
 		rootFictif.setNumero("0000/00");
 		Li li = creeLiEntite(ulRoot, rootFictif);
+		li.setSclass("hide");
+		
+		FichePosteTreeNodeDto rootFictif2 = new FichePosteTreeNodeDto();
+		rootFictif2.setIdFichePoste(0);
+		rootFictif2.setNumero("0000/00");
+		Li li2 = creeLiEntite(ulRoot, rootFictif2);
+		
+		
 
 		// Initialisation du reste de l'arbre
 		genereArborescenceHtml(listFichePosteTreeNodeDto, li, mapIdTypeEntiteCouleurEntite, mapIdTypeEntiteCouleurTexte);

@@ -11,3 +11,7 @@ div.orgChart div.entite.fichePoste {
     line-height           : 85%;
     border-radius         : 8px;
 }
+
+.hide {
+	display: none !important;
+}
