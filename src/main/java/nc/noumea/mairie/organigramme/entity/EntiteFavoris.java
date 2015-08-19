@@ -32,25 +32,24 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
 
 import nc.noumea.mairie.organigramme.core.entity.AbstractEntity;
 
 /**
- * Modélise la liaison entre un type d'entité (venant d'ADS) et une couleur.
+ * Modélise les entités favoris d'un utilisateur
  * 
  * @author AgileSoft.NC
  */
 @Entity
-@Table(name = "orga_couleur_type_entite")
-public class CouleurTypeEntite extends AbstractEntity {
+@Table(name = "orga_entite_favoris")
+public class EntiteFavoris extends AbstractEntity {
 
 	@Version
 	private Integer version;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orga_s_couleur_type_entite")
-	@SequenceGenerator(name = "orga_s_couleur_type_entite", sequenceName = "orga_s_couleur_type_entite", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orga_s_entite_favoris")
+	@SequenceGenerator(name = "orga_s_entite_favoris", sequenceName = "orga_s_entite_favoris", allocationSize = 1)
 	Long id;
 
 	@Override
@@ -63,43 +62,30 @@ public class CouleurTypeEntite extends AbstractEntity {
 		return this.version;
 	}
 
-	@Column(length = 1)
-	@NotNull
-	String couleurEntite;
-
-	@Column(length = 1)
-	@NotNull
-	String couleurTexte;
+	@Column
+	Integer idAgent;
 
 	@Column
-	Long idTypeEntite;
+	Integer idEntite;
 
 	@Override
 	public String getLibelleCourt() {
-		return "Couleur entité " + couleurEntite + "; couleur texte entité " + couleurTexte;
+		return "IdAgent " + idAgent + "; idEntite " + idEntite;
 	}
 
-	public String getCouleurEntite() {
-		return couleurEntite;
+	public Integer getIdAgent() {
+		return idAgent;
 	}
 
-	public void setCouleurEntite(String couleurEntite) {
-		this.couleurEntite = couleurEntite;
+	public void setIdAgent(Integer idAgent) {
+		this.idAgent = idAgent;
 	}
 
-	public String getCouleurTexte() {
-		return couleurTexte;
+	public Integer getIdEntite() {
+		return idEntite;
 	}
 
-	public void setCouleurTexte(String couleurTexte) {
-		this.couleurTexte = couleurTexte;
-	}
-
-	public Long getIdTypeEntite() {
-		return idTypeEntite;
-	}
-
-	public void setIdTypeEntite(Long idTypeEntite) {
-		this.idTypeEntite = idTypeEntite;
+	public void setIdEntite(Integer idEntite) {
+		this.idEntite = idEntite;
 	}
 }

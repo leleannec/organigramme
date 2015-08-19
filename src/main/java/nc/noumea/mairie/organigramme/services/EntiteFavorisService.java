@@ -24,32 +24,30 @@ package nc.noumea.mairie.organigramme.services;
  * #L%
  */
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
-import nc.noumea.mairie.organigramme.dto.EntiteDto;
-import nc.noumea.mairie.organigramme.enums.FiltreStatut;
+import nc.noumea.mairie.organigramme.core.services.GenericService;
+import nc.noumea.mairie.organigramme.entity.EntiteFavoris;
 
-/**
- * Service pour gérer les exports graphML.
- * 
- * @author AgileSoft.NC
- */
-public interface ExportGraphMLService {
+public interface EntiteFavorisService extends GenericService<EntiteFavoris> {
 
 	/**
-	 * Exporte au format GraphML l'arbre ayant pour racine l'{@link EntiteDto}
-	 * entiteDto
+	 * Recherche la liste des favoris par agent
 	 * 
-	 * @param entiteDto
-	 *            : l'entité à partir de laquelle on souhaite exporter
-	 * @param filtreStatut
-	 *            : le filtre en cours
-	 * @param mapIdLiOuvert
-	 *            : permet de savoir quel entité est dépliée
-	 * @throws IOException
-	 *             : si le logo n'a pas pu être ajouté au graphml
+	 * @param idAgent
+	 *            : l'id de l'agent
+	 * @return la liste des entités favoris de l'agent
 	 */
-	void exportGraphMLFromEntite(EntiteDto entiteDto, FiltreStatut filtreStatut, Map<String, Boolean> mapIdLiOuvert)
-			throws IOException;
+	List<EntiteFavoris> findByIdAgent(Integer idAgent);
+
+	/**
+	 * Recherche un favoris pour un agent et une entité
+	 * 
+	 * @param idAgent
+	 *            : l'id de l'agent
+	 * @param idEntite
+	 *            : l'id de l'entité
+	 * @return un favoris pour un agent et une entité
+	 */
+	EntiteFavoris findByIdAgentAndIdEntite(Integer idAgent, Integer idEntite);
 }

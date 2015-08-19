@@ -1,12 +1,17 @@
 <window xmlns:h="native" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('nc.noumea.mairie.organigramme.viewmodel.EditEntiteDtoViewModel')" border="none" hflex="1"
 	vflex="1" contentStyle="overflow:auto">
 	<vlayout height="100%">
-		<toolbar hflex="1">
-			<toolbarbutton image="/imgs/icon/save.png" label="Enregistrer" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" disabled="@load(not vm.dirty)"/>  
-			<toolbarbutton image="/imgs/icon/refresh.png" label="Rafraîchir" onClick="@command('refreshEntite', entity=vm.entity)" autodisable="self"/>
-			<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" autodisable="self" />
-		</toolbar>		
-		<tabbox vflex="1" id="tb">
+		<hlayout hflex="1" sclass="no-padding-right"> 
+			<toolbar hflex="1">
+				<toolbarbutton image="/imgs/icon/save.png" label="Enregistrer" onClick="@command('updateEntite', entity=vm.entity)" autodisable="self" disabled="@load(not vm.entity.dirty)" visible="@load(vm.modifiable)"/>  
+				<toolbarbutton image="/imgs/icon/refresh.png" label="Rafraîchir" onClick="@command('refreshEntite', entity=vm.entity)" autodisable="self"/>
+				<toolbarbutton image="/imgs/icon/delete.png" label="Supprimer" onClick="@command('deleteEntite', entity=vm.entity)" visible="@load(vm.editable and vm.entity.prevision and vm.entity.feuille)" autodisable="self" />
+			</toolbar>		
+			<toolbar sclass="no-padding-right align-right">
+				<label width="100px" value="@load(vm.statut.libelle)" sclass="statut-en-cours" visible="@load(vm.entity ne null)"/>
+			</toolbar>
+		</hlayout>
+		<tabbox vflex="1">
 			<tabs>
 				<tab label="Caractéristiques" onClick="@command('selectOnglet', onglet=0)" />
 				<tab label="@load(vm.titreOngletFdp)" onClick="@command('selectOnglet', onglet=1)" />
@@ -14,7 +19,7 @@
 				<tab label="Organigramme de fiches de poste" id="tabTreeFichesPoste" onClick="@command('selectOnglet', onglet=3)" />
 			</tabs>
 			<tabpanels>
-				<tabpanel style="overflow:auto">
+				<tabpanel style="overflow:auto"> 
 					<include src="/layout/editEntiteCaracteristique.zul" />
 				</tabpanel>
 				<tabpanel>

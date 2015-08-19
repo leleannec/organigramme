@@ -43,6 +43,7 @@ import nc.noumea.mairie.organigramme.dto.ProfilAgentDto;
 import nc.noumea.mairie.organigramme.dto.ReturnMessageDto;
 import nc.noumea.mairie.organigramme.dto.TypeEntiteDto;
 import nc.noumea.mairie.organigramme.enums.EntiteOnglet;
+import nc.noumea.mairie.organigramme.enums.Statut;
 import nc.noumea.mairie.organigramme.enums.StatutFichePoste;
 import nc.noumea.mairie.organigramme.services.OrganigrammeService;
 import nc.noumea.mairie.organigramme.services.ReturnMessageService;
@@ -57,9 +58,11 @@ import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.DependsOn;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.ExecutionArgParam;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zhtml.Li;
@@ -76,6 +79,7 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Messagebox.ClickEvent;
+import org.zkoss.zul.Tab;
 import org.zkoss.zul.Vlayout;
 
 @Init(superclass = true)
@@ -106,6 +110,8 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	private FichePosteGroupingModel fichePosteGroupingModel;
 
+	private List<FichePosteDto> listeFichePoste;
+
 	private List<EntiteHistoDto> listeHistorique;
 	
 	/** Le vlayout général dans lequel sera ajouté l'arbre **/
@@ -118,16 +124,22 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 **/
 	private EntiteOnglet ongletSelectionne = EntiteOnglet.CARACTERISTIQUE;
 
-	private boolean dirty = false;
-
 	private boolean afficheFdpInactive = false;
 
-	public boolean isDirty() {
-		return dirty;
-	}
+	private boolean afficheFdpTableau = false;
 
 	public boolean isAfficheFdpInactive() {
 		return afficheFdpInactive;
+	}
+
+	@DependsOn({ "fichePosteGroupingModel", "listeFichePoste" })
+	public boolean isAfficheFdpTableau() {
+		return afficheFdpTableau;
+	}
+
+	public boolean isModifiable() {
+		// On ne peux modifier que si on a le rôle édition
+		return profilAgentDto.isEdition() && this.entity != null;
 	}
 
 	public String getTitreOngletFdp() {
@@ -138,28 +150,37 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 				resultat += this.fichePosteGroupingModel.getChildCount(i);
 			}
 			result += " (" + resultat + ")";
+		} else if (this.listeFichePoste != null) {
+			result += " (" + this.listeFichePoste.size() + ")";
 		}
 
 		return result;
 	}
 
-	@NotifyChange({ "fichePosteGroupingModel", "titreOngletFdp" })
+	@NotifyChange({ "fichePosteGroupingModel", "listeFichePoste" })
+	public void setAfficheFdpTableau(boolean afficheFdpTableau) {
+		this.afficheFdpTableau = afficheFdpTableau;
+		// On remet la liste à null pour qu'elle soit rechargée
+		this.fichePosteGroupingModel = null;
+	}
+
+	@NotifyChange({ "fichePosteGroupingModel", "listeFichePoste" })
 	public void setAfficheFdpInactive(boolean afficheFdpInactive) {
 		this.afficheFdpInactive = afficheFdpInactive;
 		// On remet la liste à null pour qu'elle soit rechargée
 		this.fichePosteGroupingModel = null;
 	}
 
-	public void setDirty(boolean dirty) {
-		boolean majTitreOnglet = this.dirty != dirty;
-		this.dirty = dirty;
+	public void setEntiteDirty(boolean dirty) {
+		boolean majTitreOnglet = this.entity.isDirty() != dirty;
+		this.entity.setDirty(dirty);
 		if (majTitreOnglet) {
 			updateTitreOnglet();
 		}
 	}
 
 	private void updateTitreOnglet() {
-		String suffixe = this.dirty ? " (*)" : null;
+		String suffixe = this.entity.isDirty() ? " (*)" : null;
 		EventQueues.lookup("organigrammeQueue", EventQueues.DESKTOP, true).publish(
 				new UpdateOngletAbstractEntityEvent(this.entity, suffixe));
 	}
@@ -237,7 +258,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 			return null;
 		}
 
-		if (this.fichePosteGroupingModel != null) {
+		if (this.fichePosteGroupingModel != null || this.afficheFdpTableau) {
 			return this.fichePosteGroupingModel;
 		}
 
@@ -254,6 +275,30 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 				new ComparatorUtil.FichePosteComparatorAvecSigleEnTete(this.entity.getSigle()), this.entity.getSigle());
 
 		return this.fichePosteGroupingModel;
+	}
+
+	/**
+	 * Renvoie la liste des fiches de postes
+	 * 
+	 * @return la liste des fiches de postes
+	 */
+	@NotifyChange("titreOngletFdp")
+	public List<FichePosteDto> getListeFichePoste() {
+		if (this.entity == null || !this.ongletSelectionne.equals(EntiteOnglet.FDP)) {
+			return null;
+		}
+
+		if (this.listeFichePoste != null || !this.afficheFdpTableau) {
+			return this.listeFichePoste;
+		}
+
+		String listIdStatutFDP = StatutFichePoste.getListIdStatutActif();
+
+		if (this.afficheFdpInactive) {
+			listIdStatutFDP += "," + StatutFichePoste.INACTIVE.getId();
+		}
+
+		return sirhWSConsumer.getFichePosteByIdEntite(this.entity.getIdEntite(), listIdStatutFDP, true);
 	}
 
 	@Command
@@ -299,9 +344,9 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	}
 
 	@Command
-	@NotifyChange("dirty")
+	@NotifyChange("entity")
 	public void onChangeValueEntity() {
-		setDirty(true);
+		setEntiteDirty(true);
 	}
 
 	@Command
@@ -318,16 +363,32 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 *            : l'entité à rafraîchir
 	 */
 	@Command
-	@NotifyChange({ "*", "titreOngletFdp" })
+	@NotifyChange({ "*" })
 	public void refreshEntite(@BindingParam("entity") EntiteDto entiteDto) {
+		refreshEntiteGeneric(entiteDto, true);
+	}
+
+	@GlobalCommand
+	@NotifyChange({ "*" })
+	public void refreshEntiteGlobalCommand(@BindingParam("entity") EntiteDto entiteDto) {
+		if (entiteDto.getId().equals(this.entity.getId())) {
+			refreshEntiteGeneric(entiteDto, false);
+		}
+	}
+
+	private void refreshEntiteGeneric(EntiteDto entiteDto, boolean showNotification) {
 		this.entity = adsWSConsumer.getEntiteWithChildren(entiteDto.getIdEntite());
 
 		// On force à null pour que ce soit rafraîchi
 		this.fichePosteGroupingModel = null;
+		this.listeFichePoste = null;
 		this.listeHistorique = null;
 
-		setDirty(false);
-		Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
+		setEntiteDirty(false);
+		updateTitreOnglet();
+		if (showNotification) {
+			Clients.showNotification("Entité " + this.entity.getSigle() + " rafraîchie.", "info", null, "top_center", 0);
+		}
 	}
 
 	/**
@@ -339,7 +400,7 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 	 * @return true si tout s'est bien passé, false sinon
 	 */
 	@Command
-	@NotifyChange({ "entity", "dirty" })
+	@NotifyChange({ "entity", "listeHistorique" })
 	public boolean updateEntite(@BindingParam("entity") EntiteDto entiteDto) {
 
 		if (!profilAgentDto.isEdition() || showErrorPopup(entiteDto)) {
@@ -360,7 +421,9 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 		mapEntite.put("entiteDto", entiteDto);
 		BindUtils.postGlobalCommand(null, null, "refreshOrganigrammeSuiteAjout", mapEntite);
 
-		setDirty(false);
+		setEntiteDirty(false);
+		this.listeHistorique = null;
+
 		return true;
 	}
 
@@ -615,6 +678,46 @@ public class EditEntiteDtoViewModel extends AbstractEditViewModel<EntiteDto> imp
 
 	public void setView(Component view) {
 		this.view = view;
+	}
+
+	@GlobalCommand
+	public void onCloseEntiteOnglet(@BindingParam("entity") EntiteDto entiteDto, @BindingParam("tab") Tab tab) {
+		if (entiteDto.getId().equals(this.entity.getId())) {
+			if (this.entity.isDirty()) {
+				final EntiteDto entiteASauver = this.entity;
+				final Tab tabAFermer = tab;
+				Messagebox.show(
+						"Voulez-vous enregistrer les modifications apportées à l'entité '" + this.entity.getSigle()
+								+ "' ?", "Fermeture de l'onglet", new Messagebox.Button[] { Messagebox.Button.YES,
+								Messagebox.Button.NO, Messagebox.Button.CANCEL }, Messagebox.QUESTION,
+						new EventListener<Messagebox.ClickEvent>() {
+
+							@Override
+							public void onEvent(ClickEvent evt) {
+								if (evt.getName().equals("onYes")) {
+									updateEntite(entiteASauver);
+									tabAFermer.onClose();
+								}
+								if (evt.getName().equals("onNo")) {
+									tabAFermer.onClose();
+								}
+							}
+						});
+			} else {
+				tab.onClose();
+			}
+		}
+	}
+
+	/**
+	 * @return statut de l'entité
+	 */
+	@DependsOn("entity")
+	public Statut getStatut() {
+		if (this.entity == null) {
+			return null;
+		}
+		return entity.getStatut();
 	}
 	
 }

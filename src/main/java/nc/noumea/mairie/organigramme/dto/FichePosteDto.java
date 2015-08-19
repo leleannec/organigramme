@@ -38,9 +38,7 @@ public class FichePosteDto {
 	private String agent;
 	public String sigle;
 	private String gradePoste;
-
-	public FichePosteDto() {
-	}
+	private String commentaire;
 
 	public String getNumero() {
 		return numero;
@@ -120,6 +118,14 @@ public class FichePosteDto {
 
 	public void setGradePoste(String gradePoste) {
 		this.gradePoste = gradePoste;
+	}
+
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
 	}
 
 	public String getLibelleCategorie() {

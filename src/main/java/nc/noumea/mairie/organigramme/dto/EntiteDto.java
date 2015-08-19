@@ -63,6 +63,7 @@ public class EntiteDto extends AbstractEntityDto {
 	private List<EntiteDto> enfants;
 	private EntiteDto entiteParent;
 	private EntiteDto entiteRemplacee;
+	private EntiteDto entiteDirection;
 
 	private Integer idStatut;
 	private Integer idAgentCreation;
@@ -83,6 +84,7 @@ public class EntiteDto extends AbstractEntityDto {
 	private Date dateDeliberationInactif;
 
 	private Integer idAgentSuppression;
+	private boolean dirty = false;
 
 	public EntiteDto() {
 		enfants = new ArrayList<>();
@@ -298,6 +300,15 @@ public class EntiteDto extends AbstractEntityDto {
 		this.commentaire = commentaire;
 	}
 
+	@JSON(include = false)
+	public EntiteDto getEntiteDirection() {
+		return entiteDirection;
+	}
+
+	public void setEntiteDirection(EntiteDto entiteDirection) {
+		this.entiteDirection = entiteDirection;
+	}
+
 	@Override
 	@JSON(include = false)
 	public String getLibelleCourt() {
@@ -318,6 +329,15 @@ public class EntiteDto extends AbstractEntityDto {
 	@JSON(include = false)
 	public Integer getVersion() {
 		return null;
+	}
+
+	@JSON(include = false)
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 
 	@Override
@@ -359,6 +379,11 @@ public class EntiteDto extends AbstractEntityDto {
 		// construit la liste de toutes les transitions possibles depuis le
 		// statut source
 		List<Transition> listeTransition = new ArrayList<>();
+
+		if (this.getStatut() == null) {
+			return listeTransition;
+		}
+
 		for (Transition transition : Transition.values()) {
 			boolean transitionDepuisStatutCourant = this.getStatut().equals(transition.getStatutSource());
 			if (transitionDepuisStatutCourant) {
@@ -460,11 +485,14 @@ public class EntiteDto extends AbstractEntityDto {
 	}
 
 	@JSON(include = false)
-	public String getSigleWithLibelleStatut() {
+	public String getSigleWithLibelleStatutAndDirection() {
+
+		String directionEtSigle = (entiteDirection != null ? entiteDirection.getSigle() + " > " : "") + this.sigle;
+
 		if (this.getStatut() != null && this.getStatut() != Statut.ACTIF) {
-			return this.sigle + " (" + this.getStatut().getLibelle() + ")";
+			return directionEtSigle + " (" + this.getStatut().getLibelle() + ")";
 		}
-		return this.sigle;
+		return directionEtSigle;
 	}
 
 	@JSON(include = false)
