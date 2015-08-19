@@ -1,0 +1,14 @@
+<?meta http-equiv="X-UA-Compatible" content="chrome=1"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?> 
+<zk>
+   <style src="/treeFichesPoste.css"/>
+	<window xmlns:h="native" apply="org.zkoss.bind.BindComposer" border="none" hflex="1" vflex="1" contentStyle="overflow:auto" id="windowsTreeFichesPoste">
+		
+		<div id="treeFichesPoste">
+			
+			<vlayout id="vlayoutTreeFichesPoste"></vlayout>
+			
+		</div>
+		
+	</window>
+</zk>
